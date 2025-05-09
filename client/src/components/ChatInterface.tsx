@@ -74,19 +74,21 @@ interface ChatInterfaceProps {
   userId?: number;
   currentLanguage?: string;
   currentTopic?: string;
+  initialModel?: "openai" | "anthropic";
 }
 
 export default function ChatInterface({ 
   userId, 
   currentLanguage, 
-  currentTopic 
+  currentTopic,
+  initialModel = "openai"
 }: ChatInterfaceProps) {
   // State management
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [personality, setPersonality] = useState<MentorPersonality>("FRIENDLY");
   const [skillLevel, setSkillLevel] = useState<"beginner" | "intermediate" | "advanced">("beginner");
-  const [model, setModel] = useState<"openai" | "anthropic">("openai");
+  const [model, setModel] = useState<"openai" | "anthropic">(initialModel);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

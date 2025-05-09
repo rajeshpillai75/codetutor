@@ -21,6 +21,7 @@ export default function ChatMentor() {
   const [selectedLanguage, setSelectedLanguage] = useState<string>("javascript");
   const [selectedTopic, setSelectedTopic] = useState<string>("basics");
   const [location, setLocation] = useLocation();
+  const [selectedModel, setSelectedModel] = useState<"openai" | "anthropic">("openai");
 
   // For demo/testing purposes, using a fixed userId - in production, this would come from auth
   useEffect(() => {
@@ -106,6 +107,39 @@ export default function ChatMentor() {
                   </SelectContent>
                 </Select>
               </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">AI Model</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    variant={selectedModel === "openai" ? "default" : "outline"} 
+                    className={`w-full justify-start h-auto py-3 ${selectedModel === "openai" ? "" : "hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950"}`}
+                    onClick={() => setSelectedModel("openai")}
+                  >
+                    <div className="flex flex-col items-start">
+                      <div className="flex items-center">
+                        <Cpu className="mr-2 h-5 w-5 text-blue-500" />
+                        <span className="font-medium">OpenAI</span>
+                      </div>
+                      <span className={`text-xs mt-1 ${selectedModel === "openai" ? "text-primary-foreground/70" : "text-gray-500"}`}>GPT-4o with code expertise</span>
+                    </div>
+                  </Button>
+                  
+                  <Button 
+                    variant={selectedModel === "anthropic" ? "destructive" : "outline"} 
+                    className={`w-full justify-start h-auto py-3 ${selectedModel === "anthropic" ? "" : "hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-950"}`}
+                    onClick={() => setSelectedModel("anthropic")}
+                  >
+                    <div className="flex flex-col items-start">
+                      <div className="flex items-center">
+                        <Cpu className="mr-2 h-5 w-5 text-purple-500" />
+                        <span className="font-medium">Anthropic</span>
+                      </div>
+                      <span className={`text-xs mt-1 ${selectedModel === "anthropic" ? "text-primary-foreground/70" : "text-gray-500"}`}>Claude with detailed explanations</span>
+                    </div>
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
           
@@ -148,6 +182,7 @@ export default function ChatMentor() {
               userId={user?.id} 
               currentLanguage={selectedLanguage}
               currentTopic={selectedTopic}
+              initialModel={selectedModel}
             />
           </Card>
         </div>

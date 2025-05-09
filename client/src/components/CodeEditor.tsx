@@ -3,7 +3,7 @@ import { EDITOR_THEMES, EDITOR_LANGUAGE_MODES } from "@/lib/constants";
 import AIFeedback from "./AIFeedback";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import { Terminal, Play, RefreshCw, Save } from "lucide-react";
+import { Terminal, Play, RefreshCw, Save, Settings } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CodeEditorProps {
@@ -225,6 +225,15 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
             className="h-8 text-white"
           >
             <RefreshCw className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            title="Settings"
+            onClick={handleSettingsToggle}
+            className="h-8 text-white"
+          >
+            <Settings className="h-4 w-4" />
           </Button>
         </div>
       </div>

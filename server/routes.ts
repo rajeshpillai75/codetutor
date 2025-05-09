@@ -9,6 +9,7 @@ import {
   type ChatMessage,
   type MentorPersonality
 } from "./openai";
+import { getChatbotResponseWithAnthropic } from "./anthropic";
 import {
   insertCodeSubmissionSchema,
   insertCourseSchema,

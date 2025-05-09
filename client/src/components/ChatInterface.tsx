@@ -206,11 +206,11 @@ export default function ChatInterface({
       const recentMessages = updatedMessages.slice(-10);
       const response = await apiRequest<ChatbotResponse>('/api/chatbot/message', {
         method: 'POST',
-        body: JSON.stringify({
+        data: {
           messages: recentMessages,
           personality: personality,
           context: context
-        })
+        }
       });
       
       // Add assistant response to chat
@@ -241,20 +241,22 @@ export default function ChatInterface({
     return (
       <ReactMarkdown
         components={{
-          code({ node, inline, className, children, ...props }) {
+          code(props) {
+            const { children, className, node, ...rest } = props;
             const match = /language-(\w+)/.exec(className || '');
-            return !inline && match ? (
+            return match ? (
               <SyntaxHighlighter
                 className="rounded-md my-4"
+                // @ts-ignore - Known type issue with SyntaxHighlighter style prop
                 style={vscDarkPlus}
                 language={match[1]}
                 PreTag="div"
-                {...props}
+                {...rest}
               >
                 {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>
             ) : (
-              <code className={className} {...props}>
+              <code className={className} {...rest}>
                 {children}
               </code>
             );

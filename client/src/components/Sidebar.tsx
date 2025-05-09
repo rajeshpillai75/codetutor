@@ -50,17 +50,35 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
               {language.id === 1 && ( // JavaScript courses
                 <>
                   <Link href="/courses/1">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/1' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/1' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/1";
+                      }}
+                    >
                       Fundamentals
                     </a>
                   </Link>
                   <Link href="/courses/2">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/2' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/2' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/2";
+                      }}
+                    >
                       Advanced
                     </a>
                   </Link>
                   <Link href="/courses/10">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/10' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/10' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/10";
+                      }}
+                    >
                       DOM Manipulation
                     </a>
                   </Link>
@@ -70,12 +88,24 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
               {language.id === 2 && ( // Python courses
                 <>
                   <Link href="/courses/3">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/3' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/3' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/3";
+                      }}
+                    >
                       Introduction
                     </a>
                   </Link>
                   <Link href="/courses/4">
-                    <a className={`block py-1.5 text-sm ${location.startsWith('/courses/4') ? 'text-primary font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location.startsWith('/courses/4') ? 'text-primary font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/4";
+                      }}
+                    >
                       Data Science 
                       {location.startsWith('/courses/4') && <span className="bg-primary bg-opacity-20 text-xs px-1 rounded ml-1">Current</span>}
                     </a>
@@ -86,17 +116,35 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
               {language.id === 3 && ( // React courses
                 <>
                   <Link href="/courses/5">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/5' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/5' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/5";
+                      }}
+                    >
                       Fundamentals
                     </a>
                   </Link>
                   <Link href="/courses/6">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/6' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/6' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/6";
+                      }}
+                    >
                       Advanced Patterns
                     </a>
                   </Link>
                   <Link href="/courses/11">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/11' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/11' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/11";
+                      }}
+                    >
                       Hooks In Depth
                     </a>
                   </Link>
@@ -106,12 +154,24 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
               {language.id === 4 && ( // SQL courses
                 <>
                   <Link href="/courses/7">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/7' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/7' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/7";
+                      }}
+                    >
                       Basics
                     </a>
                   </Link>
                   <Link href="/courses/8">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/8' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/8' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/8";
+                      }}
+                    >
                       Advanced Techniques
                     </a>
                   </Link>
@@ -121,12 +181,24 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
               {language.id === 5 && ( // HTML & CSS courses
                 <>
                   <Link href="/courses/9">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/9' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/9' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/9";
+                      }}
+                    >
                       Web Fundamentals
                     </a>
                   </Link>
                   <Link href="/courses/12">
-                    <a className={`block py-1.5 text-sm ${location === '/courses/12' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}>
+                    <a 
+                      className={`block py-1.5 text-sm ${location === '/courses/12' ? 'text-black font-medium' : 'text-gray-800 hover:text-black'} transition-colors`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = "/courses/12";
+                      }}
+                    >
                       Advanced CSS
                     </a>
                   </Link>

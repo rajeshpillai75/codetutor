@@ -45,7 +45,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/1">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/1";
+                          onClose();
+                        }}
                       >
                         Fundamentals
                       </a>
@@ -53,7 +57,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/2">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/2";
+                          onClose();
+                        }}
                       >
                         Advanced
                       </a>
@@ -61,7 +69,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/10">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/10";
+                          onClose();
+                        }}
                       >
                         DOM Manipulation
                       </a>
@@ -73,7 +85,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/3">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/3";
+                          onClose();
+                        }}
                       >
                         Introduction
                       </a>
@@ -81,7 +97,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/4">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/4";
+                          onClose();
+                        }}
                       >
                         Data Science
                       </a>
@@ -93,7 +113,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/5">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/5";
+                          onClose();
+                        }}
                       >
                         Fundamentals
                       </a>
@@ -101,7 +125,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/6">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/6";
+                          onClose();
+                        }}
                       >
                         Advanced Patterns
                       </a>
@@ -109,7 +137,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/11">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/11";
+                          onClose();
+                        }}
                       >
                         Hooks In Depth
                       </a>
@@ -121,7 +153,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/7">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/7";
+                          onClose();
+                        }}
                       >
                         Basics
                       </a>
@@ -129,7 +165,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/8">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/8";
+                          onClose();
+                        }}
                       >
                         Advanced Techniques
                       </a>
@@ -141,7 +181,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/9">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/9";
+                          onClose();
+                        }}
                       >
                         Web Fundamentals
                       </a>
@@ -149,7 +193,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link href="/courses/12">
                       <a 
                         className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={onClose}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = "/courses/12";
+                          onClose();
+                        }}
                       >
                         Advanced CSS
                       </a>

@@ -51,6 +51,8 @@ export default function CoursePage() {
   // Find the language for this course
   const language = PROGRAMMING_LANGUAGES.find(lang => lang.id === course?.languageId);
   
+  console.log("Current course:", course?.title, "Language ID:", language?.id, "courseId:", courseId);
+  
   // Find the lesson index in the course
   const lessonIndex = DEFAULT_LESSONS
     .filter(lesson => lesson.courseId === courseId)
@@ -90,91 +92,117 @@ export default function CoursePage() {
   
   // Define language-specific key concepts and resources based on the language
   const getLanguageSpecificContent = (languageId: number = 1) => {
-    // Default values for Python (languageId: 1)
-    let keyPoints = [
-      "Creating NumPy arrays from Python lists",
-      "Array indexing and slicing",
-      "Basic mathematical operations on arrays",
-      "Broadcasting rules for operations on arrays of different shapes",
-      "Universal functions (ufuncs) for efficient element-wise operations"
-    ];
+    console.log("Getting content for language ID:", languageId);
     
-    let additionalResources = [
-      { title: "NumPy Documentation", url: "https://numpy.org/doc/stable/" },
-      { title: "Cheat Sheet: NumPy Arrays", url: "https://s3.amazonaws.com/assets.datacamp.com/blog_assets/Numpy_Python_Cheat_Sheet.pdf" },
-      { title: "Data Science with Python eBook", url: "https://jakevdp.github.io/PythonDataScienceHandbook/" }
-    ];
+    // JavaScript (languageId: 1)
+    if (languageId === 1) {
+      return {
+        keyPoints: [
+          "JavaScript variables and data types",
+          "Functions and arrow functions",
+          "Working with arrays and objects",
+          "Asynchronous JavaScript with Promises",
+          "Modern ES6+ features and best practices"
+        ],
+        additionalResources: [
+          { title: "MDN JavaScript Guide", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide" },
+          { title: "JavaScript.info", url: "https://javascript.info/" },
+          { title: "Eloquent JavaScript eBook", url: "https://eloquentjavascript.net/" }
+        ]
+      };
+    }
     
-    // JavaScript (languageId: 2)
-    if (languageId === 2) {
-      keyPoints = [
-        "JavaScript variables and data types",
-        "Functions and arrow functions",
-        "Working with arrays and objects",
-        "Asynchronous JavaScript with Promises",
-        "Modern ES6+ features and best practices"
-      ];
-      
-      additionalResources = [
-        { title: "MDN JavaScript Guide", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide" },
-        { title: "JavaScript.info", url: "https://javascript.info/" },
-        { title: "Eloquent JavaScript eBook", url: "https://eloquentjavascript.net/" }
-      ];
+    // Python (languageId: 2)
+    else if (languageId === 2) {
+      return {
+        keyPoints: [
+          "Creating NumPy arrays from Python lists",
+          "Array indexing and slicing",
+          "Basic mathematical operations on arrays",
+          "Broadcasting rules for operations on arrays of different shapes",
+          "Universal functions (ufuncs) for efficient element-wise operations"
+        ],
+        additionalResources: [
+          { title: "NumPy Documentation", url: "https://numpy.org/doc/stable/" },
+          { title: "Cheat Sheet: NumPy Arrays", url: "https://s3.amazonaws.com/assets.datacamp.com/blog_assets/Numpy_Python_Cheat_Sheet.pdf" },
+          { title: "Data Science with Python eBook", url: "https://jakevdp.github.io/PythonDataScienceHandbook/" }
+        ]
+      };
     }
     
     // React (languageId: 3)
     else if (languageId === 3) {
-      keyPoints = [
-        "React component lifecycle and hooks",
-        "State management with useState and useReducer",
-        "Side effects with useEffect",
-        "Context API for state sharing",
-        "Performance optimization with useMemo and useCallback"
-      ];
-      
-      additionalResources = [
-        { title: "React Official Documentation", url: "https://react.dev/" },
-        { title: "React Hooks Cheatsheet", url: "https://usehooks.com/" },
-        { title: "Thinking in React", url: "https://react.dev/learn/thinking-in-react" }
-      ];
+      return {
+        keyPoints: [
+          "React component lifecycle and hooks",
+          "State management with useState and useReducer",
+          "Side effects with useEffect",
+          "Context API for state sharing",
+          "Performance optimization with useMemo and useCallback"
+        ],
+        additionalResources: [
+          { title: "React Official Documentation", url: "https://react.dev/" },
+          { title: "React Hooks Cheatsheet", url: "https://usehooks.com/" },
+          { title: "Thinking in React", url: "https://react.dev/learn/thinking-in-react" }
+        ]
+      };
     }
     
     // SQL (languageId: 4)
     else if (languageId === 4) {
-      keyPoints = [
-        "SQL query structure and syntax",
-        "Filtering data with WHERE clauses",
-        "Joining tables with INNER, LEFT, and RIGHT joins",
-        "Aggregating data with GROUP BY",
-        "Optimizing queries with indexes and execution plans"
-      ];
-      
-      additionalResources = [
-        { title: "SQL Tutorial - W3Schools", url: "https://www.w3schools.com/sql/" },
-        { title: "PostgreSQL Documentation", url: "https://www.postgresql.org/docs/" },
-        { title: "SQL Performance Explained", url: "https://use-the-index-luke.com/" }
-      ];
+      return {
+        keyPoints: [
+          "SQL query structure and syntax",
+          "Filtering data with WHERE clauses",
+          "Joining tables with INNER, LEFT, and RIGHT joins",
+          "Aggregating data with GROUP BY",
+          "Optimizing queries with indexes and execution plans"
+        ],
+        additionalResources: [
+          { title: "SQL Tutorial - W3Schools", url: "https://www.w3schools.com/sql/" },
+          { title: "PostgreSQL Documentation", url: "https://www.postgresql.org/docs/" },
+          { title: "SQL Performance Explained", url: "https://use-the-index-luke.com/" }
+        ]
+      };
     }
     
     // HTML/CSS (languageId: 5)
     else if (languageId === 5) {
-      keyPoints = [
-        "HTML5 semantic elements and best practices",
-        "CSS selectors and specificity",
-        "Flexbox and Grid layout systems",
-        "Responsive design with media queries",
-        "CSS animations and transitions"
-      ];
-      
-      additionalResources = [
-        { title: "MDN HTML Reference", url: "https://developer.mozilla.org/en-US/docs/Web/HTML" },
-        { title: "CSS-Tricks Guide to Flexbox", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/" },
-        { title: "Web.dev Learn CSS", url: "https://web.dev/learn/css/" }
-      ];
+      return {
+        keyPoints: [
+          "HTML5 semantic elements and best practices",
+          "CSS selectors and specificity",
+          "Flexbox and Grid layout systems",
+          "Responsive design with media queries",
+          "CSS animations and transitions"
+        ],
+        additionalResources: [
+          { title: "MDN HTML Reference", url: "https://developer.mozilla.org/en-US/docs/Web/HTML" },
+          { title: "CSS-Tricks Guide to Flexbox", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/" },
+          { title: "Web.dev Learn CSS", url: "https://web.dev/learn/css/" }
+        ]
+      };
     }
     
-    return { keyPoints, additionalResources };
+    // Default content (fallback)
+    return {
+      keyPoints: [
+        "Programming fundamentals",
+        "Data structures and algorithms",
+        "Problem-solving techniques",
+        "Debugging and testing",
+        "Best practices and code organization"
+      ],
+      additionalResources: [
+        { title: "Learn to Code Resources", url: "https://www.freecodecamp.org/" },
+        { title: "Programming Tutorials", url: "https://www.w3schools.com/" },
+        { title: "Computer Science Basics", url: "https://www.khanacademy.org/computing/computer-science" }
+      ]
+    };
   };
+  
+  // Make sure we're getting the correct language ID
+  console.log("Current language:", language?.name, "ID:", language?.id);
   
   // Get content based on the current language
   const { keyPoints, additionalResources } = getLanguageSpecificContent(language?.id);

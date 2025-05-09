@@ -9,10 +9,30 @@ import { useLessonProgress } from "@/hooks/use-lesson-progress";
 import LessonCompletionButton from "@/components/LessonCompletionButton";
 
 export default function CoursePage() {
-  const { lessonId } = useParams<{ lessonId?: string }>();
-  const parsedLessonId = lessonId ? parseInt(lessonId) : 4; // Default to lesson 4 (NumPy Basics)
+  const params = useParams<{ lessonId?: string; courseId?: string }>();
   const [, navigate] = useLocation();
   
+  // Handle both routes - either by lessonId or courseId
+  let parsedLessonId: number;
+  
+  if (params.lessonId) {
+    // If we're on the /lessons/:lessonId route
+    parsedLessonId = parseInt(params.lessonId);
+  } else if (params.courseId) {
+    // If we're on the /courses/:courseId route, find the first lesson of this course
+    const courseId = parseInt(params.courseId);
+    const firstLessonForCourse = DEFAULT_LESSONS
+      .filter(lesson => lesson.courseId === courseId)
+      .sort((a, b) => a.order - b.order)[0];
+      
+    if (firstLessonForCourse) {
+      parsedLessonId = firstLessonForCourse.id;
+    } else {
+      parsedLessonId = 4; // Default fallback
+    }
+  } else {
+    parsedLessonId = 4; // Default to lesson 4 (NumPy Basics) if no params
+  }
   // In a real app, this would come from user authentication
   const userId = 1; // Hard-coded for demo purposes
   

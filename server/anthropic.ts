@@ -50,11 +50,12 @@ export async function getChatbotResponseWithAnthropic(
       
       If you're not sure about something, be honest about your limitations.`;
 
-    // Format messages for Anthropic API
-    const formattedMessages = messages.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'assistant',
-      content: msg.content
-    }));
+    // Format messages for Anthropic API - ensuring only valid roles are used
+    const formattedMessages = messages.map(msg => {
+      // Ensure role is either 'user' or 'assistant' as required by Anthropic
+      const role = msg.role === 'user' ? 'user' as const : 'assistant' as const;
+      return { role, content: msg.content };
+    });
 
     // Call Anthropic API
     const response = await anthropic.messages.create({
@@ -64,8 +65,10 @@ export async function getChatbotResponseWithAnthropic(
       messages: formattedMessages,
     });
 
-    // Extract code snippet if present
-    const messageContent = response.content[0].text;
+    // Extract content safely
+    const messageContent = response.content[0].type === 'text' 
+      ? response.content[0].text 
+      : 'I encountered an error processing your request.';
     const codeRegex = /```([a-zA-Z0-9]+)?\n([\s\S]*?)```/;
     const codeMatch = messageContent.match(codeRegex);
 

@@ -443,7 +443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chatbot - Get response
   app.post("/api/chatbot/message", async (req, res) => {
     try {
-      const { messages, personality, context } = req.body;
+      const { messages, personality, context, model = "openai" } = req.body;
       
       if (!messages || !Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Valid messages array is required" });
@@ -462,11 +462,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userSkillLevel: context.userSkillLevel
       } : undefined;
       
-      const response = await getChatbotResponse(
-        messages as ChatMessage[], 
-        selectedPersonality, 
-        programmingContext
-      );
+      let response;
+      // Use the specified model or fallback to OpenAI
+      if (model === "anthropic") {
+        response = await getChatbotResponseWithAnthropic(
+          messages as ChatMessage[],
+          selectedPersonality,
+          programmingContext
+        );
+      } else {
+        response = await getChatbotResponse(
+          messages as ChatMessage[], 
+          selectedPersonality, 
+          programmingContext
+        );
+      }
       
       res.json(response);
     } catch (err) {

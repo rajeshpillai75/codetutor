@@ -6,7 +6,7 @@ import { apiRequest } from "@/lib/queryClient";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { ChevronRight, Send, RefreshCw, Bot, Settings, X, User } from "lucide-react";
+import { ChevronRight, Send, RefreshCw, Bot, Settings, X, User, Cpu } from "lucide-react";
 
 import {
   Form,
@@ -86,6 +86,7 @@ export default function ChatInterface({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [personality, setPersonality] = useState<MentorPersonality>("FRIENDLY");
   const [skillLevel, setSkillLevel] = useState<"beginner" | "intermediate" | "advanced">("beginner");
+  const [model, setModel] = useState<"openai" | "anthropic">("openai");
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -142,7 +143,8 @@ export default function ChatInterface({
         data: {
           messages: initialMessages,
           personality: personality,
-          context: context
+          context: context,
+          model: model
         }
       });
       
@@ -209,7 +211,8 @@ export default function ChatInterface({
         data: {
           messages: recentMessages,
           personality: personality,
-          context: context
+          context: context,
+          model: model
         }
       });
       
@@ -276,6 +279,10 @@ export default function ChatInterface({
           <Bot className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-medium">Coding Mentor</h2>
           <Badge variant="outline">{personalityName[personality]}</Badge>
+          <Badge variant={model === "openai" ? "secondary" : "destructive"} className="ml-1">
+            <Cpu className="h-3 w-3 mr-1" />
+            {model === "openai" ? "GPT-4" : "Claude"}
+          </Badge>
         </div>
         
         <div className="flex items-center space-x-2">
@@ -327,6 +334,30 @@ export default function ChatInterface({
                     <SelectItem value="beginner">Beginner</SelectItem>
                     <SelectItem value="intermediate">Intermediate</SelectItem>
                     <SelectItem value="advanced">Advanced</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <h3 className="text-sm font-medium">AI Model</h3>
+                <Select
+                  value={model}
+                  onValueChange={(value) => setModel(value as "openai" | "anthropic")}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select AI model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="openai">
+                      <div className="flex items-center">
+                        <Cpu className="h-4 w-4 mr-2 text-blue-500" />
+                        OpenAI (GPT-4)
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="anthropic">
+                      <div className="flex items-center">
+                        <Cpu className="h-4 w-4 mr-2 text-purple-500" />
+                        Anthropic (Claude)
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 

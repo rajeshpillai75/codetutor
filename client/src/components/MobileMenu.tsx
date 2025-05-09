@@ -69,126 +69,72 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 )}
                 {language.id === 2 && ( // Python courses
                   <>
-                    <Link href="/courses/3">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/3";
-                          onClose();
-                        }}
-                      >
-                        Introduction
-                      </a>
-                    </Link>
-                    <Link href="/courses/4">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/4";
-                          onClose();
-                        }}
-                      >
-                        Data Science
-                      </a>
-                    </Link>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/3')}
+                    >
+                      Introduction
+                    </div>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/4')}
+                    >
+                      Data Science
+                    </div>
                   </>
                 )}
                 {language.id === 3 && ( // React courses
                   <>
-                    <Link href="/courses/5">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/5";
-                          onClose();
-                        }}
-                      >
-                        Fundamentals
-                      </a>
-                    </Link>
-                    <Link href="/courses/6">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/6";
-                          onClose();
-                        }}
-                      >
-                        Advanced Patterns
-                      </a>
-                    </Link>
-                    <Link href="/courses/11">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/11";
-                          onClose();
-                        }}
-                      >
-                        Hooks In Depth
-                      </a>
-                    </Link>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/5')}
+                    >
+                      Fundamentals
+                    </div>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/6')}
+                    >
+                      Advanced Patterns
+                    </div>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/11')}
+                    >
+                      Hooks In Depth
+                    </div>
                   </>
                 )}
                 {language.id === 4 && ( // SQL courses
                   <>
-                    <Link href="/courses/7">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/7";
-                          onClose();
-                        }}
-                      >
-                        Basics
-                      </a>
-                    </Link>
-                    <Link href="/courses/8">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/8";
-                          onClose();
-                        }}
-                      >
-                        Advanced Techniques
-                      </a>
-                    </Link>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/7')}
+                    >
+                      Basics
+                    </div>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/8')}
+                    >
+                      Advanced Techniques
+                    </div>
                   </>
                 )}
                 {language.id === 5 && ( // HTML & CSS courses
                   <>
-                    <Link href="/courses/9">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/9";
-                          onClose();
-                        }}
-                      >
-                        Web Fundamentals
-                      </a>
-                    </Link>
-                    <Link href="/courses/12">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/12";
-                          onClose();
-                        }}
-                      >
-                        Advanced CSS
-                      </a>
-                    </Link>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/9')}
+                    >
+                      Web Fundamentals
+                    </div>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/12')}
+                    >
+                      Advanced CSS
+                    </div>
                   </>
                 )}
                 {(language.id !== 1 && language.id !== 2 && language.id !== 3 && language.id !== 4 && language.id !== 5) && (
@@ -202,56 +148,46 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           
           <p className="uppercase text-xs text-gray-400 font-semibold tracking-wider mt-6 mb-2">Activities</p>
           
-          <Link href="/practice">
-            <a 
-              className={`flex items-center gap-2 py-3 px-3 ${location === '/practice' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors`}
-              onClick={onClose}
-            >
-              <i className="ri-terminal-line text-blue-500"></i>
-              <span className="text-gray-800">Practice Area</span>
-            </a>
-          </Link>
+          <div 
+            className={`flex items-center gap-2 py-3 px-3 ${location === '/practice' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors cursor-pointer`}
+            onClick={() => navigateTo('/practice')}
+          >
+            <i className="ri-terminal-line text-blue-500"></i>
+            <span className="text-gray-800">Practice Area</span>
+          </div>
           
-          <Link href="/challenges">
-            <a 
-              className={`flex items-center gap-2 py-3 px-3 ${location === '/challenges' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors mt-2`}
-              onClick={onClose}
-            >
-              <i className="ri-trophy-line text-blue-500"></i>
-              <span className="text-gray-800">Challenges</span>
-            </a>
-          </Link>
+          <div 
+            className={`flex items-center gap-2 py-3 px-3 ${location === '/challenges' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors mt-2 cursor-pointer`}
+            onClick={() => navigateTo('/challenges')}
+          >
+            <i className="ri-trophy-line text-blue-500"></i>
+            <span className="text-gray-800">Challenges</span>
+          </div>
           
-          <Link href="/projects">
-            <a 
-              className={`flex items-center gap-2 py-3 px-3 ${location === '/projects' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors mt-2`}
-              onClick={onClose}
-            >
-              <i className="ri-book-open-line text-blue-500"></i>
-              <span className="text-gray-800">My Projects</span>
-            </a>
-          </Link>
+          <div 
+            className={`flex items-center gap-2 py-3 px-3 ${location === '/projects' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors mt-2 cursor-pointer`}
+            onClick={() => navigateTo('/projects')}
+          >
+            <i className="ri-book-open-line text-blue-500"></i>
+            <span className="text-gray-800">My Projects</span>
+          </div>
         </div>
         
         <div className="p-4 border-t border-gray-200">
-          <Link href="/settings">
-            <a 
-              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors py-2"
-              onClick={onClose}
-            >
-              <i className="ri-settings-3-line"></i>
-              <span>Settings</span>
-            </a>
-          </Link>
-          <Link href="/help">
-            <a 
-              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors py-2"
-              onClick={onClose}
-            >
-              <i className="ri-question-line"></i>
-              <span>Help Center</span>
-            </a>
-          </Link>
+          <div 
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors py-2 cursor-pointer"
+            onClick={() => navigateTo('/settings')}
+          >
+            <i className="ri-settings-3-line"></i>
+            <span>Settings</span>
+          </div>
+          <div 
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors py-2 cursor-pointer"
+            onClick={() => navigateTo('/help')}
+          >
+            <i className="ri-question-line"></i>
+            <span>Help Center</span>
+          </div>
         </div>
       </div>
     </div>

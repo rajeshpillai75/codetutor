@@ -9,7 +9,7 @@ interface SidebarProps {
 
 export default function Sidebar({ userName = "John Doe", userLevel = "Advanced Level" }: SidebarProps) {
   const [location] = useLocation();
-  const [expandedCategories, setExpandedCategories] = useState<number[]>([2]); // Default expand Python
+  const [expandedCategories, setExpandedCategories] = useState<number[]>([1, 2, 3, 4, 5]); // Expand all language categories by default
 
   const toggleCategory = (languageId: number) => {
     setExpandedCategories(prev => 
@@ -51,9 +51,11 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
               className="flex items-center justify-between w-full px-4 py-2 text-left hover:bg-gray-700 transition-colors"
               onClick={() => toggleCategory(language.id)}
             >
-              <div className="flex items-center gap-2">
-                <i className={`${language.icon} text-[${language.color}]`} style={{ color: language.color }}></i>
-                <span>{language.name}</span>
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
+                  <i className={language.icon} style={{ color: language.color }}></i>
+                </div>
+                <span className="font-medium">{language.name}</span>
               </div>
               <i className={`ri-arrow-${expandedCategories.includes(language.id) ? 'down' : 'right'}-s-line`}></i>
             </button>
@@ -63,7 +65,7 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
                 {language.id === 2 && ( // Python courses
                   <>
                     <Link href="/courses/3">
-                      <a className={`block py-1 text-sm ${location === '/courses/3' ? 'text-white' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      <a className={`block py-1 text-sm ${location === '/courses/3' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
                         Introduction
                       </a>
                     </Link>
@@ -78,18 +80,70 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
                 {language.id === 1 && ( // JavaScript courses
                   <>
                     <Link href="/courses/1">
-                      <a className={`block py-1 text-sm ${location === '/courses/1' ? 'text-white' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Basics
+                      <a className={`block py-1 text-sm ${location === '/courses/1' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                        Fundamentals
                       </a>
                     </Link>
                     <Link href="/courses/2">
-                      <a className={`block py-1 text-sm ${location === '/courses/2' ? 'text-white' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      <a className={`block py-1 text-sm ${location === '/courses/2' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
                         Advanced
+                      </a>
+                    </Link>
+                    <Link href="/courses/10">
+                      <a className={`block py-1 text-sm ${location === '/courses/10' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                        DOM Manipulation
                       </a>
                     </Link>
                   </>
                 )}
-                {language.id !== 1 && language.id !== 2 && (
+                {language.id === 3 && ( // React courses
+                  <>
+                    <Link href="/courses/5">
+                      <a className={`block py-1 text-sm ${location === '/courses/5' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                        Fundamentals
+                      </a>
+                    </Link>
+                    <Link href="/courses/6">
+                      <a className={`block py-1 text-sm ${location === '/courses/6' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                        Advanced Patterns
+                      </a>
+                    </Link>
+                    <Link href="/courses/11">
+                      <a className={`block py-1 text-sm ${location === '/courses/11' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                        Hooks In Depth
+                      </a>
+                    </Link>
+                  </>
+                )}
+                {language.id === 4 && ( // SQL courses
+                  <>
+                    <Link href="/courses/7">
+                      <a className={`block py-1 text-sm ${location === '/courses/7' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                        Basics
+                      </a>
+                    </Link>
+                    <Link href="/courses/8">
+                      <a className={`block py-1 text-sm ${location === '/courses/8' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                        Advanced Techniques
+                      </a>
+                    </Link>
+                  </>
+                )}
+                {language.id === 5 && ( // HTML & CSS courses
+                  <>
+                    <Link href="/courses/9">
+                      <a className={`block py-1 text-sm ${location === '/courses/9' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                        Web Fundamentals
+                      </a>
+                    </Link>
+                    <Link href="/courses/12">
+                      <a className={`block py-1 text-sm ${location === '/courses/12' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                        Advanced CSS
+                      </a>
+                    </Link>
+                  </>
+                )}
+                {language.id !== 1 && language.id !== 2 && language.id !== 3 && language.id !== 4 && language.id !== 5 && (
                   <Link href={`/languages/${language.id}`}>
                     <a className="block py-1 text-sm text-gray-300 hover:text-white transition-colors">
                       Coming Soon

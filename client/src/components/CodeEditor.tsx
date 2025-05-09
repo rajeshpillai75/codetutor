@@ -2,12 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { EDITOR_THEMES, EDITOR_LANGUAGE_MODES } from "@/lib/constants";
 import AIFeedback from "./AIFeedback";
 import { apiRequest } from "@/lib/queryClient";
+import { Button } from "@/components/ui/button";
+import { Terminal, Play, RefreshCw, Save } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CodeEditorProps {
   title: string;
   language: string;
   initialCode: string;
   exerciseId?: number;
+  onExecute?: (code: string) => void;
 }
 
 declare global {
@@ -16,11 +20,13 @@ declare global {
   }
 }
 
-export default function CodeEditor({ title, language, initialCode, exerciseId }: CodeEditorProps) {
+export default function CodeEditor({ title, language, initialCode, exerciseId, onExecute }: CodeEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [editor, setEditor] = useState<any>(null);
   const [code, setCode] = useState(initialCode);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [output, setOutput] = useState<string>("");
+  const [isExecuting, setIsExecuting] = useState(false);
   const [feedback, setFeedback] = useState<{
     feedback: string;
     suggestions: string[];
@@ -28,6 +34,7 @@ export default function CodeEditor({ title, language, initialCode, exerciseId }:
     errorDetection?: { line: number; message: string }[];
   } | null>(null);
   const [feedbackQuery, setFeedbackQuery] = useState("");
+  const [showOutput, setShowOutput] = useState(false);
 
   useEffect(() => {
     if (!editorRef.current) return;
@@ -55,14 +62,17 @@ export default function CodeEditor({ title, language, initialCode, exerciseId }:
 
     const newEditor = window.ace.edit(editorRef.current);
     newEditor.setTheme("ace/theme/monokai");
-    newEditor.session.setMode(`ace/mode/${EDITOR_LANGUAGE_MODES[language.toLowerCase()] || 'text'}`);
+    
+    // Get language mode safely
+    const lang = language.toLowerCase();
+    const mode = EDITOR_LANGUAGE_MODES[lang as keyof typeof EDITOR_LANGUAGE_MODES] || 'text';
+    newEditor.session.setMode(`ace/mode/${mode}`);
+    
     newEditor.setValue(initialCode, -1);
     newEditor.setOptions({
       fontSize: "14px",
       showPrintMargin: false,
       highlightActiveLine: true,
-      enableBasicAutocompletion: true,
-      enableLiveAutocompletion: true,
       showLineNumbers: true,
       tabSize: 4,
       useSoftTabs: true
@@ -89,18 +99,91 @@ export default function CodeEditor({ title, language, initialCode, exerciseId }:
     }
   };
 
+  // Execute code and show output
+  const handleRunCode = () => {
+    setIsExecuting(true);
+    setShowOutput(true);
+    setOutput("Executing code...");
+    
+    if (onExecute) {
+      onExecute(code);
+      return;
+    }
+    
+    // Fallback execution if no onExecute prop is provided
+    setTimeout(() => {
+      try {
+        // Simple execution for JavaScript only
+        if (language.toLowerCase() === 'javascript') {
+          const originalConsoleLog = console.log;
+          let output = "";
+          
+          // Capture console.log output
+          console.log = (...args) => {
+            const formatted = args.map(arg => {
+              if (typeof arg === 'object') {
+                try {
+                  return JSON.stringify(arg, null, 2);
+                } catch (e) {
+                  return String(arg);
+                }
+              }
+              return String(arg);
+            }).join(' ');
+            
+            output += formatted + '\n';
+          };
+          
+          // Execute the code in a try-catch block
+          try {
+            // Create a function from the code and execute it
+            const executeFunction = new Function(code);
+            executeFunction();
+            
+            if (output.trim() === '') {
+              output = '[No output generated]';
+            }
+          } catch (err) {
+            if (err instanceof Error) {
+              output = `Error: ${err.message}`;
+            } else {
+              output = `Error: ${String(err)}`;
+            }
+          }
+          
+          // Restore the original console.log
+          console.log = originalConsoleLog;
+          setOutput(output);
+        } else {
+          // For non-JavaScript languages
+          setOutput(`[Code execution for ${language} is simulated in this environment]`);
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          setOutput(`Error: ${err.message}`);
+        } else {
+          setOutput(`Error: ${String(err)}`);
+        }
+      } finally {
+        setIsExecuting(false);
+      }
+    }, 500);
+  };
+
   const getFeedback = async () => {
     if (!code) return;
 
     setFeedbackLoading(true);
     try {
-      const response = await apiRequest('POST', '/api/code-feedback', {
-        code,
-        language,
-        exerciseId
+      const response = await apiRequest<any>('/api/code-feedback', {
+        method: 'POST',
+        data: {
+          code,
+          language,
+          exerciseId
+        }
       });
-      const data = await response.json();
-      setFeedback(data);
+      setFeedback(response);
     } catch (error) {
       console.error('Error getting feedback:', error);
     } finally {
@@ -116,39 +199,65 @@ export default function CodeEditor({ title, language, initialCode, exerciseId }:
   };
 
   return (
-    <div className="lg:col-span-2 flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       <div className="bg-gray-800 text-white p-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <i className="ri-terminal-box-line"></i>
+          <Terminal className="h-5 w-5" />
           <h3 className="font-medium">{title}</h3>
         </div>
         <div className="flex items-center gap-2">
-          <button 
-            className="text-gray-300 hover:text-white transition-colors" 
+          <Button 
+            variant="ghost" 
+            size="sm"
             title="Run Code"
-            onClick={getFeedback}
+            onClick={handleRunCode}
+            disabled={isExecuting}
+            className="h-8 text-white"
           >
-            <i className="ri-play-line"></i>
-          </button>
-          <button 
-            className="text-gray-300 hover:text-white transition-colors" 
+            {isExecuting ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+            <span className="ml-2">Run</span>
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
             title="Reset Code"
             onClick={handleReset}
+            className="h-8 text-white"
           >
-            <i className="ri-restart-line"></i>
-          </button>
-          <button 
-            className="text-gray-300 hover:text-white transition-colors" 
-            title="Settings"
-            onClick={handleSettingsToggle}
-          >
-            <i className="ri-settings-4-line"></i>
-          </button>
+            <RefreshCw className="h-4 w-4" />
+          </Button>
         </div>
       </div>
       
-      {/* Code Editor */}
-      <div ref={editorRef} className="flex-grow" style={{ height: "400px" }}></div>
+      {/* Split view for editor and output */}
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+        {/* Code Editor */}
+        <div className="flex-1 min-h-[300px]">
+          <div ref={editorRef} className="h-full w-full"></div>
+        </div>
+        
+        {/* Output Panel (conditionally rendered) */}
+        {showOutput && (
+          <div className="border-t md:border-t-0 md:border-l border-gray-200 w-full md:w-1/2 bg-gray-900 text-white">
+            <div className="flex items-center justify-between p-2 border-b border-gray-700">
+              <h4 className="font-medium text-sm">Output</h4>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="h-6 text-xs text-gray-300 hover:text-white"
+                onClick={() => setShowOutput(false)}
+              >
+                Hide
+              </Button>
+            </div>
+            <ScrollArea className="h-[200px] md:h-full p-2">
+              <pre className="font-mono text-sm whitespace-pre-wrap">
+                {output}
+              </pre>
+            </ScrollArea>
+          </div>
+        )}
+      </div>
       
       {/* AI Feedback Panel */}
       <AIFeedback 

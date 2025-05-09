@@ -749,7 +749,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
               output += `>>> ${content}\n`;
             });
           }
-        } else if (language === 'javascript' || language === 'react') {
+        } else if (language.toLowerCase() === 'javascript' || language.toLowerCase() === 'react') {
           const logLines = code.match(/console\.log\((.*)\)/g);
           if (logLines) {
             logLines.forEach(line => {
@@ -764,8 +764,12 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
         output = '[No output generated]';
       }
       
-    } catch (error) {
-      output += `Error: ${error.message}`;
+    } catch (err) {
+      if (err instanceof Error) {
+        output += `Error: ${err.message}`;
+      } else {
+        output += `Error: ${String(err)}`;
+      }
     } finally {
       // Restore the original console.log
       console.log = originalConsoleLog;
@@ -908,11 +912,12 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
           </p>
         </div>
         
-        <div className="h-[600px]">
+        <div className="h-[600px] overflow-auto">
           <CodeEditor 
             title={selectedExercise ? selectedExercise.title : `${formatLanguageName(language)} Practice`}
             language={language === "html-css" ? "html" : language === "react" ? "javascript" : language}
             initialCode={getCode()}
+            onExecute={executeCode}
           />
         </div>
       </div>

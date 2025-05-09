@@ -332,6 +332,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   });
+  
+  // Get user progress for a specific lesson
+  app.get("/api/user-progress/:userId/:lessonId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const lessonId = parseInt(req.params.lessonId);
+      
+      const progress = await storage.getUserLessonProgress(userId, lessonId);
+      
+      if (!progress) {
+        return res.status(404).json({ error: "User progress not found" });
+      }
+      
+      res.json(progress);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to get user progress" });
+    }
+  });
+  
+  // Update user progress (mark as complete)
+  app.post("/api/user-progress/:id/complete", async (req, res) => {
+    try {
+      const progressId = parseInt(req.params.id);
+      const { completed } = req.body;
+      
+      if (typeof completed !== 'boolean') {
+        return res.status(400).json({ error: "Completed status must be a boolean" });
+      }
+      
+      const progress = await storage.updateUserProgress(progressId, completed);
+      
+      res.json(progress);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to update user progress" });
+    }
+  });
 
   // Code submissions and feedback routes
   app.post("/api/code-submissions", async (req, res) => {

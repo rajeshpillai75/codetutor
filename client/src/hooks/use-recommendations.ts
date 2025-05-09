@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@lib/queryClient";
+import { apiRequest } from "@/lib/queryClient";
 import { Course, Lesson } from "@shared/schema";
 
 export interface RecommendedLesson {
@@ -14,12 +14,11 @@ export interface RecommendationResponse {
 }
 
 export function useRecommendations(userId?: number) {
-  return useQuery({
+  return useQuery<RecommendationResponse>({
     queryKey: ['/api/recommended-lessons', userId],
     queryFn: async () => {
       if (!userId) return { recommendations: [] };
-      const data = await apiRequest<RecommendationResponse>(`/api/recommended-lessons?userId=${userId}`);
-      return data;
+      return await apiRequest<RecommendationResponse>(`/api/recommended-lessons?userId=${userId}`);
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes

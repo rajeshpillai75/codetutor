@@ -1,8 +1,8 @@
 import { useLocation } from "wouter";
-import { Skeleton } from "@components/ui/skeleton";
-import { Progress } from "@components/ui/progress";
-import { Button } from "@components/ui/button";
-import { useRecommendations } from "@hooks/use-recommendations";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { useRecommendations, RecommendedLesson } from "@/hooks/use-recommendations";
 import { PlayCircle, BookOpen, ArrowRight } from "lucide-react";
 
 interface LearningRecommendationsProps {

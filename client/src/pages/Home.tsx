@@ -7,6 +7,23 @@ import LearningRecommendations from "@/components/LearningRecommendations";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [userId, setUserId] = useState<number | undefined>(1); // Default for demo purposes - would normally come from auth
+  
+  // In a real app, we'd fetch the user ID from auth context
+  useEffect(() => {
+    // This would be replaced with actual auth logic
+    const checkForUser = async () => {
+      try {
+        // For demo purposes, assume user 1 exists
+        setUserId(1);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setUserId(undefined);
+      }
+    };
+    
+    checkForUser();
+  }, []);
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -33,6 +50,15 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      {/* Personalized Recommendations Section */}
+      {userId && (
+        <section className="py-12 bg-white">
+          <div className="container mx-auto px-4">
+            <LearningRecommendations userId={userId} />
+          </div>
+        </section>
+      )}
       
       {/* Features Section */}
       <section className="py-16">

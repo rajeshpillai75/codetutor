@@ -26,12 +26,18 @@ export const PROGRAMMING_LANGUAGES = [
   },
   {
     id: 5,
+    name: "HTML & CSS",
+    icon: "ri-html5-line",
+    color: "#e34c26"
+  },
+  {
+    id: 6,
     name: "Java",
     icon: "ri-code-box-line",
     color: "#f89820"
   },
   {
-    id: 6,
+    id: 7,
     name: "C++",
     icon: "ri-code-s-slash-line",
     color: "#00599c"
@@ -40,32 +46,97 @@ export const PROGRAMMING_LANGUAGES = [
 
 // Default courses for each language
 export const DEFAULT_COURSES = [
+  // JavaScript Courses
   {
     id: 1,
     languageId: 1,
     title: "JavaScript Fundamentals",
-    description: "Learn the basics of JavaScript programming language",
+    description: "Learn the basics of JavaScript programming language, including variables, data types, functions, and control flow.",
     level: "Beginner"
   },
   {
     id: 2,
     languageId: 1,
     title: "Advanced JavaScript",
-    description: "Master advanced JavaScript concepts and techniques",
+    description: "Master advanced JavaScript concepts and techniques including closures, promises, async/await, and ES6+ features.",
     level: "Advanced"
   },
+  {
+    id: 10,
+    languageId: 1,
+    title: "JavaScript DOM Manipulation",
+    description: "Learn how to interact with and manipulate the Document Object Model (DOM) using JavaScript.",
+    level: "Intermediate"
+  },
+  
+  // Python Courses
   {
     id: 3,
     languageId: 2,
     title: "Python Basics",
-    description: "Introduction to Python programming language",
+    description: "Introduction to Python programming language covering fundamental concepts and syntax.",
     level: "Beginner"
   },
   {
     id: 4,
     languageId: 2,
     title: "Python for Data Science",
-    description: "Learn Python for data analysis and visualization",
+    description: "Learn Python for data analysis and visualization using NumPy, Pandas, and Matplotlib.",
+    level: "Intermediate"
+  },
+  
+  // React Courses
+  {
+    id: 5,
+    languageId: 3,
+    title: "React Fundamentals",
+    description: "Learn the basics of React including components, props, state, and the component lifecycle.",
+    level: "Beginner"
+  },
+  {
+    id: 6,
+    languageId: 3,
+    title: "Advanced React Patterns",
+    description: "Master advanced React patterns, hooks, context API, and state management with Redux.",
+    level: "Advanced"
+  },
+  {
+    id: 11,
+    languageId: 3,
+    title: "React Hooks In Depth",
+    description: "A deep dive into React hooks, including custom hooks and real-world applications.",
+    level: "Intermediate"
+  },
+  
+  // SQL Courses
+  {
+    id: 7,
+    languageId: 4,
+    title: "SQL Basics",
+    description: "Learn the fundamentals of SQL for database querying, including SELECT, INSERT, UPDATE, and DELETE statements.",
+    level: "Beginner"
+  },
+  {
+    id: 8,
+    languageId: 4,
+    title: "Advanced SQL Techniques",
+    description: "Master advanced SQL concepts including joins, subqueries, indexing, and optimization.",
+    level: "Advanced"
+  },
+  
+  // HTML & CSS Courses
+  {
+    id: 9,
+    languageId: 5,
+    title: "Web Development Fundamentals",
+    description: "Introduction to HTML and CSS for creating responsive and modern websites.",
+    level: "Beginner"
+  },
+  {
+    id: 12,
+    languageId: 5,
+    title: "Advanced CSS Techniques",
+    description: "Master CSS Grid, Flexbox, animations, transitions, and modern CSS frameworks.",
     level: "Intermediate"
   }
 ];

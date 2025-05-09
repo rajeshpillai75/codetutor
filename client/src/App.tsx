@@ -9,6 +9,7 @@ import Home from "@/pages/Home";
 import CoursePage from "@/pages/CoursePage";
 import PracticeArea from "@/pages/PracticeArea";
 import ChatMentor from "@/pages/ChatMentor";
+import CodeExecutionDemo from "@/pages/CodeExecutionDemo";
 import Sidebar from "@/components/Sidebar";
 import MobileMenu from "@/components/MobileMenu";
 
@@ -45,6 +46,7 @@ function Router() {
         <Route path="/courses/:courseId" component={CoursePage} />
         <Route path="/practice" component={PracticeArea} />
         <Route path="/mentor" component={ChatMentor} />
+        <Route path="/demo/code-execution" component={CodeExecutionDemo} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { PROGRAMMING_LANGUAGES } from "@/lib/constants";
 
 interface MobileMenuProps {
@@ -7,7 +7,12 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
+  
+  const navigateTo = (path: string) => {
+    navigate(path);
+    onClose();
+  };
 
   return (
     <div 
@@ -42,42 +47,24 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               <div className="pl-12 pr-3 py-2">
                 {language.id === 1 && ( // JavaScript courses
                   <>
-                    <Link href="/courses/1">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/1";
-                          onClose();
-                        }}
-                      >
-                        Fundamentals
-                      </a>
-                    </Link>
-                    <Link href="/courses/2">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/2";
-                          onClose();
-                        }}
-                      >
-                        Advanced
-                      </a>
-                    </Link>
-                    <Link href="/courses/10">
-                      <a 
-                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          window.location.href = "/courses/10";
-                          onClose();
-                        }}
-                      >
-                        DOM Manipulation
-                      </a>
-                    </Link>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/1')}
+                    >
+                      Fundamentals
+                    </div>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/2')}
+                    >
+                      Advanced
+                    </div>
+                    <div 
+                      className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors cursor-pointer"
+                      onClick={() => navigateTo('/courses/10')}
+                    >
+                      DOM Manipulation
+                    </div>
                   </>
                 )}
                 {language.id === 2 && ( // Python courses

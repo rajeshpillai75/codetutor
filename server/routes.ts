@@ -207,6 +207,117 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to get user progress" });
     }
   });
+  
+  // Personalized learning paths - Get recommended next lessons based on user progress
+  app.get("/api/recommended-lessons", async (req, res) => {
+    try {
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+      }
+
+      // Get user progress
+      const userProgress = await storage.getUserProgressByUser(userId);
+      // Get all lessons
+      const allLessons = await storage.getAllLessons();
+      // Get all courses
+      const allCourses = await storage.getAllCourses();
+      
+      // Maps for lookup
+      const courseMap = new Map(allCourses.map(course => [course.id, course]));
+      const completedLessonsMap = new Map();
+      
+      // Track completed lessons
+      userProgress.forEach(progress => {
+        if (progress.completed) {
+          completedLessonsMap.set(progress.lessonId, true);
+        }
+      });
+      
+      // Calculate recommendations by finding in-progress courses and next uncompleted lessons
+      const recommendations = [];
+      const courseProgress = new Map(); // To track course completion status
+      
+      // Initialize course progress
+      allCourses.forEach(course => {
+        courseProgress.set(course.id, { total: 0, completed: 0 });
+      });
+      
+      // Count lessons per course and completed lessons
+      allLessons.forEach(lesson => {
+        const courseStats = courseProgress.get(lesson.courseId);
+        if (courseStats) {
+          courseStats.total++;
+          if (completedLessonsMap.has(lesson.id)) {
+            courseStats.completed++;
+          }
+        }
+      });
+      
+      // Find courses in progress (partially completed)
+      const coursesInProgress = Array.from(courseProgress.entries())
+        .filter(([_, stats]) => stats.completed > 0 && stats.completed < stats.total)
+        .map(([courseId]) => courseId);
+      
+      // Add courses with no progress yet
+      const coursesNotStarted = Array.from(courseProgress.entries())
+        .filter(([_, stats]) => stats.completed === 0)
+        .map(([courseId]) => courseId);
+      
+      // Find next lessons in in-progress courses
+      coursesInProgress.forEach(courseId => {
+        const course = courseMap.get(courseId);
+        
+        // Get lessons for this course and sort by order
+        const courseLessons = allLessons
+          .filter(lesson => lesson.courseId === courseId)
+          .sort((a, b) => a.order - b.order);
+        
+        // Find first uncompleted lesson
+        const nextLesson = courseLessons.find(lesson => !completedLessonsMap.has(lesson.id));
+        
+        if (nextLesson) {
+          recommendations.push({
+            type: 'in_progress',
+            lesson: nextLesson,
+            course: course,
+            progress: Math.round((courseProgress.get(courseId).completed / courseProgress.get(courseId).total) * 100)
+          });
+        }
+      });
+      
+      // Add recommendations from courses not yet started (take first lesson)
+      if (recommendations.length < 3 && coursesNotStarted.length > 0) {
+        // Sort by user preference (language level, etc) - simplified for now
+        const notStartedRecommendations = coursesNotStarted
+          .slice(0, 3 - recommendations.length)
+          .map(courseId => {
+            const course = courseMap.get(courseId);
+            const firstLesson = allLessons
+              .filter(lesson => lesson.courseId === courseId)
+              .sort((a, b) => a.order - b.order)[0];
+            
+            if (firstLesson) {
+              return {
+                type: 'not_started',
+                lesson: firstLesson,
+                course: course,
+                progress: 0
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
+        
+        recommendations.push(...notStartedRecommendations);
+      }
+      
+      res.json({ recommendations });
+    } catch (err) {
+      console.error("Failed to get recommended lessons:", err);
+      res.status(500).json({ error: "Failed to get recommended lessons" });
+    }
+  });
 
   app.post("/api/user-progress", async (req, res) => {
     try {

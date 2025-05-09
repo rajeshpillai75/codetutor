@@ -1,8 +1,9 @@
-import { Link } from "wouter";
-import { useState } from "react";
+import { Link, useLocation } from "wouter";
+import { useState, useEffect } from "react";
 import { PROGRAMMING_LANGUAGES, DEFAULT_COURSES } from "@/lib/constants";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LearningRecommendations from "@/components/LearningRecommendations";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");

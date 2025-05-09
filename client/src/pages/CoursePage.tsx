@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { DEFAULT_COURSES, DEFAULT_LESSONS, PROGRAMMING_LANGUAGES, DEFAULT_EXERCISE } from "@/lib/constants";
 import VideoPlayer from "@/components/VideoPlayer";
 import CourseContent from "@/components/CourseContent";
@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 export default function CoursePage() {
   const { lessonId } = useParams<{ lessonId?: string }>();
   const parsedLessonId = lessonId ? parseInt(lessonId) : 4; // Default to lesson 4 (NumPy Basics)
+  const [, navigate] = useLocation();
   
   const [isLoading, setIsLoading] = useState(true);
   
@@ -88,11 +89,12 @@ export default function CoursePage() {
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <h2 className="text-2xl font-bold mb-4">Lesson Not Found</h2>
         <p className="text-gray-600 mb-6">The lesson you are looking for doesn't exist or has been moved.</p>
-        <Link href="/">
-          <a className="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
-            Back to Home
-          </a>
-        </Link>
+        <div 
+          className="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors cursor-pointer"
+          onClick={() => navigate('/')}
+        >
+          Back to Home
+        </div>
       </div>
     );
   }
@@ -114,20 +116,22 @@ export default function CoursePage() {
         </div>
         <div className="flex items-center gap-2">
           {prevLessonId && (
-            <Link href={`/lessons/${prevLessonId}`}>
-              <a className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 transition-colors">
-                <i className="ri-arrow-left-line"></i>
-                <span className="hidden sm:inline ml-1">Previous</span>
-              </a>
-            </Link>
+            <div 
+              className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 transition-colors cursor-pointer"
+              onClick={() => navigate(`/lessons/${prevLessonId}`)}
+            >
+              <i className="ri-arrow-left-line"></i>
+              <span className="hidden sm:inline ml-1">Previous</span>
+            </div>
           )}
           {nextLessonId && (
-            <Link href={`/lessons/${nextLessonId}`}>
-              <a className="px-3 py-1 bg-primary text-white rounded hover:bg-blue-600 transition-colors">
-                <span className="hidden sm:inline mr-1">Next</span>
-                <i className="ri-arrow-right-line"></i>
-              </a>
-            </Link>
+            <div 
+              className="px-3 py-1 bg-primary text-white rounded hover:bg-blue-600 transition-colors cursor-pointer"
+              onClick={() => navigate(`/lessons/${nextLessonId}`)}
+            >
+              <span className="hidden sm:inline mr-1">Next</span>
+              <i className="ri-arrow-right-line"></i>
+            </div>
           )}
         </div>
       </div>
@@ -170,11 +174,12 @@ export default function CoursePage() {
             <i className="ri-code-box-line text-5xl text-gray-400 mb-4"></i>
             <h3 className="text-xl font-medium mb-2">No Practice Exercise</h3>
             <p className="text-gray-600 mb-6">This lesson doesn't have a coding exercise yet.</p>
-            <Link href="/practice">
-              <a className="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
-                Go to Practice Area
-              </a>
-            </Link>
+            <div 
+              className="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors cursor-pointer"
+              onClick={() => navigate('/practice')}
+            >
+              Go to Practice Area
+            </div>
           </div>
         )}
       </div>

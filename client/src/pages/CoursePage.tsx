@@ -5,11 +5,19 @@ import VideoPlayer from "@/components/VideoPlayer";
 import CourseContent from "@/components/CourseContent";
 import CodeEditor from "@/components/CodeEditor";
 import { useQuery } from "@tanstack/react-query";
+import { useLessonProgress } from "@/hooks/use-lesson-progress";
+import LessonCompletionButton from "@/components/LessonCompletionButton";
 
 export default function CoursePage() {
   const { lessonId } = useParams<{ lessonId?: string }>();
   const parsedLessonId = lessonId ? parseInt(lessonId) : 4; // Default to lesson 4 (NumPy Basics)
   const [, navigate] = useLocation();
+  
+  // In a real app, this would come from user authentication
+  const userId = 1; // Hard-coded for demo purposes
+  
+  // Get lesson progress tracking
+  const { isCompleted, markAsCompleted } = useLessonProgress(userId, parsedLessonId);
   
   const [isLoading, setIsLoading] = useState(true);
   
@@ -159,6 +167,23 @@ export default function CoursePage() {
               duration: lesson.duration || 15
             }))}
           />
+          
+          {/* Lesson Completion Button */}
+          <div className="p-6 border-t">
+            <LessonCompletionButton 
+              userId={userId}
+              lessonId={parsedLessonId}
+              isCompleted={isCompleted}
+              onComplete={() => {
+                // Optional: Show a success message or handle completion event
+                if (nextLessonId) {
+                  setTimeout(() => {
+                    navigate(`/lessons/${nextLessonId}`);
+                  }, 2000);
+                }
+              }}
+            />
+          </div>
         </div>
         
         {/* Code Editor Panel */}

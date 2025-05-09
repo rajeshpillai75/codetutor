@@ -169,39 +169,39 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           
           <Link href="/practice">
             <a 
-              className={`flex items-center gap-2 py-3 px-2 ${location === '/practice' ? 'bg-gray-800' : 'hover:bg-gray-800'} rounded transition-colors`}
+              className={`flex items-center gap-2 py-3 px-3 ${location === '/practice' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors`}
               onClick={onClose}
             >
-              <i className="ri-terminal-line"></i>
-              <span>Practice Area</span>
+              <i className="ri-terminal-line text-blue-500"></i>
+              <span className="text-gray-800">Practice Area</span>
             </a>
           </Link>
           
           <Link href="/challenges">
             <a 
-              className={`flex items-center gap-2 py-3 px-2 ${location === '/challenges' ? 'bg-gray-800' : 'hover:bg-gray-800'} rounded transition-colors`}
+              className={`flex items-center gap-2 py-3 px-3 ${location === '/challenges' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors mt-2`}
               onClick={onClose}
             >
-              <i className="ri-trophy-line"></i>
-              <span>Challenges</span>
+              <i className="ri-trophy-line text-blue-500"></i>
+              <span className="text-gray-800">Challenges</span>
             </a>
           </Link>
           
           <Link href="/projects">
             <a 
-              className={`flex items-center gap-2 py-3 px-2 ${location === '/projects' ? 'bg-gray-800' : 'hover:bg-gray-800'} rounded transition-colors`}
+              className={`flex items-center gap-2 py-3 px-3 ${location === '/projects' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors mt-2`}
               onClick={onClose}
             >
-              <i className="ri-book-open-line"></i>
-              <span>My Projects</span>
+              <i className="ri-book-open-line text-blue-500"></i>
+              <span className="text-gray-800">My Projects</span>
             </a>
           </Link>
         </div>
         
-        <div className="p-4 border-t border-gray-700">
+        <div className="p-4 border-t border-gray-200">
           <Link href="/settings">
             <a 
-              className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors py-2"
+              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors py-2"
               onClick={onClose}
             >
               <i className="ri-settings-3-line"></i>
@@ -210,7 +210,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </Link>
           <Link href="/help">
             <a 
-              className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors py-2"
+              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors py-2"
               onClick={onClose}
             >
               <i className="ri-question-line"></i>

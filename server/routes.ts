@@ -1,7 +1,14 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { getCodeFeedback, searchYouTubeVideos } from "./openai";
+import { 
+  getCodeFeedback, 
+  searchYouTubeVideos, 
+  getChatbotResponse, 
+  MentorPersonalities,
+  type ChatMessage,
+  type MentorPersonality
+} from "./openai";
 import {
   insertCodeSubmissionSchema,
   insertCourseSchema,
@@ -419,6 +426,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(videos);
     } catch (err) {
       res.status(500).json({ error: "Failed to search videos" });
+    }
+  });
+
+  // Chatbot - Get available personalities
+  app.get("/api/chatbot/personalities", (req, res) => {
+    try {
+      const personalities = Object.values(MentorPersonalities);
+      res.json({ personalities });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to get chatbot personalities" });
+    }
+  });
+
+  // Chatbot - Get response
+  app.post("/api/chatbot/message", async (req, res) => {
+    try {
+      const { messages, personality, context } = req.body;
+      
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: "Valid messages array is required" });
+      }
+      
+      // Default to FRIENDLY personality if not specified or invalid
+      let selectedPersonality: MentorPersonality = MentorPersonalities.FRIENDLY;
+      if (personality && Object.values(MentorPersonalities).includes(personality as MentorPersonality)) {
+        selectedPersonality = personality as MentorPersonality;
+      }
+      
+      // Optional programming context
+      const programmingContext = context ? {
+        language: context.language,
+        currentTopic: context.currentTopic,
+        userSkillLevel: context.userSkillLevel
+      } : undefined;
+      
+      const response = await getChatbotResponse(
+        messages as ChatMessage[], 
+        selectedPersonality, 
+        programmingContext
+      );
+      
+      res.json(response);
+    } catch (err) {
+      console.error("Chatbot error:", err);
+      res.status(500).json({ 
+        error: "Failed to get chatbot response",
+        message: "I'm having trouble processing your request right now. Could you try asking me again?" 
+      });
     }
   });
 

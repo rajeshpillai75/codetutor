@@ -1,110 +1,722 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CodeEditor from "@/components/CodeEditor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PROGRAMMING_LANGUAGES, EDITOR_LANGUAGE_MODES } from "@/lib/constants";
+import { 
+  JAVASCRIPT_EXERCISE, 
+  REACT_EXERCISE, 
+  SQL_EXERCISE, 
+  HTML_CSS_EXERCISE 
+} from "@/lib/additional-lessons";
+
+// Type definition for exercise
+interface Exercise {
+  id: string;
+  title: string;
+  type: string;
+  difficulty: string;
+  prompt: string;
+  code: string;
+}
 
 export default function PracticeArea() {
-  const [language, setLanguage] = useState("python");
-  const [difficulty, setDifficulty] = useState("beginner");
-  const [exerciseType, setExerciseType] = useState("dataStructures");
+  const [language, setLanguage] = useState<string>("javascript");
+  const [difficulty, setDifficulty] = useState<string>("beginner");
+  const [exerciseType, setExerciseType] = useState<string>("dataStructures");
+  const [availableExercises, setAvailableExercises] = useState<Exercise[]>([]);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   
-  // Default starter code for different languages
-  const starterCode = {
-    python: `# Python Practice Area
-# Try writing some code below
+  // Language-specific exercises
+  const languageExercises = {
+    javascript: [
+      {
+        id: "js_vars",
+        title: "Variables and Data Types",
+        type: "general",
+        difficulty: "beginner",
+        prompt: "Practice working with JavaScript variables, primitive types, and type conversion.",
+        code: JAVASCRIPT_EXERCISE.starterCode
+      },
+      {
+        id: "js_functions",
+        title: "Functions and Scope",
+        type: "general",
+        difficulty: "beginner",
+        prompt: "Create functions using different syntaxes and understand variable scope.",
+        code: `// JavaScript Functions Practice
 
-def greet(name):
-    return f"Hello, {name}!"
+// Function Declaration
+function add(a, b) {
+  return a + b;
+}
+
+// Function Expression
+const subtract = function(a, b) {
+  return a - b;
+};
+
+// Arrow Function
+const multiply = (a, b) => a * b;
+
+// Test your functions
+console.log("2 + 3 =", add(2, 3));
+console.log("5 - 2 =", subtract(5, 2));
+console.log("4 * 6 =", multiply(4, 6));
+
+// Practice creating a function that calculates the area of a circle
+// formula: area = π * radius^2
+
+// Your code here:
+function calculateCircleArea(radius) {
+  // Write your implementation
+}
+
+console.log("Area of circle with radius 5:", calculateCircleArea(5));
+`
+      },
+      {
+        id: "js_arrays",
+        title: "Arrays and Objects",
+        type: "dataStructures",
+        difficulty: "beginner",
+        prompt: "Work with arrays and objects, practice array methods and object manipulation.",
+        code: `// JavaScript Arrays and Objects Practice
+
+// Sample array
+let fruits = ['apple', 'banana', 'orange', 'grape'];
+console.log("Original fruits array:", fruits);
+
+// Array methods
+console.log("Array length:", fruits.length);
+console.log("Index of 'orange':", fruits.indexOf('orange'));
+
+// Add and remove elements
+fruits.push('kiwi');
+console.log("After push:", fruits);
+
+fruits.pop();
+console.log("After pop:", fruits);
+
+// For-of loop
+console.log("Iterating with for-of:");
+for (let fruit of fruits) {
+  console.log("- " + fruit);
+}
+
+// Sample object
+let person = {
+  firstName: 'John',
+  lastName: 'Doe',
+  age: 30,
+  email: 'john@example.com'
+};
+console.log("Person object:", person);
+
+// Accessing object properties
+console.log("First name:", person.firstName);
+console.log("Age:", person['age']);
+
+// Practice: Create an array of objects and filter it
+// Create an array of student objects with properties: name, grade, subject
+// Then filter to find all students with grade > 80
+
+// Your code here:
+let students = [];
+
+// Filter students with grade > 80
+let highGradeStudents = [];
+
+console.log("High grade students:", highGradeStudents);
+`
+      },
+      {
+        id: "js_algo_sort",
+        title: "Sorting Algorithms",
+        type: "algorithms",
+        difficulty: "intermediate",
+        prompt: "Implement and understand sorting algorithms like bubble sort.",
+        code: `// JavaScript Sorting Algorithms Practice
+
+// Sample array to sort
+let numbers = [64, 34, 25, 12, 22, 11, 90];
+console.log("Original array:", numbers);
+
+// Built-in sort
+let sorted = [...numbers].sort((a, b) => a - b);
+console.log("Using built-in sort:", sorted);
+
+// Implement Bubble Sort
+function bubbleSort(arr) {
+  // Make a copy to avoid modifying the original
+  let result = [...arr];
+  
+  // Your implementation here
+  
+  return result;
+}
+
+console.log("Using bubble sort:", bubbleSort(numbers));
+
+// Implement Selection Sort (challenge)
+function selectionSort(arr) {
+  // Your implementation here
+}
+
+console.log("Using selection sort:", selectionSort(numbers));
+`
+      }
+    ],
+    python: [
+      {
+        id: "py_basics",
+        title: "Python Basics",
+        type: "general",
+        difficulty: "beginner",
+        prompt: "Practice Python syntax, variables, and basic operations.",
+        code: `# Python Basics Practice
+
+# Variables and data types
+name = "Python Learner"
+age = 25
+is_student = True
+height = 1.75
+
+print(f"Name: {name}, Type: {type(name)}")
+print(f"Age: {age}, Type: {type(age)}")
+print(f"Is Student: {is_student}, Type: {type(is_student)}")
+print(f"Height: {height}, Type: {type(height)}")
+
+# Basic operations
+x = 10
+y = 3
+
+print(f"{x} + {y} = {x + y}")
+print(f"{x} - {y} = {x - y}")
+print(f"{x} * {y} = {x * y}")
+print(f"{x} / {y} = {x / y}")  # Float division
+print(f"{x} // {y} = {x // y}")  # Integer division
+print(f"{x} % {y} = {x % y}")  # Modulus
+print(f"{x} ** {y} = {x ** y}")  # Exponentiation
+
+# Strings
+greeting = "Hello, World!"
+print(greeting.upper())
+print(greeting.lower())
+print(greeting.replace("Hello", "Hi"))
+print(greeting[0:5])  # Slicing
+
+# Write a function that calculates the area of a rectangle
+# Your code here:
+
+def calculate_rectangle_area(length, width):
+    # Implement this function
+    pass
 
 # Test your function
-print(greet("Learner"))
-
-# Try creating a list and iterating through it
-numbers = [1, 2, 3, 4, 5]
-for num in numbers:
-    print(num * 2)
-`,
-    javascript: `// JavaScript Practice Area
-// Try writing some code below
-
-function greet(name) {
-    return \`Hello, \${name}!\`;
-}
-
-// Test your function
-console.log(greet("Learner"));
-
-// Try creating an array and mapping through it
-const numbers = [1, 2, 3, 4, 5];
-numbers.map(num => console.log(num * 2));
-`,
-    java: `// Java Practice Area
-// Try writing some code below
-
-public class Main {
-    public static void main(String[] args) {
-        System.out.println(greet("Learner"));
-        
-        // Try creating an array and iterating through it
-        int[] numbers = {1, 2, 3, 4, 5};
-        for (int num : numbers) {
-            System.out.println(num * 2);
-        }
-    }
-    
-    public static String greet(String name) {
-        return "Hello, " + name + "!";
-    }
-}
-`,
-    sql: `-- SQL Practice Area
--- Try writing some SQL queries below
-
-CREATE TABLE users (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    age INTEGER
-);
-
--- Insert some data
-INSERT INTO users (id, name, email, age) VALUES (1, 'John Doe', 'john@example.com', 28);
-INSERT INTO users (id, name, email, age) VALUES (2, 'Jane Smith', 'jane@example.com', 32);
-
--- Query the data
-SELECT * FROM users WHERE age > 25;
+print(f"Rectangle area (5x3): {calculate_rectangle_area(5, 3)}")
 `
+      },
+      {
+        id: "py_data_structures",
+        title: "Python Data Structures",
+        type: "dataStructures",
+        difficulty: "beginner",
+        prompt: "Work with Python lists, dictionaries, tuples, and sets.",
+        code: `# Python Data Structures Practice
+
+# Lists
+fruits = ["apple", "banana", "orange", "grape"]
+print("Original list:", fruits)
+
+# List operations
+fruits.append("kiwi")
+print("After append:", fruits)
+
+fruits.insert(1, "mango")
+print("After insert:", fruits)
+
+fruits.remove("orange")
+print("After remove:", fruits)
+
+# List comprehension
+numbers = [1, 2, 3, 4, 5]
+squares = [n**2 for n in numbers]
+print("Original numbers:", numbers)
+print("Squared numbers:", squares)
+
+# Dictionary
+student = {
+    "name": "Alex",
+    "age": 22,
+    "courses": ["Math", "Computer Science", "Physics"],
+    "grades": {"Math": 95, "Computer Science": 90, "Physics": 85}
+}
+
+print("Student:", student)
+print("Name:", student["name"])
+print("Courses:", student["courses"])
+print("Math grade:", student["grades"]["Math"])
+
+# Add a new key-value pair
+student["year"] = "Senior"
+print("Updated student:", student)
+
+# Tuples and Sets
+coordinates = (10, 20)  # Tuple - immutable
+unique_numbers = {1, 2, 3, 4, 4, 5, 5}  # Set - unique values
+print("Coordinates (tuple):", coordinates)
+print("Unique numbers (set):", unique_numbers)
+
+# Practice: Create a function that counts the frequency of each word in a text
+# Your code here:
+
+def word_frequency(text):
+    # Implement this function
+    pass
+
+sample_text = "the quick brown fox jumps over the lazy dog"
+print("Word frequency:", word_frequency(sample_text))
+`
+      },
+      {
+        id: "py_numpy",
+        title: "NumPy Basics",
+        type: "dataStructures",
+        difficulty: "intermediate",
+        prompt: "Learn to work with NumPy arrays and operations.",
+        code: `# NumPy Practice
+import numpy as np
+
+# Creating arrays
+array1 = np.array([1, 2, 3, 4, 5])
+array2 = np.array([[1, 2, 3], [4, 5, 6]])
+
+print("1D Array:", array1)
+print("2D Array:\n", array2)
+
+# Array attributes
+print("Shape of array2:", array2.shape)
+print("Dimensions:", array2.ndim)
+print("Data type:", array2.dtype)
+
+# Array operations
+print("Array1 + 5:", array1 + 5)
+print("Array1 * 2:", array1 * 2)
+print("Array1 squared:", array1 ** 2)
+
+# Math functions
+print("Mean of array1:", np.mean(array1))
+print("Sum of array1:", np.sum(array1))
+print("Max of array1:", np.max(array1))
+
+# Reshaping
+reshaped = array1.reshape(1, 5)
+print("Reshaped array1:\n", reshaped)
+
+# Create a 3x3 identity matrix
+identity = np.eye(3)
+print("Identity matrix:\n", identity)
+
+# Create an array of random numbers
+random_array = np.random.rand(3, 3)
+print("Random array:\n", random_array)
+
+# Practice: Create a function that calculates the dot product of two vectors
+# Your code here:
+
+def dot_product(vector1, vector2):
+    # Implement this function
+    pass
+
+v1 = np.array([1, 2, 3])
+v2 = np.array([4, 5, 6])
+print("Dot product:", dot_product(v1, v2))
+`
+      }
+    ],
+    react: [
+      {
+        id: "react_components",
+        title: "React Components",
+        type: "general",
+        difficulty: "beginner",
+        prompt: "Practice creating React components and understanding props.",
+        code: REACT_EXERCISE.starterCode
+      },
+      {
+        id: "react_hooks",
+        title: "React Hooks",
+        type: "general",
+        difficulty: "intermediate",
+        prompt: "Learn to use React hooks like useState and useEffect.",
+        code: `// React Hooks Practice
+// This is a simplified React environment for practice
+
+// Component using useState hook
+function Counter() {
+  // useState hook (simulated)
+  let count = 0;
+  const setCount = (newCount) => {
+    count = newCount;
+    console.log(\`Count updated to: \${count}\`);
+    return count;
+  };
+
+  // Simulating button click handlers
+  const increment = () => setCount(count + 1);
+  const decrement = () => setCount(count - 1);
+  const reset = () => setCount(0);
+
+  console.log("Counter rendered with count:", count);
+  
+  // Simulate JSX
+  return \`
+    <div>
+      <h2>Count: \${count}</h2>
+      <button onClick=\${increment}>+</button>
+      <button onClick=\${decrement}>-</button>
+      <button onClick=\${reset}>Reset</button>
+    </div>
+  \`;
+}
+
+// Component with multiple state variables
+function UserForm() {
+  // Multiple state hooks (simulated)
+  let firstName = "";
+  let lastName = "";
+  let email = "";
+  
+  const setFirstName = (value) => {
+    firstName = value;
+    console.log(\`First name updated to: \${firstName}\`);
   };
   
-  // Template exercises based on type and difficulty
-  const getExercisePrompt = () => {
-    if (exerciseType === "dataStructures") {
-      if (difficulty === "beginner") {
-        return "Practice creating and manipulating basic data structures.";
-      } else if (difficulty === "intermediate") {
-        return "Implement more complex data structure operations like sorting and searching.";
-      } else {
-        return "Create advanced data structures and algorithms for efficiency.";
+  const setLastName = (value) => {
+    lastName = value;
+    console.log(\`Last name updated to: \${lastName}\`);
+  };
+  
+  const setEmail = (value) => {
+    email = value;
+    console.log(\`Email updated to: \${email}\`);
+  };
+  
+  // Simulate handling form submission
+  const handleSubmit = () => {
+    console.log("Form submitted with:", { firstName, lastName, email });
+  };
+  
+  // Simulate JSX
+  return \`
+    <form onSubmit=\${handleSubmit}>
+      <div>
+        <label>First Name:</label>
+        <input 
+          value="\${firstName}"
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Last Name:</label>
+        <input 
+          value="\${lastName}"
+          onChange={(e) => setLastName(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Email:</label>
+        <input 
+          value="\${email}"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  \`;
+}
+
+// Simulate component rendering
+console.log("--- Counter Component ---");
+console.log(Counter());
+
+console.log("\\n--- UserForm Component ---");
+console.log(UserForm());
+
+// Practice: Create a component that uses the useEffect hook
+// Your code here:
+function Timer() {
+  // Implement your component with useEffect
+}
+
+console.log("\\n--- Timer Component ---");
+console.log(Timer ? Timer() : "Timer component not implemented");
+`
       }
-    } else if (exerciseType === "algorithms") {
-      if (difficulty === "beginner") {
-        return "Practice implementing simple algorithms like linear search or bubble sort.";
-      } else if (difficulty === "intermediate") {
-        return "Implement more efficient algorithms like binary search or merge sort.";
-      } else {
-        return "Tackle complex algorithmic challenges and optimization problems.";
+    ],
+    sql: [
+      {
+        id: "sql_basics",
+        title: "SQL Basics",
+        type: "general",
+        difficulty: "beginner",
+        prompt: "Practice basic SQL queries including SELECT, INSERT, UPDATE, and DELETE.",
+        code: SQL_EXERCISE.starterCode
+      },
+      {
+        id: "sql_joins",
+        title: "SQL Joins",
+        type: "general",
+        difficulty: "intermediate",
+        prompt: "Practice SQL joins to combine data from multiple tables.",
+        code: `-- SQL Joins Practice
+
+-- Create tables
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100),
+    city VARCHAR(50)
+);
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE,
+    total_amount DECIMAL(10, 2),
+    status VARCHAR(20)
+);
+
+-- Insert sample data into customers
+INSERT INTO customers VALUES (1, 'John', 'Doe', 'john@example.com', 'New York');
+INSERT INTO customers VALUES (2, 'Jane', 'Smith', 'jane@example.com', 'Los Angeles');
+INSERT INTO customers VALUES (3, 'Robert', 'Johnson', 'robert@example.com', 'Chicago');
+INSERT INTO customers VALUES (4, 'Emily', 'Williams', 'emily@example.com', 'Houston');
+INSERT INTO customers VALUES (5, 'Michael', 'Brown', 'michael@example.com', 'Phoenix');
+
+-- Insert sample data into orders
+INSERT INTO orders VALUES (101, 1, '2023-01-15', 150.75, 'Completed');
+INSERT INTO orders VALUES (102, 3, '2023-01-16', 89.99, 'Completed');
+INSERT INTO orders VALUES (103, 1, '2023-01-20', 45.50, 'Processing');
+INSERT INTO orders VALUES (104, 2, '2023-01-25', 210.25, 'Completed');
+INSERT INTO orders VALUES (105, 5, '2023-01-29', 75.00, 'Processing');
+
+-- INNER JOIN: Get all orders with customer information
+SELECT c.customer_id, c.first_name, c.last_name, o.order_id, o.order_date, o.total_amount
+FROM customers c
+INNER JOIN orders o ON c.customer_id = o.customer_id;
+
+-- LEFT JOIN: Get all customers and their orders (if any)
+SELECT c.customer_id, c.first_name, c.last_name, o.order_id, o.order_date, o.total_amount
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id;
+
+-- Practice: Write a query to find customers who haven't placed any orders
+-- Your code here:
+
+
+-- Practice: Write a query to find the total amount spent by each customer
+-- Your code here:
+
+`
       }
-    } else {
-      if (difficulty === "beginner") {
-        return "Practice basic functions and control flow.";
-      } else if (difficulty === "intermediate") {
-        return "Implement classes and object-oriented programming concepts.";
-      } else {
-        return "Create complex applications with advanced language features.";
-      }
+    ],
+    html: [
+      {
+        id: "html_basics",
+        title: "HTML & CSS Basics",
+        type: "general",
+        difficulty: "beginner",
+        prompt: "Practice HTML structure and CSS styling.",
+        code: HTML_CSS_EXERCISE.starterCode
+      },
+      {
+        id: "html_layout",
+        title: "CSS Layout",
+        type: "general",
+        difficulty: "intermediate",
+        prompt: "Practice CSS Flexbox and Grid for page layouts.",
+        code: `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /* Reset styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+    
+    body {
+      font-family: Arial, sans-serif;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    /* Container for the page */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* Header styles */
+    header {
+      background-color: #f8f9fa;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    /* Flexbox layout for navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+    
+    /* Main content area with Grid layout */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .card {
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* PRACTICE: Complete the footer styles using Flexbox */
+    footer {
+      /* Add your footer styles here using Flexbox */
+    }
+    
+    /* PRACTICE: Add responsive styles for mobile devices */
+    @media (max-width: 768px) {
+      /* Make the grid single column on mobile */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <nav class="navbar">
+        <div class="logo">MyWebsite</div>
+        <ul class="nav-links">
+          <li>Home</li>
+          <li>About</li>
+          <li>Services</li>
+          <li>Contact</li>
+        </ul>
+      </nav>
+    </header>
+    
+    <main>
+      <div class="content-grid">
+        <div class="card">
+          <h3>Card 1</h3>
+          <p>This card uses CSS Grid layout for positioning.</p>
+        </div>
+        <div class="card">
+          <h3>Card 2</h3>
+          <p>Responsive design ensures proper display on all devices.</p>
+        </div>
+        <div class="card">
+          <h3>Card 3</h3>
+          <p>Flexbox and Grid are powerful CSS layout systems.</p>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">MyWebsite</div>
+        <div class="footer-copyright">© 2023 MyWebsite. All rights reserved.</div>
+        <div class="footer-social">
+          <span>Facebook</span>
+          <span>Twitter</span>
+          <span>Instagram</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
+`
+      }
+    ]
+  };
+
+  // Helper function to format language name for display
+  const formatLanguageName = (lang: string): string => {
+    if (lang === "html-css") return "HTML & CSS";
+    if (lang === "react") return "React";
+    return lang.charAt(0).toUpperCase() + lang.slice(1);
+  };
+
+  // Remove the duplicate interface definition
+
+  // Filter exercises based on current selections
+  useEffect(() => {
+    // Map language value to object property
+    let langKey = language;
+    if (language === "html-css") langKey = "html";
+    
+    // Get exercises for the selected language
+    const exercises = languageExercises[langKey as keyof typeof languageExercises] || [];
+    
+    // Filter based on difficulty and type
+    const filtered = exercises.filter((ex: Exercise) => {
+      const difficultyMatch = ex.difficulty === difficulty;
+      const typeMatch = exerciseType === "all" || ex.type === exerciseType;
+      return difficultyMatch && (exerciseType === "all" || typeMatch);
+    });
+    
+    setAvailableExercises(filtered);
+    
+    // Set a default selected exercise if available
+    if (filtered.length > 0) {
+      setSelectedExercise(filtered[0]);
+    } else {
+      setSelectedExercise(null);
+    }
+  }, [language, difficulty, exerciseType]);
+  
+  // Get default code or selected exercise code
+  const getCode = (): string => {
+    if (selectedExercise) {
+      return selectedExercise.code;
+    }
+    
+    // Fallback to generic starter code
+    const genericCode: Record<string, string> = {
+      python: `# Python Practice Area\n# No specific exercise selected\n\n# Write your code here\nprint("Hello, Python world!")`,
+      javascript: `// JavaScript Practice Area\n// No specific exercise selected\n\n// Write your code here\nconsole.log("Hello, JavaScript world!");`,
+      java: `// Java Practice Area\n// No specific exercise selected\n\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, Java world!");\n    }\n}`,
+      sql: `-- SQL Practice Area\n-- No specific exercise selected\n\n-- Write your queries here\nSELECT 'Hello, SQL world!' AS greeting;`,
+      react: `// React Practice Area\n// No specific exercise selected\n\n// Write your code here\nconsole.log("Hello, React world!");`,
+      "html-css": `<!-- HTML & CSS Practice Area -->\n<!-- No specific exercise selected -->\n\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    /* Your CSS here */\n  </style>\n</head>\n<body>\n  <h1>Hello, HTML & CSS world!</h1>\n</body>\n</html>`
+    };
+    
+    return genericCode[language] || `// Write your code here`;
   };
   
   return (
@@ -125,10 +737,11 @@ SELECT * FROM users WHERE age > 25;
                 <SelectValue placeholder="Select Language" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="python">Python</SelectItem>
                 <SelectItem value="javascript">JavaScript</SelectItem>
-                <SelectItem value="java">Java</SelectItem>
+                <SelectItem value="python">Python</SelectItem>
+                <SelectItem value="react">React</SelectItem>
                 <SelectItem value="sql">SQL</SelectItem>
+                <SelectItem value="html-css">HTML & CSS</SelectItem>
               </SelectContent>
             </Select>
           </CardContent>
@@ -168,30 +781,70 @@ SELECT * FROM users WHERE age > 25;
                 <SelectValue placeholder="Select Exercise Type" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="general">General Coding</SelectItem>
                 <SelectItem value="dataStructures">Data Structures</SelectItem>
                 <SelectItem value="algorithms">Algorithms</SelectItem>
-                <SelectItem value="general">General Coding</SelectItem>
               </SelectContent>
             </Select>
           </CardContent>
         </Card>
       </div>
       
+      {/* Available Exercises Selector */}
+      {availableExercises.length > 0 ? (
+        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+          <div className="p-4 bg-gray-50 border-b">
+            <h2 className="text-xl font-semibold">Available Exercises</h2>
+            <p className="text-gray-600 mt-1">
+              Select an exercise based on your chosen language and difficulty level
+            </p>
+          </div>
+          <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {availableExercises.map(exercise => (
+              <Card 
+                key={exercise.id} 
+                className={`cursor-pointer transition-all hover:shadow-md ${selectedExercise?.id === exercise.id ? 'border-primary border-2' : ''}`}
+                onClick={() => setSelectedExercise(exercise)}
+              >
+                <CardContent className="p-4">
+                  <h3 className="font-medium text-lg">{exercise.title}</h3>
+                  <p className="text-gray-500 text-sm mt-1">{exercise.prompt}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8 p-8 text-center">
+          <h2 className="text-xl font-semibold mb-2">No Exercises Available</h2>
+          <p className="text-gray-600">
+            No exercises match your current selection. Try changing the language, difficulty, or exercise type.
+          </p>
+        </div>
+      )}
+      
+      {/* Code Editor */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
         <div className="p-4 bg-gray-50 border-b">
-          <h2 className="text-xl font-semibold">Exercise: {language.charAt(0).toUpperCase() + language.slice(1)} {exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}</h2>
-          <p className="text-gray-600 mt-1">{getExercisePrompt()}</p>
+          <h2 className="text-xl font-semibold">
+            {selectedExercise ? selectedExercise.title : `${formatLanguageName(language)} Practice`}
+          </h2>
+          <p className="text-gray-600 mt-1">
+            {selectedExercise ? selectedExercise.prompt : "Practice coding in this environment."}
+          </p>
         </div>
         
         <div className="h-[600px]">
           <CodeEditor 
-            title={`${language.toUpperCase()} Practice`}
-            language={language}
-            initialCode={starterCode[language] || "// Start coding here"}
+            title={selectedExercise ? selectedExercise.title : `${formatLanguageName(language)} Practice`}
+            language={language === "html-css" ? "html" : language === "react" ? "javascript" : language}
+            initialCode={getCode()}
           />
         </div>
       </div>
       
+      {/* Learning Resources */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-4 bg-gray-50 border-b">
           <h2 className="text-xl font-semibold">Learning Resources</h2>
@@ -221,16 +874,22 @@ SELECT * FROM users WHERE age > 25;
                     <li><a href="https://nodejs.org/en/docs/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Node.js Documentation</a></li>
                   </>
                 )}
-                {language === "java" && (
+                {language === "react" && (
                   <>
-                    <li><a href="https://docs.oracle.com/en/java/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Java Documentation</a></li>
-                    <li><a href="https://docs.oracle.com/javase/tutorial/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Oracle Java Tutorials</a></li>
+                    <li><a href="https://react.dev/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">React Documentation</a></li>
+                    <li><a href="https://legacy.reactjs.org/docs/hooks-intro.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">React Hooks Documentation</a></li>
                   </>
                 )}
                 {language === "sql" && (
                   <>
                     <li><a href="https://dev.mysql.com/doc/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">MySQL Documentation</a></li>
                     <li><a href="https://www.postgresql.org/docs/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">PostgreSQL Documentation</a></li>
+                  </>
+                )}
+                {language === "html-css" && (
+                  <>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">MDN HTML Documentation</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">MDN CSS Documentation</a></li>
                   </>
                 )}
               </ul>
@@ -253,14 +912,22 @@ SELECT * FROM users WHERE age > 25;
                     <li><a href="https://www.youtube.com/watch?v=W6NZfCO5SIk" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">JavaScript for Beginners (YouTube)</a></li>
                   </>
                 )}
-                {language === "java" && (
+                {language === "react" && (
                   <>
-                    <li><a href="https://www.youtube.com/watch?v=eIrMbAQSU34" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Java Tutorial for Beginners (YouTube)</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=Ke90Tje7VS0" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">React Course for Beginners (YouTube)</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=4ORZ1GmjaMc" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">React Hooks Tutorial (YouTube)</a></li>
                   </>
                 )}
                 {language === "sql" && (
                   <>
                     <li><a href="https://www.youtube.com/watch?v=HXV3zeQKqGY" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">SQL Tutorial (YouTube)</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=7S_tz1z_5bA" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">SQL Full Course (YouTube)</a></li>
+                  </>
+                )}
+                {language === "html-css" && (
+                  <>
+                    <li><a href="https://www.youtube.com/watch?v=qz0aGYrrlhU" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">HTML Tutorial for Beginners (YouTube)</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=yfoY53QXEnI" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CSS Crash Course (YouTube)</a></li>
                   </>
                 )}
               </ul>
@@ -280,16 +947,25 @@ SELECT * FROM users WHERE age > 25;
                 {language === "javascript" && (
                   <>
                     <li><a href="https://github.com/30-seconds/30-seconds-of-code" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">30 Seconds of Code (GitHub)</a></li>
+                    <li><a href="https://github.com/lydiahallie/javascript-questions" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">JavaScript Questions (GitHub)</a></li>
                   </>
                 )}
-                {language === "java" && (
+                {language === "react" && (
                   <>
-                    <li><a href="https://github.com/iluwatar/java-design-patterns" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Java Design Patterns (GitHub)</a></li>
+                    <li><a href="https://github.com/enaqx/awesome-react" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Awesome React (GitHub)</a></li>
+                    <li><a href="https://github.com/react-hook-form/react-hook-form" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">React Hook Form (GitHub)</a></li>
                   </>
                 )}
                 {language === "sql" && (
                   <>
                     <li><a href="https://github.com/WebDevSimplified/Learn-SQL" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">SQL Examples (GitHub)</a></li>
+                    <li><a href="https://github.com/NUKnightLab/sql-mysteries" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">SQL Mystery (GitHub)</a></li>
+                  </>
+                )}
+                {language === "html-css" && (
+                  <>
+                    <li><a href="https://github.com/bradtraversy/50projects50days" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">50 HTML/CSS Projects (GitHub)</a></li>
+                    <li><a href="https://github.com/jgthms/css-reference" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CSS Reference (GitHub)</a></li>
                   </>
                 )}
               </ul>

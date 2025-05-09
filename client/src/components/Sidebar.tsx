@@ -163,7 +163,16 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
         </div>
         
         <div 
-          className={`flex items-center gap-2 px-4 py-2 ${location === '/practice' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors cursor-pointer`}
+          className={`flex items-center gap-2 px-4 py-2 ${location === '/mentor' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors cursor-pointer`}
+          onClick={() => navigateTo('/mentor')}
+        >
+          <i className="ri-robot-line text-blue-500"></i>
+          <span>AI Mentor</span>
+          <span className="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-600 font-medium">New</span>
+        </div>
+
+        <div 
+          className={`flex items-center gap-2 px-4 py-2 ${location === '/practice' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'} rounded transition-colors mt-1 cursor-pointer`}
           onClick={() => navigateTo('/practice')}
         >
           <i className="ri-terminal-line text-blue-500"></i>

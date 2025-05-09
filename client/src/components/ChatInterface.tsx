@@ -1,21 +1,29 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
-import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { ChevronRight, Send, RefreshCw, Bot, Settings, X, User, Cpu } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
+// UI components
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -23,24 +31,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Chat message types
+// Icons
+import {
+  Bot,
+  Cpu,
+  RefreshCw,
+  Send,
+  Settings,
+  User,
+  X,
+} from "lucide-react";
+
+// Types
 interface ChatMessage {
   role: "user" | "assistant" | "system";
   content: string;
   timestamp?: Date;
 }
 
-// Response type from API
 interface ChatbotResponse {
   message: string;
   code?: string;
@@ -51,7 +60,7 @@ interface ChatbotResponse {
   }[];
 }
 
-// Mentor personality types
+// Types for mentor personality
 type MentorPersonality = "FRIENDLY" | "EXPERT" | "ENCOURAGING" | "SOCRATIC" | "BRIEF";
 
 // Helper function to map personality to readable name
@@ -75,18 +84,20 @@ interface ChatInterfaceProps {
   currentLanguage?: string;
   currentTopic?: string;
   initialModel?: "openai" | "anthropic";
+  initialPersonality?: MentorPersonality;
 }
 
 export default function ChatInterface({ 
   userId, 
   currentLanguage, 
   currentTopic,
-  initialModel = "openai"
+  initialModel = "openai",
+  initialPersonality = "FRIENDLY"
 }: ChatInterfaceProps) {
   // State management
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [personality, setPersonality] = useState<MentorPersonality>("FRIENDLY");
+  const [personality, setPersonality] = useState<MentorPersonality>(initialPersonality);
   const [skillLevel, setSkillLevel] = useState<"beginner" | "intermediate" | "advanced">("beginner");
   const [model, setModel] = useState<"openai" | "anthropic">(initialModel);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
@@ -116,6 +127,28 @@ export default function ChatInterface({
       initializeChat();
     }
   }, []);
+
+  // Effect to update personality when initialPersonality changes
+  useEffect(() => {
+    if (personality !== initialPersonality) {
+      setPersonality(initialPersonality);
+      if (isInitialized) {
+        // Reset chat to show new personality
+        resetChat();
+      }
+    }
+  }, [initialPersonality]);
+
+  // Effect to update model when initialModel changes
+  useEffect(() => {
+    if (model !== initialModel) {
+      setModel(initialModel);
+      if (isInitialized) {
+        // Reset chat to show new model
+        resetChat();
+      }
+    }
+  }, [initialModel]);
 
   // Initialize chat with welcome message from mentor
   const initializeChat = async () => {

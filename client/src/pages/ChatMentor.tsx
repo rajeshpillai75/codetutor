@@ -3,6 +3,8 @@ import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import ChatInterface from "@/components/ChatInterface";
 import { User } from "@shared/schema";
+import MentorPersonalitySelector from "@/components/MentorPersonalitySelector";
+import { MentorPersonalityType, personalityDetails } from "@/components/MentorPersonalityCard";
 
 import {
   Select,
@@ -14,7 +16,9 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Brain, Code, Cpu, MessageSquare, BookOpen } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Brain, Code, Cpu, MessageSquare, BookOpen, Bot, Zap, Lightbulb, Settings } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function ChatMentor() {
   const [user, setUser] = useState<User | null>(null);
@@ -22,6 +26,8 @@ export default function ChatMentor() {
   const [selectedTopic, setSelectedTopic] = useState<string>("basics");
   const [location, setLocation] = useLocation();
   const [selectedModel, setSelectedModel] = useState<"openai" | "anthropic">("openai");
+  const [personalityType, setPersonalityType] = useState<MentorPersonalityType>("FRIENDLY");
+  const [isPersonalitySelectorOpen, setIsPersonalitySelectorOpen] = useState(false);
 
   // For demo/testing purposes, using a fixed userId - in production, this would come from auth
   useEffect(() => {
@@ -49,6 +55,9 @@ export default function ChatMentor() {
     return topics[selectedLanguage as keyof typeof topics] || topics.javascript;
   };
 
+  // Get the current mentor personality details
+  const currentMentorDetails = personalityDetails[personalityType];
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <h1 className="text-3xl font-bold mb-2">AI Coding Mentor</h1>
@@ -59,6 +68,57 @@ export default function ChatMentor() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sidebar with context selectors */}
         <div className="lg:col-span-1 space-y-6">
+          {/* Mentor personality card */}
+          <Card className="border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center">
+                <Bot className="mr-2 h-5 w-5" />
+                Your AI Mentor
+              </CardTitle>
+              <CardDescription>
+                Currently working with {currentMentorDetails.name}, {currentMentorDetails.title.toLowerCase()}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`p-2 rounded-lg ${currentMentorDetails.color}`}>
+                  {currentMentorDetails.icon}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold">{currentMentorDetails.name}</h3>
+                  <p className="text-sm text-gray-500">{currentMentorDetails.title}</p>
+                </div>
+                <Badge 
+                  variant={selectedModel === "openai" ? "secondary" : "destructive"} 
+                  className="ml-auto"
+                >
+                  <Cpu className="h-3 w-3 mr-1" />
+                  {selectedModel === "openai" ? "GPT" : "Claude"}
+                </Badge>
+              </div>
+              
+              <p className="text-sm mb-4">{currentMentorDetails.description}</p>
+              
+              <Dialog open={isPersonalitySelectorOpen} onOpenChange={setIsPersonalitySelectorOpen}>
+                <DialogTrigger asChild>
+                  <Button className="w-full">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Change Mentor
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl p-0">
+                  <MentorPersonalitySelector
+                    currentPersonality={personalityType}
+                    currentModel={selectedModel}
+                    onPersonalityChange={setPersonalityType}
+                    onModelChange={setSelectedModel}
+                    onClose={() => setIsPersonalitySelectorOpen(false)}
+                  />
+                </DialogContent>
+              </Dialog>
+            </CardContent>
+          </Card>
+          
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center">
@@ -107,39 +167,6 @@ export default function ChatMentor() {
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium">AI Model</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button 
-                    variant={selectedModel === "openai" ? "default" : "outline"} 
-                    className={`w-full justify-start h-auto py-3 ${selectedModel === "openai" ? "" : "hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950"}`}
-                    onClick={() => setSelectedModel("openai")}
-                  >
-                    <div className="flex flex-col items-start">
-                      <div className="flex items-center">
-                        <Cpu className="mr-2 h-5 w-5 text-blue-500" />
-                        <span className="font-medium">OpenAI</span>
-                      </div>
-                      <span className={`text-xs mt-1 ${selectedModel === "openai" ? "text-primary-foreground/70" : "text-gray-500"}`}>GPT-4o with code expertise</span>
-                    </div>
-                  </Button>
-                  
-                  <Button 
-                    variant={selectedModel === "anthropic" ? "destructive" : "outline"} 
-                    className={`w-full justify-start h-auto py-3 ${selectedModel === "anthropic" ? "" : "hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-950"}`}
-                    onClick={() => setSelectedModel("anthropic")}
-                  >
-                    <div className="flex flex-col items-start">
-                      <div className="flex items-center">
-                        <Cpu className="mr-2 h-5 w-5 text-purple-500" />
-                        <span className="font-medium">Anthropic</span>
-                      </div>
-                      <span className={`text-xs mt-1 ${selectedModel === "anthropic" ? "text-primary-foreground/70" : "text-gray-500"}`}>Claude with detailed explanations</span>
-                    </div>
-                  </Button>
-                </div>
-              </div>
             </CardContent>
           </Card>
           
@@ -171,6 +198,15 @@ export default function ChatMentor() {
                 <Brain className="mr-2 h-5 w-5" />
                 Video Lessons
               </Button>
+              
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setLocation("/demo/code-execution")}
+              >
+                <Code className="mr-2 h-5 w-5" />
+                Code Execution Demo
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -183,6 +219,7 @@ export default function ChatMentor() {
               currentLanguage={selectedLanguage}
               currentTopic={selectedTopic}
               initialModel={selectedModel}
+              initialPersonality={personalityType}
             />
           </Card>
         </div>

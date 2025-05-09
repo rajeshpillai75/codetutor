@@ -150,12 +150,26 @@ export default function ChatInterface({
         }
       });
       
+      // Format response to include code blocks if present
+      let formattedContent = response.message;
+      if (response.code && response.language) {
+        formattedContent += `\n\n\`\`\`${response.language}\n${response.code}\n\`\`\``;
+      }
+      
+      // Add resources if present
+      if (response.resources && response.resources.length > 0) {
+        formattedContent += "\n\n**Helpful Resources:**\n";
+        response.resources.forEach(resource => {
+          formattedContent += `\n- [${resource.title}](${resource.url})`;
+        });
+      }
+      
       // Update messages with response
       setMessages([
         ...initialMessages,
         {
           role: "assistant",
-          content: response.message,
+          content: formattedContent,
           timestamp: new Date()
         }
       ]);
@@ -218,12 +232,26 @@ export default function ChatInterface({
         }
       });
       
+      // Format response to include code blocks if present
+      let formattedContent = response.message;
+      if (response.code && response.language) {
+        formattedContent += `\n\n\`\`\`${response.language}\n${response.code}\n\`\`\``;
+      }
+      
+      // Add resources if present
+      if (response.resources && response.resources.length > 0) {
+        formattedContent += "\n\n**Helpful Resources:**\n";
+        response.resources.forEach(resource => {
+          formattedContent += `\n- [${resource.title}](${resource.url})`;
+        });
+      }
+      
       // Add assistant response to chat
       setMessages([
         ...updatedMessages,
         {
           role: "assistant",
-          content: response.message,
+          content: formattedContent,
           timestamp: new Date()
         }
       ]);

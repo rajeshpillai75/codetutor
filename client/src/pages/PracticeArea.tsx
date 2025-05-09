@@ -27,6 +27,8 @@ export default function PracticeArea() {
   const [exerciseType, setExerciseType] = useState<string>("dataStructures");
   const [availableExercises, setAvailableExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [codeOutput, setCodeOutput] = useState<string>("");
+  const [isRunning, setIsRunning] = useState<boolean>(false);
   
   // Language-specific exercises
   const languageExercises = {
@@ -701,6 +703,77 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
   }, [language, difficulty, exerciseType]);
   
   // Get default code or selected exercise code
+  // Execute the code and show the output
+  const executeCode = (code: string) => {
+    setIsRunning(true);
+    setCodeOutput("");
+    
+    // Create a safe way to capture console.log output
+    let output = "";
+    const originalConsoleLog = console.log;
+    
+    const appendOutput = (...args: any[]) => {
+      const formatted = args.map(arg => {
+        if (typeof arg === 'object') {
+          try {
+            return JSON.stringify(arg, null, 2);
+          } catch (e) {
+            return String(arg);
+          }
+        }
+        return String(arg);
+      }).join(' ');
+      
+      output += formatted + '\n';
+    };
+    
+    try {
+      // Replace console.log with our capturing function
+      console.log = appendOutput;
+      
+      // Execute the code differently based on language
+      if (language === 'javascript') {
+        // Create a function from the code and execute it
+        const executeFunction = new Function(code);
+        executeFunction();
+      } else if (language === 'python' || language === 'sql' || language === 'html-css' || language === 'react') {
+        // For non-JavaScript languages, we'll simulate execution
+        output += `[Code execution for ${language} is simulated in this environment]\n\n`;
+        
+        // Extract console.log or print statements for display
+        if (language === 'python') {
+          const printLines = code.match(/print\((.*)\)/g);
+          if (printLines) {
+            printLines.forEach(line => {
+              const content = line.substring(6, line.length - 1);
+              output += `>>> ${content}\n`;
+            });
+          }
+        } else if (language === 'javascript' || language === 'react') {
+          const logLines = code.match(/console\.log\((.*)\)/g);
+          if (logLines) {
+            logLines.forEach(line => {
+              const content = line.substring(12, line.length - 1);
+              output += `> ${content}\n`;
+            });
+          }
+        }
+      }
+      
+      if (output.trim() === '') {
+        output = '[No output generated]';
+      }
+      
+    } catch (error) {
+      output += `Error: ${error.message}`;
+    } finally {
+      // Restore the original console.log
+      console.log = originalConsoleLog;
+      setCodeOutput(output);
+      setIsRunning(false);
+    }
+  };
+
   const getCode = (): string => {
     if (selectedExercise) {
       return selectedExercise.code;

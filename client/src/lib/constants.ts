@@ -141,8 +141,111 @@ export const DEFAULT_COURSES = [
   }
 ];
 
-// Default lessons for Python Data Science course
+// Default lessons for all courses
 export const DEFAULT_LESSONS = [
+  // JavaScript Fundamentals course
+  {
+    id: 101,
+    courseId: 1,
+    title: "JavaScript Basics",
+    description: "Introduction to JavaScript syntax, variables, and data types",
+    videoUrl: "https://www.youtube.com/watch?v=W6NZfCO5SIk",
+    order: 1,
+    duration: 15
+  },
+  {
+    id: 102,
+    courseId: 1,
+    title: "JavaScript Functions",
+    description: "Learn how to create and use functions in JavaScript",
+    videoUrl: "https://www.youtube.com/watch?v=xUI5Tsl2JpY",
+    order: 2,
+    duration: 12
+  },
+  {
+    id: 103,
+    courseId: 1,
+    title: "Objects and Arrays in JavaScript",
+    description: "Working with complex data structures in JavaScript",
+    videoUrl: "https://www.youtube.com/watch?v=oigfaZ5ApsM",
+    order: 3,
+    duration: 18
+  },
+  
+  // JavaScript Advanced course
+  {
+    id: 201,
+    courseId: 2,
+    title: "Advanced JavaScript Concepts",
+    description: "Closures, prototypes, and the this keyword",
+    videoUrl: "https://www.youtube.com/watch?v=Mus_vwhTCq0",
+    order: 1,
+    duration: 20
+  },
+  {
+    id: 202,
+    courseId: 2,
+    title: "ES6+ Features",
+    description: "Modern JavaScript features including arrow functions, destructuring, and template literals",
+    videoUrl: "https://www.youtube.com/watch?v=nZ1DMMsyVyI",
+    order: 2,
+    duration: 15
+  },
+  
+  // JavaScript DOM course
+  {
+    id: 301,
+    courseId: 10,
+    title: "DOM Manipulation Basics",
+    description: "Learn how to interact with the Document Object Model",
+    videoUrl: "https://www.youtube.com/watch?v=y17RuWkWdn8",
+    order: 1,
+    duration: 14
+  },
+  
+  // React Fundamentals course
+  {
+    id: 401,
+    courseId: 5,
+    title: "React Fundamentals",
+    description: "Introduction to React, components, and JSX",
+    videoUrl: "https://www.youtube.com/watch?v=Ke90Tje7VS0",
+    order: 1,
+    duration: 16
+  },
+  {
+    id: 402,
+    courseId: 5,
+    title: "React State and Props",
+    description: "Managing component state and props in React",
+    videoUrl: "https://www.youtube.com/watch?v=4ORZ1GmjaMc",
+    order: 2,
+    duration: 14
+  },
+  
+  // React Advanced course
+  {
+    id: 501,
+    courseId: 6,
+    title: "React Advanced Patterns",
+    description: "Higher-order components, render props, and context API",
+    videoUrl: "https://www.youtube.com/watch?v=3BT_No8o2NA",
+    order: 1,
+    duration: 18
+  },
+  
+  // React Hooks course
+  {
+    id: 601,
+    courseId: 11,
+    title: "React Hooks Introduction",
+    description: "Learn how to use useState, useEffect, and other basic hooks",
+    videoUrl: "https://www.youtube.com/watch?v=TNhaISOUy6Q",
+    order: 1,
+    duration: 15
+  },
+  
+  // Python Data Science course
   {
     id: 1,
     courseId: 4,
@@ -205,6 +308,77 @@ export const DEFAULT_LESSONS = [
     videoUrl: "https://www.youtube.com/watch?v=vmEHCJofslg",
     order: 7,
     duration: 15
+  },
+  
+  // SQL Basics course
+  {
+    id: 701,
+    courseId: 7,
+    title: "Introduction to SQL",
+    description: "Learn the basics of SQL syntax and database concepts",
+    videoUrl: "https://www.youtube.com/watch?v=7S_tz1z_5bA",
+    order: 1,
+    duration: 16
+  },
+  {
+    id: 702,
+    courseId: 7,
+    title: "SQL SELECT Statements",
+    description: "Master the basic SQL query for retrieving data",
+    videoUrl: "https://www.youtube.com/watch?v=9ylj9NR0Lcg",
+    order: 2,
+    duration: 12
+  },
+  
+  // SQL Advanced Techniques course
+  {
+    id: 801,
+    courseId: 8,
+    title: "Advanced SQL Joins",
+    description: "Learn how to use INNER, LEFT, RIGHT and FULL OUTER joins",
+    videoUrl: "https://www.youtube.com/watch?v=9yeOJ0ZMUYw",
+    order: 1,
+    duration: 14
+  },
+  
+  // HTML & CSS Web Fundamentals course
+  {
+    id: 901,
+    courseId: 9,
+    title: "HTML Fundamentals",
+    description: "Learn the basic structure and elements of HTML",
+    videoUrl: "https://www.youtube.com/watch?v=qz0aGYrrlhU",
+    order: 1,
+    duration: 15
+  },
+  {
+    id: 902,
+    courseId: 9,
+    title: "CSS Basics",
+    description: "Introduction to styling web pages with CSS",
+    videoUrl: "https://www.youtube.com/watch?v=yfoY53QXEnI",
+    order: 2,
+    duration: 18
+  },
+  
+  // Advanced CSS course
+  {
+    id: 1001,
+    courseId: 12,
+    title: "CSS Flexbox Layout",
+    description: "Master modern layouts with CSS Flexbox",
+    videoUrl: "https://www.youtube.com/watch?v=JJSoEo8JSnc",
+    order: 1,
+    duration: 13
+  },
+  {
+    id: 1002,
+    courseId: 12,
+    title: "CSS Grid Layout",
+    description: "Create powerful grid-based layouts with CSS Grid",
+    videoUrl: "https://www.youtube.com/watch?v=jV8B24rSN5o",
+    order: 2,
+    duration: 16
   }
 ];
 

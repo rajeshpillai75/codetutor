@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { useLocation } from "wouter";
 
 interface NextVideo {
   id: number;
@@ -23,6 +23,8 @@ export default function CourseContent({
   additionalResources = [],
   nextVideos = []
 }: CourseContentProps) {
+  const [, navigate] = useLocation();
+
   return (
     <div className="p-6">
       <h3 className="text-xl font-semibold mb-4">{title}</h3>
@@ -68,24 +70,26 @@ export default function CourseContent({
           <h4 className="font-medium text-lg mb-3">Next in this Series</h4>
           
           {nextVideos.map((video) => (
-            <Link key={video.id} href={`/lessons/${video.id}`}>
-              <a className="flex items-center gap-3 mb-3 p-2 hover:bg-gray-100 rounded transition-colors cursor-pointer">
-                <div className="relative flex-shrink-0">
-                  <img 
-                    src={video.thumbnailUrl || `https://i3.ytimg.com/vi/dQw4w9WgXcQ/mqdefault.jpg`} 
-                    alt={video.title} 
-                    className="w-24 h-14 object-cover rounded" 
-                  />
-                  <div className="absolute bottom-1 right-1 bg-black bg-opacity-70 text-white px-1 text-xs rounded">
-                    {Math.floor(video.duration / 60)}:{(video.duration % 60).toString().padStart(2, '0')}
-                  </div>
+            <div 
+              key={video.id} 
+              className="flex items-center gap-3 mb-3 p-2 hover:bg-gray-100 rounded transition-colors cursor-pointer"
+              onClick={() => navigate(`/lessons/${video.id}`)}
+            >
+              <div className="relative flex-shrink-0">
+                <img 
+                  src={video.thumbnailUrl || `https://i3.ytimg.com/vi/dQw4w9WgXcQ/mqdefault.jpg`} 
+                  alt={video.title} 
+                  className="w-24 h-14 object-cover rounded" 
+                />
+                <div className="absolute bottom-1 right-1 bg-black bg-opacity-70 text-white px-1 text-xs rounded">
+                  {Math.floor(video.duration / 60)}:{(video.duration % 60).toString().padStart(2, '0')}
                 </div>
-                <div className="flex-grow min-w-0">
-                  <h5 className="font-medium text-sm line-clamp-2">{video.title}</h5>
-                  <p className="text-xs text-gray-500">Lesson {video.id} • {Math.floor(Math.random() * 5) + 1}.{Math.floor(Math.random() * 9)}K views</p>
-                </div>
-              </a>
-            </Link>
+              </div>
+              <div className="flex-grow min-w-0">
+                <h5 className="font-medium text-sm line-clamp-2">{video.title}</h5>
+                <p className="text-xs text-gray-500">Lesson {video.id} • {Math.floor(Math.random() * 5) + 1}.{Math.floor(Math.random() * 9)}K views</p>
+              </div>
+            </div>
           ))}
         </div>
       )}

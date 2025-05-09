@@ -45,6 +45,7 @@
 --destructive-foreground: 0 0% 98%;
 --ring: 240 4.9% 83.9%;
 --radius: 0.5rem;
+--sidebar-bg: 240 10% 16%;
   }
 
 @layer base {

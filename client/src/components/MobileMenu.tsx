@@ -11,15 +11,15 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
   return (
     <div 
-      className={`fixed inset-0 bg-dark bg-opacity-95 z-20 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 md:hidden`}
+      className={`fixed inset-0 bg-white z-20 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 md:hidden`}
     >
-      <div className="flex flex-col h-full text-white">
-        <div className="p-4 flex items-center justify-between border-b border-gray-700">
+      <div className="flex flex-col h-full">
+        <div className="p-4 flex items-center justify-between border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <i className="ri-code-box-line text-2xl text-primary"></i>
-            <h1 className="text-xl font-bold">CodeTutor AI</h1>
+            <i className="ri-code-box-line text-2xl text-blue-500"></i>
+            <h1 className="text-xl font-bold text-gray-800">CodeTutor AI</h1>
           </div>
-          <button onClick={onClose} aria-label="Close menu">
+          <button onClick={onClose} aria-label="Close menu" className="text-gray-600">
             <i className="ri-close-line text-2xl"></i>
           </button>
         </div>
@@ -31,20 +31,20 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           {PROGRAMMING_LANGUAGES.map(language => (
             <div key={language.id} className="mb-4">
               {/* Language Header */}
-              <div className="flex items-center py-3 px-3 bg-gray-800 rounded-t">
+              <div className="flex items-center py-3 px-3">
                 <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mr-3">
                   <i className={language.icon} style={{ color: language.color }}></i>
                 </div>
-                <span className="font-medium">{language.name}</span>
+                <span className="font-bold text-blue-400">{language.name}</span>
               </div>
               
               {/* Course List */}
-              <div className="pl-12 pr-3 py-2 bg-gray-900 bg-opacity-50 rounded-b">
+              <div className="pl-12 pr-3 py-2">
                 {language.id === 1 && ( // JavaScript courses
                   <>
                     <Link href="/courses/1">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Fundamentals
@@ -52,7 +52,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     </Link>
                     <Link href="/courses/2">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Advanced
@@ -60,7 +60,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     </Link>
                     <Link href="/courses/10">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         DOM Manipulation
@@ -72,7 +72,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   <>
                     <Link href="/courses/3">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Introduction
@@ -80,7 +80,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     </Link>
                     <Link href="/courses/4">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Data Science
@@ -92,7 +92,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   <>
                     <Link href="/courses/5">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Fundamentals
@@ -100,7 +100,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     </Link>
                     <Link href="/courses/6">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Advanced Patterns
@@ -108,7 +108,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     </Link>
                     <Link href="/courses/11">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Hooks In Depth
@@ -120,7 +120,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   <>
                     <Link href="/courses/7">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Basics
@@ -128,7 +128,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     </Link>
                     <Link href="/courses/8">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Advanced Techniques
@@ -140,7 +140,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   <>
                     <Link href="/courses/9">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Web Fundamentals
@@ -148,7 +148,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     </Link>
                     <Link href="/courses/12">
                       <a 
-                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        className="block py-2 text-sm text-gray-800 hover:text-black font-medium transition-colors"
                         onClick={onClose}
                       >
                         Advanced CSS
@@ -157,7 +157,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   </>
                 )}
                 {(language.id !== 1 && language.id !== 2 && language.id !== 3 && language.id !== 4 && language.id !== 5) && (
-                  <span className="block py-2 text-sm text-gray-300">
+                  <span className="block py-2 text-sm text-gray-600">
                     Coming Soon
                   </span>
                 )}

@@ -1,6 +1,5 @@
 import { Link, useLocation } from "wouter";
 import { PROGRAMMING_LANGUAGES } from "@/lib/constants";
-import { useState } from "react";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -9,11 +8,6 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const [location] = useLocation();
-  const [expandedLanguage, setExpandedLanguage] = useState<number | null>(null);
-
-  const toggleLanguage = (id: number) => {
-    setExpandedLanguage(expandedLanguage === id ? null : id);
-  };
 
   return (
     <div 
@@ -35,147 +29,139 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           <p className="uppercase text-xs text-gray-400 font-semibold tracking-wider mb-2">Learning Paths</p>
           
           {PROGRAMMING_LANGUAGES.map(language => (
-            <div key={language.id} className="mb-3">
-              <button
-                className={`flex items-center justify-between w-full py-3 px-2 ${
-                  expandedLanguage === language.id ? 'bg-gray-800 text-white' : 'hover:bg-gray-800'
-                } rounded transition-colors`}
-                onClick={() => toggleLanguage(language.id)}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
-                    <i className={language.icon} style={{ color: language.color }}></i>
-                  </div>
-                  <span className="font-medium">{language.name}</span>
+            <div key={language.id} className="mb-4">
+              {/* Language Header */}
+              <div className="flex items-center py-3 px-3 bg-gray-800 rounded-t">
+                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mr-3">
+                  <i className={language.icon} style={{ color: language.color }}></i>
                 </div>
-                <i className={`ri-arrow-${expandedLanguage === language.id ? 'down' : 'right'}-s-line`}></i>
-              </button>
+                <span className="font-medium">{language.name}</span>
+              </div>
               
-              {expandedLanguage === language.id && (
-                <div className="pl-11 pr-2 py-2 bg-gray-800 rounded-b">
-                  {language.id === 1 && ( // JavaScript courses
-                    <>
-                      <Link href="/courses/1">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Fundamentals
-                        </a>
-                      </Link>
-                      <Link href="/courses/2">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Advanced
-                        </a>
-                      </Link>
-                      <Link href="/courses/10">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          DOM Manipulation
-                        </a>
-                      </Link>
-                    </>
-                  )}
-                  {language.id === 2 && ( // Python courses
-                    <>
-                      <Link href="/courses/3">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Introduction
-                        </a>
-                      </Link>
-                      <Link href="/courses/4">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Data Science
-                        </a>
-                      </Link>
-                    </>
-                  )}
-                  {language.id === 3 && ( // React courses
-                    <>
-                      <Link href="/courses/5">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Fundamentals
-                        </a>
-                      </Link>
-                      <Link href="/courses/6">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Advanced Patterns
-                        </a>
-                      </Link>
-                      <Link href="/courses/11">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Hooks In Depth
-                        </a>
-                      </Link>
-                    </>
-                  )}
-                  {language.id === 4 && ( // SQL courses
-                    <>
-                      <Link href="/courses/7">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Basics
-                        </a>
-                      </Link>
-                      <Link href="/courses/8">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Advanced Techniques
-                        </a>
-                      </Link>
-                    </>
-                  )}
-                  {language.id === 5 && ( // HTML & CSS courses
-                    <>
-                      <Link href="/courses/9">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Web Fundamentals
-                        </a>
-                      </Link>
-                      <Link href="/courses/12">
-                        <a 
-                          className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
-                          onClick={onClose}
-                        >
-                          Advanced CSS
-                        </a>
-                      </Link>
-                    </>
-                  )}
-                  {(language.id !== 1 && language.id !== 2 && language.id !== 3 && language.id !== 4 && language.id !== 5) && (
-                    <span className="block py-2 text-sm text-gray-300">
-                      Coming Soon
-                    </span>
-                  )}
-                </div>
-              )}
+              {/* Course List */}
+              <div className="pl-12 pr-3 py-2 bg-gray-900 bg-opacity-50 rounded-b">
+                {language.id === 1 && ( // JavaScript courses
+                  <>
+                    <Link href="/courses/1">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Fundamentals
+                      </a>
+                    </Link>
+                    <Link href="/courses/2">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Advanced
+                      </a>
+                    </Link>
+                    <Link href="/courses/10">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        DOM Manipulation
+                      </a>
+                    </Link>
+                  </>
+                )}
+                {language.id === 2 && ( // Python courses
+                  <>
+                    <Link href="/courses/3">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Introduction
+                      </a>
+                    </Link>
+                    <Link href="/courses/4">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Data Science
+                      </a>
+                    </Link>
+                  </>
+                )}
+                {language.id === 3 && ( // React courses
+                  <>
+                    <Link href="/courses/5">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Fundamentals
+                      </a>
+                    </Link>
+                    <Link href="/courses/6">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Advanced Patterns
+                      </a>
+                    </Link>
+                    <Link href="/courses/11">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Hooks In Depth
+                      </a>
+                    </Link>
+                  </>
+                )}
+                {language.id === 4 && ( // SQL courses
+                  <>
+                    <Link href="/courses/7">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Basics
+                      </a>
+                    </Link>
+                    <Link href="/courses/8">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Advanced Techniques
+                      </a>
+                    </Link>
+                  </>
+                )}
+                {language.id === 5 && ( // HTML & CSS courses
+                  <>
+                    <Link href="/courses/9">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Web Fundamentals
+                      </a>
+                    </Link>
+                    <Link href="/courses/12">
+                      <a 
+                        className="block py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                        onClick={onClose}
+                      >
+                        Advanced CSS
+                      </a>
+                    </Link>
+                  </>
+                )}
+                {(language.id !== 1 && language.id !== 2 && language.id !== 3 && language.id !== 4 && language.id !== 5) && (
+                  <span className="block py-2 text-sm text-gray-300">
+                    Coming Soon
+                  </span>
+                )}
+              </div>
             </div>
           ))}
           

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { PROGRAMMING_LANGUAGES } from "@/lib/constants";
 
@@ -9,15 +8,6 @@ interface SidebarProps {
 
 export default function Sidebar({ userName = "John Doe", userLevel = "Advanced Level" }: SidebarProps) {
   const [location] = useLocation();
-  const [expandedCategories, setExpandedCategories] = useState<number[]>([1, 2, 3, 4, 5]); // Expand all language categories by default
-
-  const toggleCategory = (languageId: number) => {
-    setExpandedCategories(prev => 
-      prev.includes(languageId) 
-        ? prev.filter(id => id !== languageId) 
-        : [...prev, languageId]
-    );
-  };
 
   return (
     <aside className="bg-dark text-white w-64 flex-shrink-0 flex flex-col h-full overflow-y-auto hidden md:block">
@@ -46,112 +36,109 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
         </div>
         
         {PROGRAMMING_LANGUAGES.map(language => (
-          <div className="mb-2" key={language.id}>
-            <button 
-              className="flex items-center justify-between w-full px-4 py-2 text-left hover:bg-gray-700 transition-colors"
-              onClick={() => toggleCategory(language.id)}
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
-                  <i className={language.icon} style={{ color: language.color }}></i>
-                </div>
-                <span className="font-medium">{language.name}</span>
+          <div className="mb-4" key={language.id}>
+            {/* Language Header (Always Visible) */}
+            <div className="flex items-center px-4 py-2 bg-gray-800 text-white">
+              <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center mr-3">
+                <i className={language.icon} style={{ color: language.color }}></i>
               </div>
-              <i className={`ri-arrow-${expandedCategories.includes(language.id) ? 'down' : 'right'}-s-line`}></i>
-            </button>
+              <span className="font-medium">{language.name}</span>
+            </div>
             
-            {expandedCategories.includes(language.id) && (
-              <div className="pl-10 pr-4 py-1">
-                {language.id === 2 && ( // Python courses
-                  <>
-                    <Link href="/courses/3">
-                      <a className={`block py-1 text-sm ${location === '/courses/3' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Introduction
-                      </a>
-                    </Link>
-                    <Link href="/courses/4">
-                      <a className={`block py-1 text-sm ${location.startsWith('/courses/4') ? 'text-primary font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Data Science 
-                        {location.startsWith('/courses/4') && <span className="bg-primary bg-opacity-20 text-xs px-1 rounded ml-1">Current</span>}
-                      </a>
-                    </Link>
-                  </>
-                )}
-                {language.id === 1 && ( // JavaScript courses
-                  <>
-                    <Link href="/courses/1">
-                      <a className={`block py-1 text-sm ${location === '/courses/1' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Fundamentals
-                      </a>
-                    </Link>
-                    <Link href="/courses/2">
-                      <a className={`block py-1 text-sm ${location === '/courses/2' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Advanced
-                      </a>
-                    </Link>
-                    <Link href="/courses/10">
-                      <a className={`block py-1 text-sm ${location === '/courses/10' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        DOM Manipulation
-                      </a>
-                    </Link>
-                  </>
-                )}
-                {language.id === 3 && ( // React courses
-                  <>
-                    <Link href="/courses/5">
-                      <a className={`block py-1 text-sm ${location === '/courses/5' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Fundamentals
-                      </a>
-                    </Link>
-                    <Link href="/courses/6">
-                      <a className={`block py-1 text-sm ${location === '/courses/6' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Advanced Patterns
-                      </a>
-                    </Link>
-                    <Link href="/courses/11">
-                      <a className={`block py-1 text-sm ${location === '/courses/11' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Hooks In Depth
-                      </a>
-                    </Link>
-                  </>
-                )}
-                {language.id === 4 && ( // SQL courses
-                  <>
-                    <Link href="/courses/7">
-                      <a className={`block py-1 text-sm ${location === '/courses/7' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Basics
-                      </a>
-                    </Link>
-                    <Link href="/courses/8">
-                      <a className={`block py-1 text-sm ${location === '/courses/8' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Advanced Techniques
-                      </a>
-                    </Link>
-                  </>
-                )}
-                {language.id === 5 && ( // HTML & CSS courses
-                  <>
-                    <Link href="/courses/9">
-                      <a className={`block py-1 text-sm ${location === '/courses/9' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Web Fundamentals
-                      </a>
-                    </Link>
-                    <Link href="/courses/12">
-                      <a className={`block py-1 text-sm ${location === '/courses/12' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
-                        Advanced CSS
-                      </a>
-                    </Link>
-                  </>
-                )}
-                {language.id !== 1 && language.id !== 2 && language.id !== 3 && language.id !== 4 && language.id !== 5 && (
-                  <Link href={`/languages/${language.id}`}>
-                    <a className="block py-1 text-sm text-gray-300 hover:text-white transition-colors">
-                      Coming Soon
+            {/* Course List (Always Visible) */}
+            <div className="pl-10 pr-4 py-2">
+              {language.id === 1 && ( // JavaScript courses
+                <>
+                  <Link href="/courses/1">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/1' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Fundamentals
                     </a>
                   </Link>
-                )}
-              </div>
-            )}
+                  <Link href="/courses/2">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/2' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Advanced
+                    </a>
+                  </Link>
+                  <Link href="/courses/10">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/10' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      DOM Manipulation
+                    </a>
+                  </Link>
+                </>
+              )}
+              
+              {language.id === 2 && ( // Python courses
+                <>
+                  <Link href="/courses/3">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/3' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Introduction
+                    </a>
+                  </Link>
+                  <Link href="/courses/4">
+                    <a className={`block py-1.5 text-sm ${location.startsWith('/courses/4') ? 'text-primary font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Data Science 
+                      {location.startsWith('/courses/4') && <span className="bg-primary bg-opacity-20 text-xs px-1 rounded ml-1">Current</span>}
+                    </a>
+                  </Link>
+                </>
+              )}
+              
+              {language.id === 3 && ( // React courses
+                <>
+                  <Link href="/courses/5">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/5' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Fundamentals
+                    </a>
+                  </Link>
+                  <Link href="/courses/6">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/6' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Advanced Patterns
+                    </a>
+                  </Link>
+                  <Link href="/courses/11">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/11' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Hooks In Depth
+                    </a>
+                  </Link>
+                </>
+              )}
+              
+              {language.id === 4 && ( // SQL courses
+                <>
+                  <Link href="/courses/7">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/7' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Basics
+                    </a>
+                  </Link>
+                  <Link href="/courses/8">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/8' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Advanced Techniques
+                    </a>
+                  </Link>
+                </>
+              )}
+              
+              {language.id === 5 && ( // HTML & CSS courses
+                <>
+                  <Link href="/courses/9">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/9' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Web Fundamentals
+                    </a>
+                  </Link>
+                  <Link href="/courses/12">
+                    <a className={`block py-1.5 text-sm ${location === '/courses/12' ? 'text-white font-medium' : 'text-gray-300 hover:text-white'} transition-colors`}>
+                      Advanced CSS
+                    </a>
+                  </Link>
+                </>
+              )}
+              
+              {language.id !== 1 && language.id !== 2 && language.id !== 3 && language.id !== 4 && language.id !== 5 && (
+                <div className="py-1.5 text-sm text-gray-400">
+                  Coming Soon
+                </div>
+              )}
+            </div>
           </div>
         ))}
         

@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth } from "./auth";
 import { 
   getCodeFeedback, 
   searchYouTubeVideos, 
@@ -20,8 +21,22 @@ import {
   insertUserSchema,
 } from "@shared/schema";
 import { ZodError } from "zod";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set up PostgreSQL session store
+  const PostgresSessionStore = connectPg(session);
+  const sessionStore = new PostgresSessionStore({
+    pool,
+    tableName: 'user_sessions',
+    createTableIfMissing: true
+  });
+
+  // Set up authentication routes and middleware
+  setupAuth(app);
+
   // Error handling middleware for Zod validation errors
   const handleZodError = (err: ZodError, res: Response) => {
     const errorMessages = err.errors.map((e) => ({

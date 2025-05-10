@@ -1,4 +1,4 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
@@ -79,6 +79,168 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(user);
     } catch (err) {
       res.status(500).json({ error: "Failed to get user" });
+    }
+  });
+
+  // User progress routes
+  app.get("/api/user-progress/:userId/:lessonId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const lessonId = parseInt(req.params.lessonId);
+      
+      // Ensure the requesting user can only access their own progress
+      if (req.user?.id !== userId && !req.user?.isAdmin) {
+        return res.status(403).json({ error: "Forbidden: You can only access your own progress" });
+      }
+      
+      const progress = await storage.getUserLessonProgress(userId, lessonId);
+      
+      if (!progress) {
+        return res.status(404).json({ error: "Progress not found" });
+      }
+      
+      res.json(progress);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user progress" });
+    }
+  });
+  
+  app.get("/api/user-progress/:userId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      // Ensure the requesting user can only access their own progress
+      if (req.user?.id !== userId && !req.user?.isAdmin) {
+        return res.status(403).json({ error: "Forbidden: You can only access your own progress" });
+      }
+      
+      const progress = await storage.getUserProgressByUser(userId);
+      res.json(progress);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user progress" });
+    }
+  });
+  
+  app.post("/api/user-progress", isAuthenticated, async (req, res) => {
+    try {
+      const data = insertUserProgressSchema.safeParse(req.body);
+      
+      if (!data.success) {
+        return handleZodError(data.error, res);
+      }
+      
+      // Ensure the requesting user can only create progress for themselves
+      if (req.user?.id !== data.data.userId && !req.user?.isAdmin) {
+        return res.status(403).json({ error: "Forbidden: You can only create progress for yourself" });
+      }
+      
+      const progress = await storage.createUserProgress(data.data);
+      res.status(201).json(progress);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create user progress" });
+    }
+  });
+  
+  app.put("/api/user-progress/:id", isAuthenticated, async (req, res) => {
+    try {
+      const progressId = parseInt(req.params.id);
+      const { completed } = req.body;
+      
+      // Get the progress to check ownership
+      const userProgressList = await storage.getAllUserProgress();
+      const existingProgress = userProgressList.find(p => p.id === progressId);
+      
+      if (!existingProgress) {
+        return res.status(404).json({ error: "Progress not found" });
+      }
+      
+      // Ensure the requesting user can only update their own progress
+      if (req.user?.id !== existingProgress.userId) {
+        return res.status(403).json({ error: "Forbidden: You can only update your own progress" });
+      }
+      
+      const progress = await storage.updateUserProgress(progressId, completed);
+      res.json(progress);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update user progress" });
+    }
+  });
+  
+  // Recommended lessons API
+  app.get("/api/recommended-lessons", async (req, res) => {
+    try {
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      
+      // If userId is provided, ensure the requesting user can only access their own recommendations
+      if (userId && req.user?.id !== userId && !req.user?.isAdmin) {
+        return res.status(403).json({ error: "Forbidden: You can only access your own recommendations" });
+      }
+      
+      // Get all lessons
+      const allLessons = await storage.getAllLessons();
+      const allCourses = await storage.getAllCourses();
+      
+      // If not authenticated or no userId provided, return random recommendations
+      if (!userId || !req.isAuthenticated()) {
+        const recommendations = allLessons
+          .slice(0, 4)
+          .map(lesson => {
+            const course = allCourses.find(c => c.id === lesson.courseId)!;
+            return {
+              type: 'not_started' as const,
+              lesson,
+              course,
+              progress: 0
+            };
+          });
+        
+        return res.json({ recommendations });
+      }
+      
+      // Get user progress for all lessons
+      const userProgress = await storage.getUserProgressByUser(userId);
+      
+      // Create a map for quick lookup
+      const progressMap = new Map();
+      userProgress.forEach(p => progressMap.set(p.lessonId, p));
+      
+      // 1. Find in-progress lessons (up to 2)
+      const inProgressLessons = allLessons
+        .filter(lesson => {
+          const progress = progressMap.get(lesson.id);
+          return progress && !progress.completed;
+        })
+        .slice(0, 2)
+        .map(lesson => {
+          const course = allCourses.find(c => c.id === lesson.courseId)!;
+          return {
+            type: 'in_progress' as const,
+            lesson,
+            course,
+            progress: 0.4 // This would normally be calculated based on more detailed progress info
+          };
+        });
+      
+      // 2. Find not started lessons (up to 4)
+      const completedOrInProgressLessonIds = new Set(userProgress.map(p => p.lessonId));
+      const notStartedLessons = allLessons
+        .filter(lesson => !completedOrInProgressLessonIds.has(lesson.id))
+        .slice(0, 4 - inProgressLessons.length)
+        .map(lesson => {
+          const course = allCourses.find(c => c.id === lesson.courseId)!;
+          return {
+            type: 'not_started' as const,
+            lesson,
+            course,
+            progress: 0
+          };
+        });
+      
+      // Combine and return
+      const recommendations = [...inProgressLessons, ...notStartedLessons];
+      res.json({ recommendations });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch recommendations" });
     }
   });
 

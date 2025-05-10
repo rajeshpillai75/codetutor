@@ -47,7 +47,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("login");
-  const [_, navigate] = useLocation();
+  const [location, navigate] = useLocation();
 
   // Create form for login
   const loginForm = useForm<LoginFormValues>({

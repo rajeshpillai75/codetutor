@@ -506,9 +506,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const response = await getChatbotResponse(
         messages as ChatMessage[],
-        currentLanguage,
-        currentTopic,
-        selectedPersonality
+        selectedPersonality,
+        {
+          language: currentLanguage,
+          currentTopic: currentTopic
+        }
       );
       
       res.json(response);
@@ -533,9 +535,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const response = await getChatbotResponseWithAnthropic(
         messages as ChatMessage[],
-        currentLanguage,
-        currentTopic,
-        selectedPersonality
+        selectedPersonality,
+        {
+          language: currentLanguage,
+          currentTopic: currentTopic
+        }
       );
       
       res.json(response);

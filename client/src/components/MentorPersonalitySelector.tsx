@@ -40,7 +40,7 @@ export default function MentorPersonalitySelector({
           Choose Your AI Mentor
         </CardTitle>
         <CardDescription>
-          Select a mentor personality that matches your learning style and preferences
+          Choose a mentor personality that matches your learning style. Each mentor has a different teaching approach!
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -132,7 +132,7 @@ export default function MentorPersonalitySelector({
             Cancel
           </Button>
           <Button onClick={handleApply}>
-            Apply Changes
+            Meet Your New Mentor
           </Button>
         </div>
       </CardContent>

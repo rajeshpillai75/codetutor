@@ -126,15 +126,16 @@ export default function ChatInterface({
     if (!isInitialized && !messages.length) {
       initializeChat();
     }
-  }, []);
+  }, [isInitialized, messages.length]);
 
   // Effect to update personality when initialPersonality changes
   useEffect(() => {
     if (personality !== initialPersonality) {
       setPersonality(initialPersonality);
       if (isInitialized) {
-        // Reset chat to show new personality
-        resetChat();
+        // Reset chat to show new personality introduction
+        setMessages([]);
+        setIsInitialized(false);
       }
     }
   }, [initialPersonality]);
@@ -144,8 +145,9 @@ export default function ChatInterface({
     if (model !== initialModel) {
       setModel(initialModel);
       if (isInitialized) {
-        // Reset chat to show new model
-        resetChat();
+        // Reset chat to show new model introduction
+        setMessages([]);
+        setIsInitialized(false);
       }
     }
   }, [initialModel]);
@@ -157,10 +159,11 @@ export default function ChatInterface({
     
     try {
       // Initial system message to set up the chat
+      const personalityInfo = personalityName[personality].split(" ")[0];
       const initialMessages: ChatMessage[] = [
         {
           role: "user",
-          content: "Hello! I'm ready to learn about programming. Can you introduce yourself?",
+          content: `Hello ${personalityInfo}! I'm ready to learn about programming. Can you introduce yourself and tell me about your teaching style?`,
           timestamp: new Date()
         }
       ];

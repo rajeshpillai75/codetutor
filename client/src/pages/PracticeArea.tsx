@@ -737,7 +737,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
           // Create a function from the code and execute it
           const executeFunction = new Function(code);
           executeFunction();
-        } else if (language === 'python' || language === 'sql' || language === 'html' || language === 'react') {
+        } else {
           // For non-JavaScript languages, we'll simulate execution
           output += `[Code execution for ${language} is simulated in this environment]\n\n`;
           
@@ -750,7 +750,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
                 output += `>>> ${content}\n`;
               });
             }
-          } else if (language === 'javascript' || language === 'react') {
+          } else if (language === 'react') {
             const logLines = code.match(/console\.log\((.*)\)/g);
             if (logLines) {
               logLines.forEach(line => {

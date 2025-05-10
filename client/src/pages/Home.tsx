@@ -1,29 +1,15 @@
 import { Link, useLocation } from "wouter";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PROGRAMMING_LANGUAGES, DEFAULT_COURSES } from "@/lib/constants";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LearningRecommendations from "@/components/LearningRecommendations";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [userId, setUserId] = useState<number | undefined>(1); // Default for demo purposes - would normally come from auth
-  
-  // In a real app, we'd fetch the user ID from auth context
-  useEffect(() => {
-    // This would be replaced with actual auth logic
-    const checkForUser = async () => {
-      try {
-        // For demo purposes, assume user 1 exists
-        setUserId(1);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        setUserId(undefined);
-      }
-    };
-    
-    checkForUser();
-  }, []);
+  const { user } = useAuth();
+  const userId = user?.id;
   
   return (
     <div className="min-h-screen bg-gray-50">

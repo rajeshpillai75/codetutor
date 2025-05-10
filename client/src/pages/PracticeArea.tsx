@@ -727,55 +727,57 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
       output += formatted + '\n';
     };
     
-    try {
-      // Replace console.log with our capturing function
-      console.log = appendOutput;
-      
-      // Execute the code differently based on language
-      if (language === 'javascript') {
-        // Create a function from the code and execute it
-        const executeFunction = new Function(code);
-        executeFunction();
-      } else if (language === 'python' || language === 'sql' || language === 'html-css' || language === 'react') {
-        // For non-JavaScript languages, we'll simulate execution
-        output += `[Code execution for ${language} is simulated in this environment]\n\n`;
-        
-        // Extract console.log or print statements for display
-        if (language === 'python') {
-          const printLines = code.match(/print\((.*)\)/g);
-          if (printLines) {
-            printLines.forEach(line => {
-              const content = line.substring(6, line.length - 1);
-              output += `>>> ${content}\n`;
-            });
-          }
-        } else if (language.toLowerCase() === 'javascript' || language.toLowerCase() === 'react') {
-          const logLines = code.match(/console\.log\((.*)\)/g);
-          if (logLines) {
-            logLines.forEach(line => {
-              const content = line.substring(12, line.length - 1);
-              output += `> ${content}\n`;
-            });
+    // We need to replace the global console.log before executing
+    console.log = appendOutput;
+    
+    setTimeout(() => {
+      try {
+        // Execute the code differently based on language
+        if (language === 'javascript') {
+          // Create a function from the code and execute it
+          const executeFunction = new Function(code);
+          executeFunction();
+        } else if (language === 'python' || language === 'sql' || language === 'html' || language === 'react') {
+          // For non-JavaScript languages, we'll simulate execution
+          output += `[Code execution for ${language} is simulated in this environment]\n\n`;
+          
+          // Extract console.log or print statements for display
+          if (language === 'python') {
+            const printLines = code.match(/print\((.*)\)/g);
+            if (printLines) {
+              printLines.forEach(line => {
+                const content = line.substring(6, line.length - 1);
+                output += `>>> ${content}\n`;
+              });
+            }
+          } else if (language === 'javascript' || language === 'react') {
+            const logLines = code.match(/console\.log\((.*)\)/g);
+            if (logLines) {
+              logLines.forEach(line => {
+                const content = line.substring(12, line.length - 1);
+                output += `> ${content}\n`;
+              });
+            }
           }
         }
+        
+        if (output.trim() === '') {
+          output = '[No output generated]';
+        }
+        
+      } catch (err) {
+        if (err instanceof Error) {
+          output += `Error: ${err.message}`;
+        } else {
+          output += `Error: ${String(err)}`;
+        }
+      } finally {
+        // Restore the original console.log
+        console.log = originalConsoleLog;
+        setCodeOutput(output);
+        setIsRunning(false);
       }
-      
-      if (output.trim() === '') {
-        output = '[No output generated]';
-      }
-      
-    } catch (err) {
-      if (err instanceof Error) {
-        output += `Error: ${err.message}`;
-      } else {
-        output += `Error: ${String(err)}`;
-      }
-    } finally {
-      // Restore the original console.log
-      console.log = originalConsoleLog;
-      setCodeOutput(output);
-      setIsRunning(false);
-    }
+    }, 100); // Adding a short timeout to allow state updates to render
   };
 
   const getCode = (): string => {

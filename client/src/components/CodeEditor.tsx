@@ -106,7 +106,15 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
     setOutput("Executing code...");
     
     if (onExecute) {
+      // Pass the code to the parent component's handler
       onExecute(code);
+      
+      // We need to rely on the parent to update state
+      // Since we don't have direct access to the output here,
+      // we'll reset our executing state after a timeout
+      setTimeout(() => {
+        setIsExecuting(false);
+      }, 1500);
       return;
     }
     

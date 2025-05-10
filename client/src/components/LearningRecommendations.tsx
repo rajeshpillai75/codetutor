@@ -1,120 +1,142 @@
-import { useLocation } from "wouter";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import { useRecommendations, RecommendedLesson } from "@/hooks/use-recommendations";
-import { PlayCircle, BookOpen, ArrowRight } from "lucide-react";
+import React from 'react';
+import { useRecommendations } from '@/hooks/use-recommendations';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { BookOpen, Calendar, PlayCircle, Sparkles, Loader2 } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { PROGRAMMING_LANGUAGES } from '@/lib/constants';
 
 interface LearningRecommendationsProps {
   userId?: number;
 }
 
 export default function LearningRecommendations({ userId }: LearningRecommendationsProps) {
-  const [, navigate] = useLocation();
-  const { data, isLoading, error } = useRecommendations(userId);
+  const { recommendations, isLoading, isError } = useRecommendations(userId);
+  const [_, navigate] = useLocation();
 
   if (isLoading) {
     return (
-      <div className="space-y-4 w-full">
-        <h2 className="text-xl font-semibold">Recommended for You</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(3)].map((_, index) => (
-            <div key={index} className="border rounded-lg p-4 space-y-3">
-              <Skeleton className="h-4 w-2/3" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-28" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          ))}
-        </div>
+      <div className="flex flex-col items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="mt-2 text-sm text-muted-foreground">Loading your recommendations...</p>
       </div>
     );
   }
 
-  if (error || !data) {
+  if (isError) {
     return (
-      <div className="p-4 border rounded-lg bg-red-50 text-red-800">
-        <p>Unable to load recommendations. Please try again later.</p>
+      <div className="flex flex-col items-center justify-center p-8">
+        <p className="text-sm text-muted-foreground">
+          We couldn't load your recommendations. Please try again later.
+        </p>
       </div>
     );
   }
 
-  if (data.recommendations.length === 0) {
+  if (recommendations.length === 0) {
     return (
-      <div className="p-6 border rounded-lg bg-blue-50">
-        <h2 className="text-xl font-semibold mb-2">Welcome to Your Learning Journey!</h2>
-        <p className="mb-4">Start exploring our courses to get personalized recommendations.</p>
-        <Button onClick={() => navigate("/courses")}>
-          Explore Courses <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-xl">Welcome to CodeTutor AI</CardTitle>
+          <CardDescription>Get started with our programming courses</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground mb-4">
+            Explore our courses to start learning, or check out the practice area to test your skills.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {PROGRAMMING_LANGUAGES.slice(0, 3).map((language) => (
+              <Card key={language.id} className="cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => navigate(`/courses/${language.id*2-1}`)}>
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: `${language.color}20` }}>
+                      <i className={language.icon} style={{ color: language.color }}></i>
+                    </div>
+                    <CardTitle className="text-base">{language.name} Fundamentals</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Learn the basics of {language.name} programming.
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button variant="outline" className="w-full" onClick={() => navigate('/practice')}>
+            <BookOpen className="mr-2 h-4 w-4" />
+            Go to Practice Area
+          </Button>
+        </CardFooter>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-4 w-full">
-      <h2 className="text-xl font-semibold">Recommended for You</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {data.recommendations.map((recommendation) => (
-          <div 
-            key={recommendation.lesson.id}
-            className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => navigate(`/lessons/${recommendation.lesson.id}`)}
-          >
-            <div className="flex items-center gap-2 text-sm text-blue-600 mb-1">
-              <span className="font-medium">{recommendation.course.title}</span>
-              {recommendation.type === 'in_progress' && (
-                <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs">
-                  In Progress
-                </span>
-              )}
-              {recommendation.type === 'not_started' && (
-                <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 text-xs">
-                  New
-                </span>
-              )}
-            </div>
-            
-            <h3 className="font-semibold text-lg mb-1">{recommendation.lesson.title}</h3>
-            
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-              {recommendation.lesson.description || "Learn essential concepts and practical skills."}
-            </p>
-            
-            {recommendation.type === 'in_progress' && (
-              <div className="mb-3">
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
-                  <span>Progress</span>
-                  <span>{recommendation.progress}%</span>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+      {recommendations.map((rec, index) => {
+        const languageInfo = PROGRAMMING_LANGUAGES.find(l => l.id === rec.course.languageId) || PROGRAMMING_LANGUAGES[0];
+        
+        return (
+          <Card key={`${rec.lesson.id}-${index}`} className="overflow-hidden">
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-start">
+                <div className="flex items-start gap-2">
+                  <Avatar className="h-8 w-8" style={{ backgroundColor: `${languageInfo.color}20` }}>
+                    <AvatarFallback style={{ color: languageInfo.color }}>
+                      <i className={languageInfo.icon}></i>
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <CardTitle className="text-base">{rec.lesson.title}</CardTitle>
+                    <CardDescription className="text-xs">{rec.course.title}</CardDescription>
+                  </div>
                 </div>
-                <Progress value={recommendation.progress} className="h-2" />
+                <Badge variant={rec.type === 'in_progress' ? 'default' : 'outline'}>
+                  {rec.type === 'in_progress' ? 'In Progress' : 'New'}
+                </Badge>
               </div>
-            )}
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center text-xs text-gray-500">
-                {recommendation.lesson.duration ? (
-                  <span className="flex items-center">
-                    <PlayCircle className="h-3 w-3 mr-1" />
-                    {Math.floor(recommendation.lesson.duration / 60)}:{(recommendation.lesson.duration % 60).toString().padStart(2, '0')} mins
-                  </span>
-                ) : (
-                  <span className="flex items-center">
-                    <BookOpen className="h-3 w-3 mr-1" />
-                    Lesson {recommendation.lesson.order}
-                  </span>
-                )}
-              </div>
-              
-              <Button variant="outline" size="sm" className="text-xs">
-                {recommendation.type === 'in_progress' ? 'Continue' : 'Start'} 
-                <ArrowRight className="ml-1 h-3 w-3" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                {rec.lesson.description || "Continue your learning journey with this lesson."}
+              </p>
+              {rec.type === 'in_progress' && (
+                <div className="mt-2">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>Progress</span>
+                    <span>{Math.round(rec.progress * 100)}%</span>
+                  </div>
+                  <Progress value={rec.progress * 100} className="h-2" />
+                </div>
+              )}
+            </CardContent>
+            <CardFooter className="flex justify-between pt-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex gap-1 text-xs"
+                onClick={() => navigate(`/lessons/${rec.lesson.id}`)}
+              >
+                <PlayCircle className="h-3.5 w-3.5" />
+                {rec.type === 'in_progress' ? 'Continue' : 'Start Learning'}
               </Button>
-            </div>
-          </div>
-        ))}
-      </div>
+              {rec.type === 'not_started' && (
+                <div className="flex items-center text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3 mr-1" />
+                  {rec.lesson.duration} min
+                </div>
+              )}
+            </CardFooter>
+          </Card>
+        );
+      })}
     </div>
   );
 }

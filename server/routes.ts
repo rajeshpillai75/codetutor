@@ -36,6 +36,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Set up authentication routes and middleware
   setupAuth(app);
+  
+  // Middleware to check if user is authenticated
+  const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.status(401).json({ message: "Unauthorized" });
+  };
 
   // Error handling middleware for Zod validation errors
   const handleZodError = (err: ZodError, res: Response) => {

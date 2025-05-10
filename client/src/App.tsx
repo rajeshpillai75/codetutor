@@ -46,12 +46,13 @@ function Router() {
   return (
     <Layout>
       <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/lessons/:lessonId" component={CoursePage} />
-        <Route path="/courses/:courseId" component={CoursePage} />
-        <Route path="/practice" component={PracticeArea} />
-        <Route path="/mentor" component={ChatMentor} />
-        <Route path="/demo/code-execution" component={CodeExecutionDemo} />
+        <ProtectedRoute path="/" component={Home} />
+        <ProtectedRoute path="/lessons/:lessonId" component={CoursePage} />
+        <ProtectedRoute path="/courses/:courseId" component={CoursePage} />
+        <ProtectedRoute path="/practice" component={PracticeArea} />
+        <ProtectedRoute path="/mentor" component={ChatMentor} />
+        <ProtectedRoute path="/demo/code-execution" component={CodeExecutionDemo} />
+        <Route path="/auth" component={AuthPage} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
@@ -61,10 +62,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

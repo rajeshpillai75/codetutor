@@ -1,13 +1,19 @@
 import { useLocation } from "wouter";
 import { PROGRAMMING_LANGUAGES } from "@/lib/constants";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import { LogOut, User as UserIcon, Loader2 } from "lucide-react";
 
 interface SidebarProps {
   userName?: string;
   userLevel?: string;
 }
 
-export default function Sidebar({ userName = "John Doe", userLevel = "Advanced Level" }: SidebarProps) {
+export default function Sidebar({ userLevel = "Advanced Level" }: SidebarProps) {
+  const { user, logoutMutation } = useAuth();
   const [location, navigate] = useLocation();
+  
+  const userName = user?.username || "Guest";
 
   const navigateTo = (path: string) => {
     navigate(path);
@@ -221,6 +227,20 @@ export default function Sidebar({ userName = "John Doe", userLevel = "Advanced L
           <i className="ri-question-line"></i>
           <span>Help Center</span>
         </div>
+        
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start mt-4 text-gray-600 hover:text-red-600 transition-colors"
+          onClick={() => logoutMutation.mutate()}
+          disabled={logoutMutation.isPending}
+        >
+          {logoutMutation.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <LogOut className="mr-2 h-4 w-4" />
+          )}
+          Sign Out
+        </Button>
       </div>
     </aside>
   );

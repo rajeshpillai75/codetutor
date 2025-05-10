@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { Course, Lesson } from "@shared/schema";
+import { useAuth } from '@/hooks/use-auth';
+import { apiRequest } from '@/lib/queryClient';
+import { Course, Lesson, UserProgress } from '@shared/schema';
+import { useQuery } from '@tanstack/react-query';
 
 export interface RecommendedLesson {
   type: 'in_progress' | 'not_started';
@@ -14,13 +15,35 @@ export interface RecommendationResponse {
 }
 
 export function useRecommendations(userId?: number) {
-  return useQuery<RecommendationResponse>({
-    queryKey: ['/api/recommended-lessons', userId],
+  const { user } = useAuth();
+  const effectiveUserId = userId || user?.id;
+  
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch
+  } = useQuery<RecommendationResponse>({
+    queryKey: ['/api/recommended-lessons', effectiveUserId],
     queryFn: async () => {
-      if (!userId) return { recommendations: [] };
-      return await apiRequest<RecommendationResponse>(`/api/recommended-lessons?userId=${userId}`);
+      try {
+        return await apiRequest(`/api/recommended-lessons?userId=${effectiveUserId}`);
+      } catch (error) {
+        // Handle specific errors if needed
+        throw error;
+      }
     },
-    enabled: !!userId,
+    enabled: !!effectiveUserId,
+    // Use stale time to prevent too frequent refetches
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+  
+  return {
+    recommendations: data?.recommendations || [],
+    isLoading,
+    isError,
+    error,
+    refetch
+  };
 }

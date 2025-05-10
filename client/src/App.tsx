@@ -4,12 +4,15 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import CoursePage from "@/pages/CoursePage";
 import PracticeArea from "@/pages/PracticeArea";
 import ChatMentor from "@/pages/ChatMentor";
 import CodeExecutionDemo from "@/pages/CodeExecutionDemo";
+import AuthPage from "@/pages/auth-page";
 import Sidebar from "@/components/Sidebar";
 import MobileMenu from "@/components/MobileMenu";
 
@@ -17,7 +20,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen">
       <Sidebar />
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       
@@ -32,7 +35,9 @@ function Layout({ children }: { children: React.ReactNode }) {
         </button>
       </div>
       
-      {children}
+      <div className="flex-1 overflow-y-auto">
+        {children}
+      </div>
     </div>
   );
 }

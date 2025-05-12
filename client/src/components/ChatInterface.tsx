@@ -219,10 +219,11 @@ export default function ChatInterface({
       ]);
       
       setIsInitialized(true);
-    } catch (err) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error("Error initializing chat:", err);
       // Add more specific error message
-      if (err.message && err.message.includes("API key")) {
+      if (err?.message && err.message.includes("API key")) {
         setError("AI service API key is missing or invalid. Please contact the administrator.");
       } else {
         setError("Failed to connect to the coding mentor. Please try again later.");
@@ -264,10 +265,12 @@ export default function ChatInterface({
     try {
       // Create context for API request
       const context = {
-        language: currentLanguage,
-        currentTopic: currentTopic,
+        language: currentLanguage || "JavaScript",
+        currentTopic: currentTopic || "Programming Basics",
         userSkillLevel: skillLevel
       };
+      
+      console.log("Sending message with:", { personality, model, context });
       
       // Get response from server (only send the last 10 messages to prevent token limit issues)
       const recentMessages = updatedMessages.slice(-10);
@@ -280,6 +283,12 @@ export default function ChatInterface({
           model: model
         }
       });
+      
+      console.log("Message response received:", response);
+      
+      if (!response || !response.message) {
+        throw new Error("Invalid response from server");
+      }
       
       // Format response to include code blocks if present
       let formattedContent = response.message;
@@ -304,9 +313,16 @@ export default function ChatInterface({
           timestamp: new Date()
         }
       ]);
-    } catch (err) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error("Error sending message:", err);
-      setError("Failed to get a response. Please try again.");
+      
+      // Add more specific error message
+      if (err?.message && err.message.includes("API key")) {
+        setError("AI service API key is missing or invalid. Please contact the administrator.");
+      } else {
+        setError("Failed to get a response. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }

@@ -187,12 +187,12 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
     if (onExecute) {
       try {
         // Pass the code to the parent component's handler
-        const result = onExecute(code);
+        onExecute(code);
         
-        // If the parent handler returns a promise or value, try to use it
-        if (result && typeof result === 'string') {
-          setOutput(result);
-        }
+        // Set a timeout to allow the parent component to process the code
+        setTimeout(() => {
+          setOutput("Execution complete");
+        }, 500);
       } catch (error) {
         setOutput(`Error: ${error instanceof Error ? error.message : String(error)}`);
       }

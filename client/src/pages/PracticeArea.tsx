@@ -3,6 +3,9 @@ import CodeEditor from "@/components/CodeEditor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Terminal, CheckCircle } from "lucide-react";
 import { PROGRAMMING_LANGUAGES, EDITOR_LANGUAGE_MODES } from "@/lib/constants";
 import { 
   JAVASCRIPT_EXERCISE, 
@@ -983,13 +986,38 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
           </p>
         </div>
         
-        <div className="h-[700px] flex flex-col overflow-hidden">
-          <CodeEditor 
-            title={selectedExercise ? selectedExercise.title : `${formatLanguageName(language)} Practice`}
-            language={language === "html-css" ? "html" : language === "react" ? "javascript" : language}
-            initialCode={getCode()}
-            onExecute={executeCode}
-          />
+        <div className="flex flex-col overflow-hidden">
+          <div className="h-[500px]">
+            <CodeEditor 
+              title={selectedExercise ? selectedExercise.title : `${formatLanguageName(language)} Practice`}
+              language={language === "html-css" ? "html" : language === "react" ? "javascript" : language}
+              initialCode={getCode()}
+              onExecute={executeCode}
+            />
+          </div>
+          
+          {/* Direct Output Panel */}
+          {codeOutput && (
+            <div className="border-t border-gray-200 bg-gray-900 text-white p-3">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-medium text-sm flex items-center">
+                  <Terminal className="h-4 w-4 mr-2" />
+                  Execution Output
+                </h4>
+                {!isRunning && (
+                  <Badge variant="outline" className="bg-green-600 text-white text-xs">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Execution Complete
+                  </Badge>
+                )}
+              </div>
+              <ScrollArea className="h-[150px]">
+                <pre className="font-mono text-sm whitespace-pre-wrap p-2">
+                  {codeOutput}
+                </pre>
+              </ScrollArea>
+            </div>
+          )}
         </div>
       </div>
       

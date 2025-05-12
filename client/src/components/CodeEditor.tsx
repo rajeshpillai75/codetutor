@@ -3,8 +3,14 @@ import { EDITOR_THEMES, EDITOR_LANGUAGE_MODES } from "@/lib/constants";
 import AIFeedback from "./AIFeedback";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import { Terminal, Play, RefreshCw, Save, Settings } from "lucide-react";
+import { Terminal, Play, RefreshCw, Save, Settings, ChevronDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 
 interface CodeEditorProps {
   title: string;
@@ -27,6 +33,8 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [output, setOutput] = useState<string>("");
   const [isExecuting, setIsExecuting] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState("monokai");
+  const [fontSize, setFontSize] = useState(14);
   const [feedback, setFeedback] = useState<{
     feedback: string;
     suggestions: string[];
@@ -41,11 +49,31 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
 
     // Load Ace Editor from CDN if it's not already loaded
     if (typeof window.ace === "undefined") {
-      const script = document.createElement("script");
-      script.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js";
-      script.async = true;
-      script.onload = initializeEditor;
-      document.body.appendChild(script);
+      // Load Ace and required extensions
+      const loadAce = async () => {
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js";
+        script.async = true;
+        document.body.appendChild(script);
+        
+        script.onload = () => {
+          // Load language tools for autocompletion
+          const langTools = document.createElement("script");
+          langTools.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ext-language_tools.js";
+          langTools.async = true;
+          document.body.appendChild(langTools);
+          
+          // Load error markers
+          const errorMarker = document.createElement("script");
+          errorMarker.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ext-error_marker.js";
+          errorMarker.async = true;
+          document.body.appendChild(errorMarker);
+          
+          langTools.onload = initializeEditor;
+        };
+      };
+      
+      loadAce();
     } else {
       initializeEditor();
     }
@@ -57,11 +85,30 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
     };
   }, [editorRef, language]);
 
+  // Handle language change
+  useEffect(() => {
+    if (editor) {
+      const lang = language.toLowerCase();
+      const mode = EDITOR_LANGUAGE_MODES[lang as keyof typeof EDITOR_LANGUAGE_MODES] || 'text';
+      editor.session.setMode(`ace/mode/${mode}`);
+    }
+  }, [language, editor]);
+
   const initializeEditor = () => {
     if (!editorRef.current || !window.ace) return;
 
+    // Enable languages tools if loaded
+    if (window.ace.require) {
+      try {
+        const langTools = window.ace.require("ace/ext/language_tools");
+        window.ace.require("ace/ext/error_marker");
+      } catch (e) {
+        console.log("Optional Ace extensions not loaded:", e);
+      }
+    }
+
     const newEditor = window.ace.edit(editorRef.current);
-    newEditor.setTheme("ace/theme/monokai");
+    newEditor.setTheme(`ace/theme/${currentTheme}`);
     
     // Get language mode safely
     const lang = language.toLowerCase();
@@ -70,16 +117,40 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
     
     newEditor.setValue(initialCode, -1);
     newEditor.setOptions({
-      fontSize: "14px",
+      fontSize: `${fontSize}px`,
       showPrintMargin: false,
       highlightActiveLine: true,
+      highlightGutterLine: true,
       showLineNumbers: true,
-      tabSize: 4,
-      useSoftTabs: true
+      tabSize: 2,
+      useSoftTabs: true,
+      wrap: true,
+      enableBasicAutocompletion: true,
+      enableLiveAutocompletion: true,
+      enableSnippets: true,
+      showInvisibles: false,
+      fadeFoldWidgets: true,
+      showFoldWidgets: true
     });
 
     newEditor.session.on("change", () => {
       setCode(newEditor.getValue());
+    });
+
+    // Focus editor after initialization
+    newEditor.focus();
+    
+    // Create keyboard shortcuts
+    newEditor.commands.addCommand({
+      name: 'run',
+      bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
+      exec: () => handleRunCode()
+    });
+    
+    newEditor.commands.addCommand({
+      name: 'save',
+      bindKey: {win: 'Ctrl-S', mac: 'Command-S'},
+      exec: () => console.log('Save operation')
     });
 
     setEditor(newEditor);
@@ -88,14 +159,21 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
   const handleReset = () => {
     if (editor) {
       editor.setValue(initialCode, -1);
+      setCode(initialCode);
     }
   };
-
-  const handleSettingsToggle = () => {
-    // Open a settings dropdown or modal
-    const themeIndex = Math.floor(Math.random() * EDITOR_THEMES.length);
+  
+  const handleThemeChange = (theme: string) => {
     if (editor) {
-      editor.setTheme(`ace/theme/${EDITOR_THEMES[themeIndex]}`);
+      editor.setTheme(`ace/theme/${theme}`);
+      setCurrentTheme(theme);
+    }
+  };
+  
+  const handleFontSizeChange = (size: number) => {
+    if (editor) {
+      editor.setFontSize(`${size}px`);
+      setFontSize(size);
     }
   };
 
@@ -279,12 +357,33 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
     }
   };
 
-  const handleSendFeedbackQuery = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && feedbackQuery.trim()) {
+  const handleSendFeedbackQuery = (query: string) => {
+    if (query.trim()) {
+      setFeedbackQuery(query);
       getFeedback();
-      setFeedbackQuery('');
     }
   };
+  
+  const getAnnotations = () => {
+    if (!editor || !feedback?.errorDetection) return;
+    
+    // Set annotations for error markers
+    const annotations = feedback.errorDetection.map(error => ({
+      row: error.line - 1,
+      column: 0,
+      text: error.message,
+      type: "error"
+    }));
+    
+    editor.session.setAnnotations(annotations);
+  };
+
+  // Apply error annotations when feedback changes
+  useEffect(() => {
+    if (feedback?.errorDetection) {
+      getAnnotations();
+    }
+  }, [feedback]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -292,37 +391,77 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
         <div className="flex items-center gap-2">
           <Terminal className="h-5 w-5" />
           <h3 className="font-medium">{title}</h3>
+          <span className="text-xs px-2 py-1 bg-gray-700 rounded-full">{language}</span>
         </div>
         <div className="flex items-center gap-2">
           <Button 
             variant="ghost" 
             size="sm"
-            title="Run Code"
+            title="Run Code (Ctrl+Enter)"
             onClick={handleRunCode}
             disabled={isExecuting}
-            className="h-8 text-white"
+            className="h-8 px-3 bg-green-600 hover:bg-green-700 text-white"
           >
-            {isExecuting ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-            <span className="ml-2">Run</span>
+            {isExecuting ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+            Run
           </Button>
+          
           <Button 
             variant="ghost" 
             size="icon"
             title="Reset Code"
             onClick={handleReset}
-            className="h-8 text-white"
+            className="h-8 text-white hover:bg-gray-700"
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            title="Settings"
-            onClick={handleSettingsToggle}
-            className="h-8 text-white"
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="h-8 text-white hover:bg-gray-700 flex items-center"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                <span>Settings</span>
+                <ChevronDown className="h-3 w-3 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <div className="p-2">
+                <h4 className="mb-2 text-sm font-medium">Theme</h4>
+                <div className="grid grid-cols-2 gap-1">
+                  {EDITOR_THEMES.slice(0, 8).map((theme) => (
+                    <Button
+                      key={theme}
+                      variant="ghost"
+                      size="sm"
+                      className={`justify-start h-8 px-2 ${currentTheme === theme ? 'bg-accent' : ''}`}
+                      onClick={() => handleThemeChange(theme)}
+                    >
+                      {theme}
+                    </Button>
+                  ))}
+                </div>
+                
+                <h4 className="mt-4 mb-2 text-sm font-medium">Font Size</h4>
+                <div className="flex gap-1">
+                  {[12, 14, 16, 18].map((size) => (
+                    <Button
+                      key={size}
+                      variant="outline"
+                      size="sm"
+                      className={`${fontSize === size ? 'bg-accent' : ''}`}
+                      onClick={() => handleFontSizeChange(size)}
+                    >
+                      {size}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       

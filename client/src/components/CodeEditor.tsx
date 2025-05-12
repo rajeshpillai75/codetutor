@@ -3,7 +3,7 @@ import { EDITOR_THEMES, EDITOR_LANGUAGE_MODES } from "@/lib/constants";
 import AIFeedback from "./AIFeedback";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import { Terminal, Play, RefreshCw, Save, Settings, ChevronDown } from "lucide-react";
+import { Terminal, Play, RefreshCw, Save, Settings, ChevronDown, CheckCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   DropdownMenu, 
@@ -11,6 +11,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 interface CodeEditorProps {
   title: string;
@@ -476,15 +477,26 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
         {showOutput && (
           <div className="border-t md:border-t-0 md:border-l border-gray-200 w-full md:w-1/2 bg-gray-900 text-white">
             <div className="flex items-center justify-between p-2 border-b border-gray-700">
-              <h4 className="font-medium text-sm">Output</h4>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="h-6 text-xs text-gray-300 hover:text-white"
-                onClick={() => setShowOutput(false)}
-              >
-                Hide
-              </Button>
+              <h4 className="font-medium text-sm flex items-center">
+                <Terminal className="h-4 w-4 mr-2" />
+                Output
+              </h4>
+              <div className="flex items-center gap-2">
+                {!isExecuting && output && output.trim() !== '' && (
+                  <Badge variant="outline" className="bg-green-600 text-white text-xs">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Execution Complete
+                  </Badge>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="h-6 text-xs text-gray-300 hover:text-white"
+                  onClick={() => setShowOutput(false)}
+                >
+                  Hide
+                </Button>
+              </div>
             </div>
             <ScrollArea className="h-[200px] md:h-full p-2">
               <pre className="font-mono text-sm whitespace-pre-wrap">
@@ -499,10 +511,7 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
       <AIFeedback 
         feedback={feedback}
         loading={feedbackLoading}
-        onSendQuery={(query) => {
-          setFeedbackQuery(query);
-          getFeedback();
-        }}
+        onSendQuery={handleSendFeedbackQuery}
       />
     </div>
   );

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import CodeEditor from "@/components/CodeEditor";
+import AIFeedback from "@/components/AIFeedback";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Terminal, CheckCircle } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 import { PROGRAMMING_LANGUAGES, EDITOR_LANGUAGE_MODES } from "@/lib/constants";
 import { 
   JAVASCRIPT_EXERCISE, 
@@ -32,6 +34,40 @@ export default function PracticeArea() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [codeOutput, setCodeOutput] = useState<string>("");
   const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [currentCode, setCurrentCode] = useState<string>("");
+  
+  // Code feedback state
+  const [feedback, setFeedback] = useState<{
+    feedback: string;
+    suggestions: string[];
+    bestPractices: string[];
+    errorDetection?: { line: number; message: string }[];
+  } | null>(null);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  
+  // Handle feedback query
+  const handleSendFeedbackQuery = async (query: string) => {
+    if (!currentCode) return;
+    
+    setFeedbackLoading(true);
+    try {
+      const res = await apiRequest("POST", "/api/ai/code-feedback", {
+        body: {
+          code: currentCode,
+          language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
+          exerciseId: selectedExercise?.id,
+          query
+        }
+      });
+      
+      const data = await res.json();
+      setFeedback(data);
+    } catch (error) {
+      console.error("Error getting code feedback:", error);
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
   
   // Language-specific exercises
   const languageExercises = {
@@ -710,6 +746,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
   const executeCode = (code: string) => {
     setIsRunning(true);
     setCodeOutput("");
+    setCurrentCode(code);
     
     // Create a safe way to capture console.log output
     let output = "";
@@ -1018,6 +1055,13 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
               </ScrollArea>
             </div>
           )}
+
+          {/* Code Tutor AI Feedback Panel */}
+          <AIFeedback 
+            feedback={feedback}
+            loading={feedbackLoading}
+            onSendQuery={handleSendFeedbackQuery}
+          />
         </div>
       </div>
       

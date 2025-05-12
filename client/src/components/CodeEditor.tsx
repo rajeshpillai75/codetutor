@@ -514,12 +514,7 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
         )}
       </div>
       
-      {/* AI Feedback Panel */}
-      <AIFeedback 
-        feedback={feedback}
-        loading={feedbackLoading}
-        onSendQuery={handleSendFeedbackQuery}
-      />
+      {/* AI Feedback Panel has been moved to the PracticeArea component */}
     </div>
   );
 }

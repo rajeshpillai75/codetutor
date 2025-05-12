@@ -983,7 +983,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
           </p>
         </div>
         
-        <div className="h-[600px] overflow-auto">
+        <div className="h-[700px] flex flex-col overflow-hidden">
           <CodeEditor 
             title={selectedExercise ? selectedExercise.title : `${formatLanguageName(language)} Practice`}
             language={language === "html-css" ? "html" : language === "react" ? "javascript" : language}

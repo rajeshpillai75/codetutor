@@ -342,7 +342,7 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
 
     setFeedbackLoading(true);
     try {
-      const response = await apiRequest<any>('/api/code-feedback', {
+      const response = await apiRequest<any>('/api/ai/code-feedback', {
         method: 'POST',
         data: {
           code,
@@ -388,7 +388,7 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="bg-gray-800 text-white p-3 flex items-center justify-between">
+      <div className="bg-gray-800 text-white p-3 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <Terminal className="h-5 w-5" />
           <h3 className="font-medium">{title}</h3>

@@ -35,8 +35,8 @@ export default function AIFeedback({ feedback, loading, onSendQuery }: AIFeedbac
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 border-t p-4 space-y-4 overflow-y-auto max-h-64">
-      <ScrollArea className="h-full max-h-40">
+    <div className="bg-gray-50 dark:bg-gray-800 border-t p-4 space-y-4 overflow-y-auto max-h-48 flex flex-col shrink-0">
+      <ScrollArea className="h-full max-h-32">
         {loading ? (
           <div className="flex justify-center items-center py-4">
             <RefreshCw className="h-5 w-5 animate-spin text-primary mr-2" />

@@ -548,6 +548,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to get chat response" });
     }
   });
+  
+  // Unified chatbot endpoint for the ChatInterface component
+  app.post("/api/chatbot/message", async (req, res) => {
+    try {
+      const { messages, personality, context, model } = req.body;
+      
+      if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ error: "Valid messages array is required" });
+      }
+      
+      let selectedPersonality: MentorPersonality = MentorPersonalities.FRIENDLY;
+      if (personality && Object.values(MentorPersonalities).includes(personality)) {
+        selectedPersonality = personality;
+      }
+      
+      let response;
+      
+      // Choose the appropriate AI model based on the request
+      if (model === 'anthropic') {
+        response = await getChatbotResponseWithAnthropic(
+          messages as ChatMessage[],
+          selectedPersonality,
+          context
+        );
+      } else {
+        // Default to OpenAI
+        response = await getChatbotResponse(
+          messages as ChatMessage[],
+          selectedPersonality,
+          context
+        );
+      }
+      
+      res.json(response);
+    } catch (err) {
+      console.error("Error in chatbot message:", err);
+      res.status(500).json({ error: "Failed to get chat response" });
+    }
+  });
 
   const httpServer = createServer(app);
 

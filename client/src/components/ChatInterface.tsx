@@ -159,7 +159,7 @@ export default function ChatInterface({
     
     try {
       // Initial system message to set up the chat
-      const personalityInfo = personalityName[personality].split(" ")[0];
+      const personalityInfo = personalityName[personality]?.split(" ")[0] || "Mentor";
       const initialMessages: ChatMessage[] = [
         {
           role: "user",
@@ -170,10 +170,12 @@ export default function ChatInterface({
       
       // Create context for API request
       const context = {
-        language: currentLanguage,
-        currentTopic: currentTopic,
+        language: currentLanguage || "JavaScript",
+        currentTopic: currentTopic || "Programming Basics",
         userSkillLevel: skillLevel
       };
+      
+      console.log("Initializing chat with:", { personality, model, context });
       
       // Get response from server
       const response = await apiRequest<ChatbotResponse>('/api/chatbot/message', {
@@ -185,6 +187,12 @@ export default function ChatInterface({
           model: model
         }
       });
+      
+      console.log("Chat response received:", response);
+      
+      if (!response || !response.message) {
+        throw new Error("Invalid response from server");
+      }
       
       // Format response to include code blocks if present
       let formattedContent = response.message;
@@ -213,7 +221,12 @@ export default function ChatInterface({
       setIsInitialized(true);
     } catch (err) {
       console.error("Error initializing chat:", err);
-      setError("Failed to connect to the coding mentor. Please try again later.");
+      // Add more specific error message
+      if (err.message && err.message.includes("API key")) {
+        setError("AI service API key is missing or invalid. Please contact the administrator.");
+      } else {
+        setError("Failed to connect to the coding mentor. Please try again later.");
+      }
     } finally {
       setIsLoading(false);
     }

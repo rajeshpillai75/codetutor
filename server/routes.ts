@@ -552,6 +552,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Unified chatbot endpoint for the ChatInterface component
   app.post("/api/chatbot/message", async (req, res) => {
     try {
+      console.log("Chatbot message request received:", {
+        model: req.body.model,
+        personality: req.body.personality,
+        messageCount: req.body.messages?.length || 0
+      });
+      
       const { messages, personality, context, model } = req.body;
       
       if (!messages || !Array.isArray(messages)) {
@@ -563,7 +569,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         selectedPersonality = personality;
       }
       
+      // Verify API keys are available
+      if (model === 'anthropic' && !process.env.ANTHROPIC_API_KEY) {
+        console.error("Anthropic API key is missing");
+        return res.status(500).json({ 
+          error: "Anthropic API key is missing", 
+          message: "The Anthropic API key is not configured. Please contact the administrator." 
+        });
+      }
+      
+      if (model !== 'anthropic' && !process.env.OPENAI_API_KEY) {
+        console.error("OpenAI API key is missing");
+        return res.status(500).json({ 
+          error: "OpenAI API key is missing", 
+          message: "The OpenAI API key is not configured. Please contact the administrator." 
+        });
+      }
+      
       let response;
+      console.log("Using AI model:", model || "openai", "with personality:", selectedPersonality);
       
       // Choose the appropriate AI model based on the request
       if (model === 'anthropic') {
@@ -581,10 +605,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
       }
       
+      console.log("AI response generated successfully");
       res.json(response);
     } catch (err) {
       console.error("Error in chatbot message:", err);
-      res.status(500).json({ error: "Failed to get chat response" });
+      res.status(500).json({ 
+        error: "Failed to get chat response",
+        message: "There was an error processing your request. Please try again later."
+      });
     }
   });
 

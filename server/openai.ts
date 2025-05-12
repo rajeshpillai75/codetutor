@@ -231,15 +231,33 @@ export async function getChatbotResponse(
       }))
     ];
 
+    // Check if API key exists
+    if (!process.env.OPENAI_API_KEY) {
+      console.error("OpenAI API key is missing");
+      return { 
+        message: "The OpenAI API key is not configured. Please contact the administrator." 
+      };
+    }
+    
+    console.log("Making request to OpenAI API...");
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: conversationMessages,
       response_format: { type: "json_object" },
     });
+    console.log("OpenAI API response received successfully");
 
     const content = response.choices[0].message.content || '{"message":"I\'m sorry, I couldn\'t process your request"}';
-    const parsedResponse = JSON.parse(content) as ChatbotResponse;
-    return parsedResponse;
+    
+    try {
+      const parsedResponse = JSON.parse(content) as ChatbotResponse;
+      return parsedResponse;
+    } catch (jsonError) {
+      console.error("Error parsing JSON response from OpenAI:", jsonError);
+      return { 
+        message: "I received a response that I couldn't parse correctly. Could you try asking your question differently?" 
+      };
+    }
   } catch (error) {
     console.error("Error getting chatbot response:", error);
     return { 

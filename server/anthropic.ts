@@ -50,6 +50,14 @@ export async function getChatbotResponseWithAnthropic(
       
       If you're not sure about something, be honest about your limitations.`;
 
+    // Check if API key exists
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error("Anthropic API key is missing");
+      return { 
+        message: "The Anthropic API key is not configured. Please contact the administrator." 
+      };
+    }
+    
     // Format messages for Anthropic API - ensuring only valid roles are used
     const formattedMessages = messages.map(msg => {
       // Ensure role is either 'user' or 'assistant' as required by Anthropic
@@ -57,6 +65,7 @@ export async function getChatbotResponseWithAnthropic(
       return { role, content: msg.content };
     });
 
+    console.log("Making request to Anthropic API...");
     // Call Anthropic API
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219',
@@ -64,21 +73,43 @@ export async function getChatbotResponseWithAnthropic(
       system: systemPrompt,
       messages: formattedMessages,
     });
+    console.log("Anthropic API response received successfully");
 
-    // Extract content safely
-    const messageContent = response.content[0].type === 'text' 
-      ? response.content[0].text 
-      : 'I encountered an error processing your request.';
-    const codeRegex = /```([a-zA-Z0-9]+)?\n([\s\S]*?)```/;
-    const codeMatch = messageContent.match(codeRegex);
+    // Extract content safely with robust error handling
+    try {
+      // Check if response has the expected structure
+      if (!response.content || !Array.isArray(response.content) || response.content.length === 0) {
+        console.error("Unexpected Anthropic response structure:", response);
+        return {
+          message: "I received an unexpected response structure. Please try again."
+        };
+      }
 
-    return {
-      message: messageContent,
-      code: codeMatch ? codeMatch[2] : undefined,
-      language: codeMatch ? codeMatch[1] : undefined,
-    };
+      const messageContent = response.content[0]?.type === 'text' 
+        ? response.content[0].text 
+        : 'I encountered an error processing your request.';
+        
+      // Extract code blocks using regex
+      const codeRegex = /```([a-zA-Z0-9]+)?\n([\s\S]*?)```/;
+      const codeMatch = messageContent.match(codeRegex);
+
+      // Format response as expected by the client
+      return {
+        message: messageContent,
+        code: codeMatch ? codeMatch[2] : undefined,
+        language: codeMatch ? codeMatch[1] : undefined,
+      };
+    } catch (parseError) {
+      console.error("Error parsing Anthropic response:", parseError);
+      return {
+        message: "I had trouble processing the response. Could you try again with a different question?"
+      };
+    }
   } catch (error) {
     console.error('Error calling Anthropic API:', error);
-    throw new Error('Failed to get response from Anthropic');
+    // Return a fallback response instead of throwing an error
+    return { 
+      message: "I'm having trouble processing your request right now. Could you try asking me again? If this problem persists, you might want to try switching to a different AI model." 
+    };
   }
 }

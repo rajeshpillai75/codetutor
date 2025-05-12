@@ -35,8 +35,30 @@ export default function AIFeedback({ feedback, loading, onSendQuery }: AIFeedbac
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 border-t p-4 space-y-4 overflow-y-auto max-h-48 flex flex-col shrink-0">
-      <ScrollArea className="h-full max-h-32">
+    <div className="bg-gray-50 dark:bg-gray-800 border-t p-4 flex flex-col space-y-4 shrink-0">
+      {/* Input field at the top */}
+      <div className="flex relative">
+        <Input
+          type="text"
+          className="flex-1 pr-10"
+          placeholder="Ask about your code..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
+        />
+        <Button
+          type="submit"
+          size="sm"
+          disabled={!query.trim() || loading}
+          onClick={handleSubmit}
+          className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+        >
+          <Send className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      {/* Feedback content below input */}
+      <ScrollArea className="h-full max-h-48 overflow-y-auto">
         {loading ? (
           <div className="flex justify-center items-center py-4">
             <RefreshCw className="h-5 w-5 animate-spin text-primary mr-2" />
@@ -154,28 +176,6 @@ export default function AIFeedback({ feedback, loading, onSendQuery }: AIFeedbac
           </div>
         )}
       </ScrollArea>
-
-      <div className="flex pt-2">
-        <div className="flex-1 relative flex items-center gap-2">
-          <Input
-            type="text"
-            className="flex-1 pr-10"
-            placeholder="Ask about your code..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-          <Button
-            type="submit"
-            size="sm"
-            disabled={!query.trim() || loading}
-            onClick={handleSubmit}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
     </div>
   );
 }

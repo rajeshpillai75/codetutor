@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Terminal, CheckCircle } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, apiPost } from "@/lib/queryClient";
 import { PROGRAMMING_LANGUAGES, EDITOR_LANGUAGE_MODES } from "@/lib/constants";
 import { 
   JAVASCRIPT_EXERCISE, 
@@ -51,16 +51,13 @@ export default function PracticeArea() {
     
     setFeedbackLoading(true);
     try {
-      const res = await apiRequest("POST", "/api/ai/code-feedback", {
-        body: {
-          code: currentCode,
-          language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
-          exerciseId: selectedExercise?.id,
-          query
-        }
+      const data = await apiPost("/api/ai/code-feedback", {
+        code: currentCode,
+        language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
+        exerciseId: selectedExercise?.id,
+        query
       });
       
-      const data = await res.json();
       setFeedback(data);
     } catch (error) {
       console.error("Error getting code feedback:", error);

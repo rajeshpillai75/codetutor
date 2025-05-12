@@ -163,8 +163,88 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
           console.log = originalConsoleLog;
           setOutput(output);
         } else {
-          // For non-JavaScript languages
-          setOutput(`[Code execution for ${language} is simulated in this environment]`);
+          // For non-JavaScript languages - provide more detailed simulation
+          if (language.toLowerCase() === 'python') {
+            // Parse Python print statements for a better simulation
+            const printRegex = /print\s*\((.*?)\)/g;
+            const printMatches = Array.from(code.matchAll(printRegex));
+            
+            // Track variable assignments to provide more realistic output
+            const variableRegex = /^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$/gm;
+            const variableMatches = Array.from(code.matchAll(variableRegex));
+            const variables: Record<string, string> = {};
+            
+            // Build simple variable tracking
+            variableMatches.forEach(match => {
+              if (match[1] && match[2]) {
+                const varName = match[1].trim();
+                const varValue = match[2].trim();
+                variables[varName] = varValue;
+              }
+            });
+            
+            let simulatedOutput = `[Python code execution is simulated]\n\n`;
+            
+            // Handle print statements with variables
+            if (printMatches && printMatches.length > 0) {
+              simulatedOutput += "Output:\n";
+              printMatches.forEach(match => {
+                if (match[1]) {
+                  let content = match[1].trim();
+                  
+                  // Simple handling of string literals
+                  if ((content.startsWith('"') && content.endsWith('"')) || 
+                      (content.startsWith("'") && content.endsWith("'"))) {
+                    content = content.substring(1, content.length - 1);
+                  }
+                  // Check if it's a variable reference
+                  else if (variables[content]) {
+                    let value = variables[content];
+                    
+                    // If the value is a string literal, clean it
+                    if ((value.startsWith('"') && value.endsWith('"')) || 
+                        (value.startsWith("'") && value.endsWith("'"))) {
+                      value = value.substring(1, value.length - 1);
+                    }
+                    
+                    content = `${content} (${value})`;
+                  }
+                  // Try to evaluate simple math expressions
+                  else if (/^[\d\s\+\-\*\/\(\)\.]+$/.test(content)) {
+                    try {
+                      // Replace Python-specific math operators with JavaScript equivalents
+                      const jsExpression = content.replace(/\/\//g, '/');
+                      
+                      // Only evaluate if it's a safe mathematical expression
+                      const result = eval(jsExpression);
+                      if (typeof result === 'number') {
+                        content = `${content} = ${result}`;
+                      }
+                    } catch (e) {
+                      // If evaluation fails, just use the original content
+                    }
+                  }
+                  
+                  simulatedOutput += `>>> ${content}\n`;
+                }
+              });
+            } else {
+              simulatedOutput += "No print statements found to execute.\n";
+            }
+            
+            // Show variable assignments for better understanding
+            if (Object.keys(variables).length > 0) {
+              simulatedOutput += "\nVariables defined:\n";
+              Object.entries(variables).forEach(([name, value]) => {
+                simulatedOutput += `${name} = ${value}\n`;
+              });
+            }
+            
+            setOutput(simulatedOutput);
+          } else {
+            // For other languages
+            setOutput(`[Code execution for ${language} is simulated in this environment]`);
+          }
         }
       } catch (err) {
         if (err instanceof Error) {

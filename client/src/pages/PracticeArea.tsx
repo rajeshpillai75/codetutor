@@ -743,11 +743,80 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
           
           // Extract console.log or print statements for display
           if (language === 'python') {
-            const printLines = code.match(/print\((.*)\)/g);
-            if (printLines) {
-              printLines.forEach(line => {
-                const content = line.substring(6, line.length - 1);
-                output += `>>> ${content}\n`;
+            // More robust regex to capture Python print statements with different argument types
+            const printRegex = /print\s*\((.*?)\)/g;
+            const printMatches = Array.from(code.matchAll(printRegex));
+            
+            // Extract variable assignments to simulate basic variable execution
+            const variableRegex = /^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$/gm;
+            const variableMatches = Array.from(code.matchAll(variableRegex));
+            const variables: Record<string, string> = {};
+            
+            // Store variable values for reference
+            variableMatches.forEach(match => {
+              if (match[1] && match[2]) {
+                const varName = match[1].trim();
+                const varValue = match[2].trim();
+                variables[varName] = varValue;
+              }
+            });
+            
+            output += "Python Output:\n";
+            
+            if (printMatches && printMatches.length > 0) {
+              printMatches.forEach(match => {
+                if (match[1]) {
+                  // Handle different Python argument types
+                  let content = match[1].trim();
+                  
+                  // Check if it's a string (with quotes)
+                  if ((content.startsWith('"') && content.endsWith('"')) || 
+                      (content.startsWith("'") && content.endsWith("'"))) {
+                    // Remove the quotes for display
+                    content = content.substring(1, content.length - 1);
+                  } 
+                  // Check if it's a variable reference
+                  else if (variables[content]) {
+                    // For variables, show the variable name and its value
+                    let value = variables[content];
+                    
+                    // If the value is a string literal, clean it
+                    if ((value.startsWith('"') && value.endsWith('"')) || 
+                        (value.startsWith("'") && value.endsWith("'"))) {
+                      value = value.substring(1, value.length - 1);
+                    }
+                    
+                    content = `${content} (${value})`;
+                  }
+                  // Try to evaluate simple math expressions
+                  else if (/^[\d\s\+\-\*\/\(\)\.]+$/.test(content)) {
+                    try {
+                      // Replace Python-specific math operators with JavaScript equivalents
+                      const jsExpression = content.replace(/\/\//g, '/');
+                      
+                      // Only evaluate if it's a safe mathematical expression
+                      const result = eval(jsExpression);
+                      if (typeof result === 'number') {
+                        content = `${content} = ${result}`;
+                      }
+                    } catch (e) {
+                      // If evaluation fails, just use the original content
+                    }
+                  }
+                  
+                  // Variables and expressions would just show as is
+                  output += `>>> ${content}\n`;
+                }
+              });
+            } else {
+              output += "No print statements found in the code.\n";
+            }
+            
+            // Show variable assignments
+            if (Object.keys(variables).length > 0) {
+              output += "\nVariables defined:\n";
+              Object.entries(variables).forEach(([name, value]) => {
+                output += `${name} = ${value}\n`;
               });
             }
           } else if (language === 'react') {

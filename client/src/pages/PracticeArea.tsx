@@ -33,6 +33,7 @@ export default function PracticeArea() {
   const [availableExercises, setAvailableExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [codeOutput, setCodeOutput] = useState<string>("");
+  const [selectedModel, setSelectedModel] = useState<"openai" | "llama3">("openai");
   
   // Define difficulty levels
   const difficultyLevels = [
@@ -98,12 +99,36 @@ export default function PracticeArea() {
         code: currentCode,
         language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
         exerciseId: selectedExercise?.id,
-        query
+        query,
+        model: selectedModel
       });
       
       setFeedback(data);
     } catch (error) {
       console.error("Error getting code feedback:", error);
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
+  
+  // Get general code feedback without a specific query
+  const getGeneralCodeFeedback = async () => {
+    if (!currentCode) return;
+    
+    setFeedbackLoading(true);
+    try {
+      console.log("Getting general code feedback for current code with model:", selectedModel);
+      const data = await apiPost("/api/ai/code-feedback", {
+        code: currentCode,
+        language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
+        exerciseId: selectedExercise?.id,
+        query: "Analyze this code and provide general feedback on structure, style, and best practices.",
+        model: selectedModel
+      });
+      
+      setFeedback(data);
+    } catch (error) {
+      console.error("Error getting general code feedback:", error);
     } finally {
       setFeedbackLoading(false);
     }

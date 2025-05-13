@@ -16,6 +16,9 @@ interface AIFeedbackProps {
   feedback: FeedbackType | null;
   loading: boolean;
   onSendQuery: (query: string) => void;
+  onGetGeneralFeedback?: () => void;
+  selectedModel?: "openai" | "llama3";
+  onChangeModel?: (model: "openai" | "llama3") => void;
 }
 
 export default function AIFeedback({ feedback, loading, onSendQuery }: AIFeedbackProps) {

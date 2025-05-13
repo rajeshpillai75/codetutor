@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Terminal, CheckCircle } from "lucide-react";
+import { Terminal, CheckCircle, Cpu } from "lucide-react";
 import { apiPost } from "@/lib/queryClient";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Import the AceEditor component
 import AceEditor from "react-ace";
@@ -118,6 +119,7 @@ export default function SimplifiedPracticeArea() {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [currentCode, setCurrentCode] = useState<string>("");
   const [editorTheme, setEditorTheme] = useState<string>("monokai");
+  const [selectedModel, setSelectedModel] = useState<"openai" | "llama3">("openai");
   
   // Code feedback state
   const [feedback, setFeedback] = useState<FeedbackType | null>(null);
@@ -203,7 +205,8 @@ export default function SimplifiedPracticeArea() {
       const data = await apiPost("/api/ai/code-feedback", {
         code: currentCode,
         language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
-        query: feedbackQuery
+        query: feedbackQuery,
+        model: selectedModel
       });
       
       setFeedback(data);

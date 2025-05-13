@@ -1021,10 +1021,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
               <SelectContent>
                 {difficultyLevels.map(level => (
                   <SelectItem key={level.value} value={level.value}>
-                    <div className="flex flex-col">
-                      <span>{level.label}</span>
-                      <span className="text-xs text-muted-foreground">{level.description}</span>
-                    </div>
+                    {level.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -1049,10 +1046,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
                 {language && topicCategories[language as keyof typeof topicCategories] ? 
                   topicCategories[language as keyof typeof topicCategories].map(topic => (
                     <SelectItem key={topic.value} value={topic.value}>
-                      <div className="flex flex-col">
-                        <span>{topic.label}</span>
-                        <span className="text-xs text-muted-foreground">{topic.description}</span>
-                      </div>
+                      {topic.label}
                     </SelectItem>
                   )) : null}
               </SelectContent>

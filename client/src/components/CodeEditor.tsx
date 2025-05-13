@@ -94,9 +94,20 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
       editor.session.setMode(`ace/mode/${mode}`);
     }
   }, [language, editor]);
+  
+  // Update code when initialCode changes
+  useEffect(() => {
+    if (editor && initialCode) {
+      editor.setValue(initialCode, -1);
+      setCode(initialCode);
+    }
+  }, [initialCode, editor]);
 
   const initializeEditor = () => {
-    if (!editorRef.current || !window.ace) return;
+    if (!editorRef.current || typeof window.ace === 'undefined') {
+      console.log("Ace editor not loaded yet");
+      return;
+    }
 
     // Enable languages tools if loaded
     if (window.ace.require) {

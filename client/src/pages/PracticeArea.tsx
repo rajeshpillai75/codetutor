@@ -950,7 +950,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
   };
 
   const getCode = (): string => {
-    if (selectedExercise) {
+    if (selectedExercise && selectedExercise.code) {
       return selectedExercise.code;
     }
     
@@ -1099,7 +1099,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
         </div>
         
         <div className="flex flex-col overflow-hidden">
-          <div className="h-[500px]">
+          <div className="h-[500px]" key={selectedExercise?.id || language}>
             <CodeEditor 
               title={selectedExercise ? selectedExercise.title : `${formatLanguageName(language)} Practice`}
               language={language === "html-css" ? "html" : language === "react" ? "javascript" : language}

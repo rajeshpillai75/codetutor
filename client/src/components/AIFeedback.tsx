@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Bot, CheckCircle, AlertTriangle, Lightbulb, Send, RefreshCw } from "lucide-react";
+import { Bot, CheckCircle, AlertTriangle, Lightbulb, Send, RefreshCw, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface FeedbackType {
   feedback: string;
@@ -21,7 +22,14 @@ interface AIFeedbackProps {
   onChangeModel?: (model: "openai" | "llama3") => void;
 }
 
-export default function AIFeedback({ feedback, loading, onSendQuery }: AIFeedbackProps) {
+export default function AIFeedback({ 
+  feedback, 
+  loading, 
+  onSendQuery, 
+  onGetGeneralFeedback, 
+  selectedModel = "openai", 
+  onChangeModel
+}: AIFeedbackProps) {
   const [query, setQuery] = useState("");
 
   const handleSubmit = () => {
@@ -39,25 +47,78 @@ export default function AIFeedback({ feedback, loading, onSendQuery }: AIFeedbac
 
   return (
     <div className="bg-gray-50 dark:bg-gray-800 border-t p-4 flex flex-col space-y-4 shrink-0">
-      {/* Input field at the top */}
-      <div className="flex relative">
-        <Input
-          type="text"
-          className="flex-1 pr-10"
-          placeholder="Ask about your code..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyPress={handleKeyPress}
-        />
-        <Button
-          type="submit"
-          size="sm"
-          disabled={!query.trim() || loading}
-          onClick={handleSubmit}
-          className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
-        >
-          <Send className="h-4 w-4" />
-        </Button>
+      {/* Header with title and model selector */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium flex items-center">
+          <Bot className="h-4 w-4 mr-1" /> Code Tutor AI
+        </h3>
+        
+        {onChangeModel && (
+          <Select 
+            value={selectedModel} 
+            onValueChange={(value: "openai" | "llama3") => onChangeModel(value)}
+          >
+            <SelectTrigger className="w-[140px] h-8">
+              <SelectValue placeholder="Select model" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="openai">
+                <div className="flex items-center">
+                  <Cpu className="h-4 w-4 mr-2 text-blue-500" />
+                  OpenAI
+                </div>
+              </SelectItem>
+              <SelectItem value="llama3">
+                <div className="flex items-center">
+                  <Cpu className="h-4 w-4 mr-2 text-green-500" />
+                  Llama 3
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+      
+      {/* Input field with buttons */}
+      <div className="space-y-2">
+        <div className="flex relative">
+          <Input
+            type="text"
+            className="flex-1 pr-10"
+            placeholder="Ask about your code..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
+          <Button
+            type="submit"
+            size="sm"
+            disabled={!query.trim() || loading}
+            onClick={handleSubmit}
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        {onGetGeneralFeedback && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={onGetGeneralFeedback}
+            disabled={loading}
+          >
+            {loading ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : <Lightbulb className="h-4 w-4 mr-2" />}
+            Get Code Review
+          </Button>
+        )}
+        
+        {selectedModel && (
+          <div className="text-xs text-center text-muted-foreground">
+            Using {selectedModel === "openai" ? "OpenAI GPT-4" : "Perplexity Llama 3"} for analysis
+          </div>
+        )}
       </div>
       
       {/* Feedback content below input */}

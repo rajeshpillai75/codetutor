@@ -490,10 +490,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let feedback;
       // Use Llama 3 model via Perplexity if specified
       if (model === 'llama3') {
+        if (!process.env.PERPLEXITY_API_KEY) {
+          console.error("Perplexity API key is missing for code feedback");
+          return res.status(500).json({ 
+            error: "Perplexity API key is missing", 
+            message: "The Perplexity API key is not configured. Please contact the administrator." 
+          });
+        }
+        
         log('Using Llama 3 via Perplexity for code feedback');
         feedback = await getCodeFeedbackWithPerplexity(code, language, query);
       } else {
         // Default to OpenAI
+        if (!process.env.OPENAI_API_KEY) {
+          console.error("OpenAI API key is missing for code feedback");
+          return res.status(500).json({ 
+            error: "OpenAI API key is missing", 
+            message: "The OpenAI API key is not configured. Please contact the administrator." 
+          });
+        }
+        
         log('Using OpenAI for code feedback');
         feedback = await getCodeFeedback(code, language, query);
       }

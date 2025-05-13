@@ -88,30 +88,44 @@ export async function getCodeFeedbackWithPerplexity(
     const userPrompt = `Here's the ${language} code to analyze:\n\`\`\`${language}\n${code}\n\`\`\``;
 
     // Make request to Perplexity API
+    console.log('Making request to Perplexity API for code feedback...');
+    
+    const requestBody = {
+      model: 'llama-3.1-sonar-small-128k-online',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      temperature: 0.2,
+      top_p: 0.9,
+      max_tokens: 2048,
+      stream: false,
+      frequency_penalty: 1
+    };
+    
+    console.log('Perplexity code feedback request payload:', {
+      model: requestBody.model,
+      language: language,
+      codeLength: code.length,
+      systemPromptLength: systemPrompt.length
+    });
+    
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model: 'llama-3.1-sonar-small-128k-online',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.2,
-        top_p: 0.9,
-        max_tokens: 2048,
-        stream: false,
-        frequency_penalty: 1
-      })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`Perplexity API error: ${response.status}`, errorText);
       throw new Error(`Perplexity API error: ${response.status} - ${errorText}`);
     }
+    
+    console.log('Perplexity API code feedback response received successfully');
 
     const data = await response.json() as PerplexityResponse;
     
@@ -231,27 +245,40 @@ export async function getChatbotResponseWithPerplexity(
     });
 
     // Make request to Perplexity API
+    console.log('Making request to Perplexity API for chatbot response...');
+    
+    const requestBody = {
+      model: 'llama-3.1-sonar-small-128k-online',
+      messages: perplexityMessages,
+      temperature: 0.7,
+      top_p: 0.95,
+      max_tokens: 2048,
+      stream: false,
+      frequency_penalty: 0.5
+    };
+    
+    console.log('Perplexity request payload:', {
+      model: requestBody.model,
+      messageCount: requestBody.messages.length,
+      system: requestBody.messages[0].content.substring(0, 100) + '...'
+    });
+    
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model: 'llama-3.1-sonar-small-128k-online',
-        messages: perplexityMessages,
-        temperature: 0.7,
-        top_p: 0.95,
-        max_tokens: 2048,
-        stream: false,
-        frequency_penalty: 0.5
-      })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`Perplexity API error: ${response.status}`, errorText);
       throw new Error(`Perplexity API error: ${response.status} - ${errorText}`);
     }
+    
+    console.log('Perplexity API response received successfully');
 
     const data = await response.json() as PerplexityResponse;
     

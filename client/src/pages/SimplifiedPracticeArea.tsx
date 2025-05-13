@@ -196,7 +196,7 @@ export default function SimplifiedPracticeArea() {
     }
   };
   
-  // Handle feedback query
+  // Handle specific feedback query
   const handleSendFeedbackQuery = async () => {
     if (!currentCode || !feedbackQuery.trim()) return;
     
@@ -212,6 +212,28 @@ export default function SimplifiedPracticeArea() {
       setFeedback(data);
     } catch (error) {
       console.error("Error getting code feedback:", error);
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
+  
+  // Get general code feedback without a specific query
+  const getGeneralCodeFeedback = async () => {
+    if (!currentCode) return;
+    
+    setFeedbackLoading(true);
+    try {
+      console.log("Getting general code feedback for current code:", currentCode.substring(0, 50) + "...");
+      const data = await apiPost("/api/ai/code-feedback", {
+        code: currentCode,
+        language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
+        query: "Analyze this code and provide general feedback on structure, style, and best practices.",
+        model: selectedModel
+      });
+      
+      setFeedback(data);
+    } catch (error) {
+      console.error("Error getting general code feedback:", error);
     } finally {
       setFeedbackLoading(false);
     }
@@ -309,7 +331,19 @@ export default function SimplifiedPracticeArea() {
                 mode={getEditorMode()}
                 theme={editorTheme}
                 value={currentCode}
-                onChange={setCurrentCode}
+                onChange={(newCode) => {
+                  // Ensure currentCode is always updated with editor content
+                  console.log("Editor content changed, updating currentCode");
+                  setCurrentCode(newCode);
+                }}
+                onBlur={(event) => {
+                  // Additional safety to make sure we always have the latest code
+                  const editorValue = event.target.value;
+                  if (editorValue !== currentCode) {
+                    console.log("Editor blur event detected, syncing code state");
+                    setCurrentCode(editorValue);
+                  }
+                }}
                 name="code-editor"
                 editorProps={{ $blockScrolling: true }}
                 setOptions={{
@@ -390,16 +424,30 @@ export default function SimplifiedPracticeArea() {
                   onChange={(e) => setFeedbackQuery(e.target.value)}
                   className="resize-none h-20"
                 />
-                <div className="flex flex-col gap-2">
-                  <Button 
-                    onClick={handleSendFeedbackQuery} 
-                    disabled={feedbackLoading || !feedbackQuery.trim()}
-                    className="w-full"
-                  >
-                    {feedbackLoading ? "Getting Feedback..." : "Get AI Feedback"}
-                  </Button>
-                  <div className="text-xs text-center text-muted-foreground">
-                    Using {selectedModel === "openai" ? "OpenAI GPT-4" : "Perplexity Llama 3"} for analysis
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={handleSendFeedbackQuery} 
+                      disabled={feedbackLoading || !feedbackQuery.trim()}
+                      className="flex-1"
+                      variant="default"
+                    >
+                      {feedbackLoading ? "Working..." : "Ask Question"}
+                    </Button>
+                    
+                    <Button 
+                      onClick={getGeneralCodeFeedback} 
+                      disabled={feedbackLoading}
+                      className="flex-1"
+                      variant="outline"
+                    >
+                      {feedbackLoading ? "Working..." : "Get Code Review"}
+                    </Button>
+                  </div>
+                  
+                  <div className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
+                    <Cpu className="h-3 w-3" />
+                    Using {selectedModel === "openai" ? "OpenAI GPT-4" : "Llama 3"} for analysis
                   </div>
                 </div>
               </div>

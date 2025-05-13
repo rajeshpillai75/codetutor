@@ -5,9 +5,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Terminal, CheckCircle, Cpu } from "lucide-react";
 import { apiPost } from "@/lib/queryClient";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import AIFeedback from "@/components/AIFeedback";
 
 // Import the AceEditor component
 import AceEditor from "react-ace";
@@ -197,15 +197,16 @@ export default function SimplifiedPracticeArea() {
   };
   
   // Handle specific feedback query
-  const handleSendFeedbackQuery = async () => {
-    if (!currentCode || !feedbackQuery.trim()) return;
+  const handleSendFeedbackQuery = async (customQuery?: string) => {
+    const queryToUse = customQuery || feedbackQuery;
+    if (!currentCode || !queryToUse.trim()) return;
     
     setFeedbackLoading(true);
     try {
       const data = await apiPost("/api/ai/code-feedback", {
         code: currentCode,
         language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
-        query: feedbackQuery,
+        query: queryToUse,
         model: selectedModel
       });
       
@@ -390,130 +391,18 @@ export default function SimplifiedPracticeArea() {
         {/* Right Side: AI Feedback */}
         <div className="lg:col-span-4 space-y-4">
           <Card className="h-full flex flex-col">
-            <CardHeader className="py-3 flex flex-row items-center">
-              <CardTitle className="text-md">Code Tutor AI</CardTitle>
-              <div className="ml-auto">
-                <Select value={selectedModel} onValueChange={(value: "openai" | "llama3") => setSelectedModel(value)}>
-                  <SelectTrigger className="w-[140px] h-8">
-                    <SelectValue placeholder="Select model" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="openai">
-                      <div className="flex items-center">
-                        <Cpu className="h-4 w-4 mr-2 text-blue-500" />
-                        OpenAI
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="llama3">
-                      <div className="flex items-center">
-                        <Cpu className="h-4 w-4 mr-2 text-green-500" />
-                        Llama 3
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4 flex-1 flex flex-col">
-              {/* Input for asking about code */}
-              <div className="space-y-2">
-                <Textarea 
-                  placeholder="Ask about your code..."
-                  value={feedbackQuery}
-                  onChange={(e) => setFeedbackQuery(e.target.value)}
-                  className="resize-none h-20"
-                />
-                <div className="space-y-3">
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={handleSendFeedbackQuery} 
-                      disabled={feedbackLoading || !feedbackQuery.trim()}
-                      className="flex-1"
-                      variant="default"
-                    >
-                      {feedbackLoading ? "Working..." : "Ask Question"}
-                    </Button>
-                    
-                    <Button 
-                      onClick={getGeneralCodeFeedback} 
-                      disabled={feedbackLoading}
-                      className="flex-1"
-                      variant="outline"
-                    >
-                      {feedbackLoading ? "Working..." : "Get Code Review"}
-                    </Button>
-                  </div>
-                  
-                  <div className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
-                    <Cpu className="h-3 w-3" />
-                    Using {selectedModel === "openai" ? "OpenAI GPT-4" : "Llama 3"} for analysis
-                  </div>
-                </div>
-              </div>
-              
-              <ScrollArea className="flex-1">
-                {feedback ? (
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-medium">Overall Feedback</h3>
-                        <Badge variant={selectedModel === "openai" ? "secondary" : "outline"} className="text-xs">
-                          <Cpu className="h-3 w-3 mr-1" />
-                          {selectedModel === "openai" ? "GPT-4" : "Llama 3"}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{feedback.feedback}</p>
-                    </div>
-                    
-                    {feedback.suggestions.length > 0 && (
-                      <div className="space-y-2">
-                        <h3 className="font-medium">Suggestions</h3>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {feedback.suggestions.map((suggestion, index) => (
-                            <li key={index} className="text-sm text-muted-foreground">
-                              {suggestion}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {feedback.bestPractices.length > 0 && (
-                      <div className="space-y-2">
-                        <h3 className="font-medium">Best Practices</h3>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {feedback.bestPractices.map((practice, index) => (
-                            <li key={index} className="text-sm text-muted-foreground">
-                              {practice}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {feedback.errorDetection && feedback.errorDetection.length > 0 && (
-                      <div className="space-y-2">
-                        <h3 className="font-medium">Error Detection</h3>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {feedback.errorDetection.map((error, index) => (
-                            <li key={index} className="text-sm text-muted-foreground">
-                              Line {error.line}: {error.message}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
-                    <CheckCircle className="h-12 w-12 mb-2 opacity-20" />
-                    <p className="text-center">
-                      Ask for feedback about your code to get personalized suggestions and advice.
-                    </p>
-                  </div>
-                )}
-              </ScrollArea>
+            <CardContent className="p-0 flex-1 flex flex-col">
+              <AIFeedback 
+                feedback={feedback}
+                loading={feedbackLoading}
+                onSendQuery={(query) => {
+                  setFeedbackQuery(query);
+                  handleSendFeedbackQuery();
+                }}
+                onGetGeneralFeedback={getGeneralCodeFeedback}
+                selectedModel={selectedModel}
+                onChangeModel={(model) => setSelectedModel(model)}
+              />
             </CardContent>
           </Card>
         </div>

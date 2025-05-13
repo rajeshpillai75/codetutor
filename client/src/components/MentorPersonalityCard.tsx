@@ -70,7 +70,7 @@ interface MentorPersonalityCardProps {
   personality: MentorPersonalityType;
   isSelected: boolean;
   onClick: () => void;
-  aiModel?: "openai" | "anthropic";
+  aiModel?: "openai" | "anthropic" | "llama3";
 }
 
 export default function MentorPersonalityCard({ 

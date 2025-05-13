@@ -374,9 +374,15 @@ export default function ChatInterface({
           <Bot className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-medium">Coding Mentor</h2>
           <Badge variant="outline">{personalityName[personality]}</Badge>
-          <Badge variant={model === "openai" ? "secondary" : "destructive"} className="ml-1">
+          <Badge variant={
+            model === "openai" ? "secondary" : 
+            model === "anthropic" ? "destructive" : 
+            "outline"
+          } className="ml-1">
             <Cpu className="h-3 w-3 mr-1" />
-            {model === "openai" ? "GPT-4" : "Claude"}
+            {model === "openai" ? "GPT-4" : 
+             model === "anthropic" ? "Claude" : 
+             "Llama 3"}
           </Badge>
         </div>
         
@@ -435,7 +441,7 @@ export default function ChatInterface({
                 <h3 className="text-sm font-medium">AI Model</h3>
                 <Select
                   value={model}
-                  onValueChange={(value) => setModel(value as "openai" | "anthropic")}
+                  onValueChange={(value) => setModel(value as "openai" | "anthropic" | "llama3")}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select AI model" />
@@ -451,6 +457,12 @@ export default function ChatInterface({
                       <div className="flex items-center">
                         <Cpu className="h-4 w-4 mr-2 text-purple-500" />
                         Anthropic (Claude)
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="llama3">
+                      <div className="flex items-center">
+                        <Cpu className="h-4 w-4 mr-2 text-green-500" />
+                        Perplexity (Llama 3)
                       </div>
                     </SelectItem>
                   </SelectContent>

@@ -10,9 +10,9 @@ import { Brain, MessageSquare, Settings } from "lucide-react";
 
 interface MentorPersonalitySelectorProps {
   currentPersonality: MentorPersonalityType;
-  currentModel: "openai" | "anthropic";
+  currentModel: "openai" | "anthropic" | "llama3";
   onPersonalityChange: (personality: MentorPersonalityType) => void;
-  onModelChange: (model: "openai" | "anthropic") => void;
+  onModelChange: (model: "openai" | "anthropic" | "llama3") => void;
   onClose: () => void;
 }
 
@@ -24,7 +24,7 @@ export default function MentorPersonalitySelector({
   onClose
 }: MentorPersonalitySelectorProps) {
   const [selectedPersonality, setSelectedPersonality] = useState<MentorPersonalityType>(currentPersonality);
-  const [selectedModel, setSelectedModel] = useState<"openai" | "anthropic">(currentModel);
+  const [selectedModel, setSelectedModel] = useState<"openai" | "anthropic" | "llama3">(currentModel);
 
   const handleApply = () => {
     onPersonalityChange(selectedPersonality);
@@ -118,6 +118,32 @@ export default function MentorPersonalitySelector({
                         <div className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">Detailed</div>
                         <div className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">Nuanced</div>
                         <div className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">Contextual</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card 
+                className={`border-2 transition-all cursor-pointer hover:border-green-400 ${
+                  selectedModel === "llama3" ? 'ring-2 ring-offset-2 ring-green-400' : ''
+                }`}
+                onClick={() => setSelectedModel("llama3")}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-100 text-green-600 p-2 rounded-lg">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.5 4C8.67 4 8 4.67 8 5.5V18.5C8 19.33 8.67 20 9.5 20H14.5C15.33 20 16 19.33 16 18.5V5.5C16 4.67 15.33 4 14.5 4H9.5ZM10 6H14V10H10V6ZM10 12H14V18H10V12Z" fill="currentColor"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg">Perplexity Llama 3</h3>
+                      <p className="text-sm text-gray-600">Open-source AI model with strong reasoning capabilities</p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        <div className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">Open-source</div>
+                        <div className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">Versatile</div>
+                        <div className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">Latest tech</div>
                       </div>
                     </div>
                   </div>

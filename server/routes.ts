@@ -481,13 +481,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI-related routes
   app.post("/api/ai/code-feedback", async (req, res) => {
     try {
-      const { code, language } = req.body;
+      const { code, language, model, query } = req.body;
       
       if (!code || !language) {
         return res.status(400).json({ error: "Code and language are required" });
       }
       
-      const feedback = await getCodeFeedback(code, language);
+      let feedback;
+      // Use Llama 3 model via Perplexity if specified
+      if (model === 'llama3') {
+        log('Using Llama 3 via Perplexity for code feedback');
+        feedback = await getCodeFeedbackWithPerplexity(code, language, query);
+      } else {
+        // Default to OpenAI
+        log('Using OpenAI for code feedback');
+        feedback = await getCodeFeedback(code, language, query);
+      }
+      
       res.json(feedback);
     } catch (err) {
       console.error("Error getting code feedback:", err);

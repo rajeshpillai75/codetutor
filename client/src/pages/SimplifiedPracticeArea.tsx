@@ -356,8 +356,29 @@ export default function SimplifiedPracticeArea() {
         {/* Right Side: AI Feedback */}
         <div className="lg:col-span-4 space-y-4">
           <Card className="h-full flex flex-col">
-            <CardHeader className="py-3">
+            <CardHeader className="py-3 flex flex-row items-center">
               <CardTitle className="text-md">Code Tutor AI</CardTitle>
+              <div className="ml-auto">
+                <Select value={selectedModel} onValueChange={(value: "openai" | "llama3") => setSelectedModel(value)}>
+                  <SelectTrigger className="w-[140px] h-8">
+                    <SelectValue placeholder="Select model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="openai">
+                      <div className="flex items-center">
+                        <Cpu className="h-4 w-4 mr-2 text-blue-500" />
+                        OpenAI
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="llama3">
+                      <div className="flex items-center">
+                        <Cpu className="h-4 w-4 mr-2 text-green-500" />
+                        Llama 3
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </CardHeader>
             
             <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -369,20 +390,31 @@ export default function SimplifiedPracticeArea() {
                   onChange={(e) => setFeedbackQuery(e.target.value)}
                   className="resize-none h-20"
                 />
-                <Button 
-                  onClick={handleSendFeedbackQuery} 
-                  disabled={feedbackLoading || !feedbackQuery.trim()}
-                  className="w-full"
-                >
-                  {feedbackLoading ? "Getting Feedback..." : "Get AI Feedback"}
-                </Button>
+                <div className="flex flex-col gap-2">
+                  <Button 
+                    onClick={handleSendFeedbackQuery} 
+                    disabled={feedbackLoading || !feedbackQuery.trim()}
+                    className="w-full"
+                  >
+                    {feedbackLoading ? "Getting Feedback..." : "Get AI Feedback"}
+                  </Button>
+                  <div className="text-xs text-center text-muted-foreground">
+                    Using {selectedModel === "openai" ? "OpenAI GPT-4" : "Perplexity Llama 3"} for analysis
+                  </div>
+                </div>
               </div>
               
               <ScrollArea className="flex-1">
                 {feedback ? (
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <h3 className="font-medium">Overall Feedback</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium">Overall Feedback</h3>
+                        <Badge variant={selectedModel === "openai" ? "secondary" : "outline"} className="text-xs">
+                          <Cpu className="h-3 w-3 mr-1" />
+                          {selectedModel === "openai" ? "GPT-4" : "Llama 3"}
+                        </Badge>
+                      </div>
                       <p className="text-sm text-muted-foreground">{feedback.feedback}</p>
                     </div>
                     

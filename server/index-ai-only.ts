@@ -29,7 +29,7 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 // Register API routes and get HTTP server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 async function startServer() {
   try {

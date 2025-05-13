@@ -3,6 +3,67 @@ import OpenAI from "openai";
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+export interface HintResponse {
+  hint: string;
+}
+
+export async function generateHint(
+  code: string,
+  language: string,
+  hintLevel: number = 1,
+  difficulty: string = "beginner",
+  exerciseId?: string
+): Promise<HintResponse> {
+  try {
+    // Create hint level descriptions
+    const hintLevelDescriptions = {
+      1: "a gentle nudge in the right direction without revealing the solution",
+      2: "more specific guidance about what to focus on",
+      3: "a detailed hint that almost gives away the solution but still requires some thinking"
+    };
+    
+    const prompt = `
+      You are a friendly and supportive programming tutor specializing in ${language}.
+      The student is working on a ${difficulty} level coding exercise${exerciseId ? ` (ID: ${exerciseId})` : ''}.
+      
+      Their current code is:
+      \`\`\`${language}
+      ${code}
+      \`\`\`
+      
+      Please provide a level ${hintLevel} hint, which should be ${hintLevelDescriptions[hintLevel as keyof typeof hintLevelDescriptions]}.
+      
+      Important guidelines:
+      - Be encouraging and supportive
+      - Use simple, friendly language
+      - For level 1 hints: Don't mention specific code or solutions, just general concepts
+      - For level 2 hints: You can point to specific areas that need attention
+      - For level 3 hints: You can provide more detailed guidance, but still make the student think
+      - Keep your response concise (max 2-3 sentences)
+      - Focus on helping them learn, not just giving the answer
+      - Don't use technical jargon unless necessary
+      
+      Format your response as a JSON object with this structure:
+      {
+        "hint": "Your friendly, concise hint here"
+      }
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.7
+    });
+
+    const result = JSON.parse(response.choices[0].message.content);
+    return { hint: result.hint };
+  } catch (error) {
+    console.error("Error generating hint:", error);
+    throw error;
+  }
+}
+
 export interface CodeFeedback {
   feedback: string;
   suggestions: string[];

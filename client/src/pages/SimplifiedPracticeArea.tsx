@@ -197,15 +197,38 @@ export default function SimplifiedPracticeArea() {
     }
   };
   
+  // Helper function to get the latest code from the editor
+  const getLatestCodeFromEditor = (): string => {
+    try {
+      // @ts-ignore - We need to access internal Ace editor properties
+      const editorElement = document.querySelector('.ace_editor');
+      // @ts-ignore - Ace editor exposes env.editor on the DOM element
+      const editor = editorElement?.env?.editor;
+      return editor ? editor.getValue() : currentCode;
+    } catch (error) {
+      console.error("Error accessing editor:", error);
+      return currentCode;
+    }
+  };
+
   // Handle specific feedback query
   const handleSendFeedbackQuery = async (customQuery?: string) => {
     const queryToUse = customQuery || feedbackQuery;
-    if (!currentCode || !queryToUse.trim()) return;
+    if (!queryToUse.trim()) return;
+    
+    // Ensure we're using the most current code from the editor
+    const latestCode = getLatestCodeFromEditor();
+    if (!latestCode) return;
+    
+    // Make sure currentCode state is updated with the latest
+    if (latestCode !== currentCode) {
+      setCurrentCode(latestCode);
+    }
     
     setFeedbackLoading(true);
     try {
       const data = await apiPost("/api/ai/code-feedback", {
-        code: currentCode,
+        code: latestCode,
         language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
         query: queryToUse,
         model: selectedModel
@@ -222,9 +245,7 @@ export default function SimplifiedPracticeArea() {
   // Get general code feedback without a specific query
   const getGeneralCodeFeedback = async () => {
     // Ensure we're using the most current code from the editor
-    const editorInstance = document.querySelector('.ace_editor')?.env?.editor;
-    const latestCode = editorInstance ? editorInstance.getValue() : currentCode;
-    
+    const latestCode = getLatestCodeFromEditor();
     if (!latestCode) return;
     
     // Make sure currentCode state is updated with the latest

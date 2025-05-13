@@ -8,6 +8,7 @@ import { apiPost } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AIFeedback from "@/components/AIFeedback";
+import HintGenerator from "@/components/HintGenerator";
 
 // Import the AceEditor component
 import AceEditor from "react-ace";
@@ -388,8 +389,18 @@ export default function SimplifiedPracticeArea() {
           </Card>
         </div>
         
-        {/* Right Side: AI Feedback */}
+        {/* Right Side: AI Feedback and Hint Generator */}
         <div className="lg:col-span-4 space-y-4">
+          {/* Hint Generator */}
+          <HintGenerator 
+            currentCode={currentCode}
+            language={language}
+            exerciseId={selectedExercise?.id}
+            difficulty={selectedExercise?.difficulty || "beginner"}
+            selectedModel={selectedModel}
+          />
+          
+          {/* AI Feedback */}
           <Card className="h-full flex flex-col">
             <CardContent className="p-0 flex-1 flex flex-col">
               <AIFeedback 

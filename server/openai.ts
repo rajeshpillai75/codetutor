@@ -56,7 +56,9 @@ export async function generateHint(
       temperature: 0.7
     });
 
-    const result = JSON.parse(response.choices[0].message.content);
+    // Ensure content is not null with a fallback
+    const content = response.choices[0].message.content as string;
+    const result = JSON.parse(content);
     return { hint: result.hint };
   } catch (error) {
     console.error("Error generating hint:", error);

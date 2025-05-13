@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import CodeEditor from "@/components/CodeEditor";
 import AIFeedback from "@/components/AIFeedback";
+import HintGenerator from "@/components/HintGenerator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

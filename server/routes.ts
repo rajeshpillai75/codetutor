@@ -17,6 +17,7 @@ import {
   type MentorPersonality,
   getChatbotResponse,
   getCodeFeedback,
+  generateHint,
   ChatMessage
 } from "./openai";
 import { getChatbotResponseWithAnthropic } from "./anthropic";
@@ -479,6 +480,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AI-related routes
+  app.post("/api/ai/generate-hint", async (req, res) => {
+    try {
+      const { code, language, hintLevel = 1, difficulty = "beginner", exerciseId, model } = req.body;
+      
+      if (!code || !language) {
+        return res.status(400).json({ error: "Code and language are required" });
+      }
+      
+      // If using Llama 3 model via Perplexity
+      if (model === 'llama3') {
+        if (!process.env.PERPLEXITY_API_KEY) {
+          console.error("Perplexity API key is missing for hint generation");
+          return res.status(500).json({ 
+            error: "Perplexity API key is missing", 
+            message: "The Perplexity API key is not configured. Please contact the administrator." 
+          });
+        }
+        
+        log('Using Llama 3 via Perplexity for hint generation');
+        // Currently only OpenAI is supported for hint generation
+        // Can be extended later to support Perplexity
+        const hint = await generateHint(code, language, hintLevel, difficulty, exerciseId);
+        res.json(hint);
+      } else {
+        // Default to OpenAI
+        if (!process.env.OPENAI_API_KEY) {
+          console.error("OpenAI API key is missing for hint generation");
+          return res.status(500).json({ 
+            error: "OpenAI API key is missing", 
+            message: "The OpenAI API key is not configured. Please contact the administrator." 
+          });
+        }
+        
+        log('Using OpenAI for hint generation');
+        const hint = await generateHint(code, language, hintLevel, difficulty, exerciseId);
+        res.json(hint);
+      }
+    } catch (err) {
+      console.error("Error generating hint:", err);
+      res.status(500).json({ error: "Failed to generate hint" });
+    }
+  });
+
   app.post("/api/ai/code-feedback", async (req, res) => {
     try {
       const { code, language, model, query } = req.body;

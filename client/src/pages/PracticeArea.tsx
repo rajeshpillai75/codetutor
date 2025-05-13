@@ -28,14 +28,15 @@ interface Exercise {
 
 export default function PracticeArea() {
   const [language, setLanguage] = useState<string>("javascript");
-  const [difficulty, setDifficulty] = useState<string>("beginner");
-  const [exerciseType, setExerciseType] = useState<string>("basics");
+  const [difficulty, setDifficulty] = useState<string>("all");
+  const [exerciseType, setExerciseType] = useState<string>("all");
   const [availableExercises, setAvailableExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [codeOutput, setCodeOutput] = useState<string>("");
   
   // Define difficulty levels
   const difficultyLevels = [
+    { value: "all", label: "All Levels", description: "Show exercises for all difficulty levels" },
     { value: "beginner", label: "Beginner", description: "For those new to programming" },
     { value: "intermediate", label: "Intermediate", description: "For those with some programming experience" },
     { value: "advanced", label: "Advanced", description: "For experienced programmers" }
@@ -756,27 +757,41 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
 
   // Filter exercises based on current selections
   useEffect(() => {
-    // Map language value to object property
-    let langKey = language;
-    if (language === "html-css") langKey = "html";
-    
     // Get exercises for the selected language
-    const exercises = languageExercises[langKey as keyof typeof languageExercises] || [];
+    const exercises = languageExercises[language as keyof typeof languageExercises] || [];
     
-    // Filter based on difficulty and type
+    // Filter based on difficulty and topic type
     const filtered = exercises.filter((ex: Exercise) => {
-      const difficultyMatch = ex.difficulty === difficulty;
+      // Match by difficulty level
+      const difficultyMatch = difficulty === "all" || ex.difficulty === difficulty;
+      
+      // Match by topic/exercise type
       const typeMatch = exerciseType === "all" || ex.type === exerciseType;
-      return difficultyMatch && (exerciseType === "all" || typeMatch);
+      
+      return difficultyMatch && typeMatch;
     });
     
     setAvailableExercises(filtered);
     
-    // Set a default selected exercise if available
+    // Reset selected exercise when filters change
     if (filtered.length > 0) {
-      setSelectedExercise(filtered[0]);
+      // Only auto-select if none is currently selected or if current selection is no longer in the filtered list
+      if (!selectedExercise || !filtered.some(ex => ex.id === selectedExercise.id)) {
+        setSelectedExercise(filtered[0]);
+        setCodeOutput(""); // Clear output when changing exercise
+      }
     } else {
       setSelectedExercise(null);
+    }
+    
+    // When language changes, reset the exercise type if current type isn't available for the new language
+    if (language) {
+      const availableTypes = topicCategories[language as keyof typeof topicCategories] || [];
+      const typeExists = availableTypes.some(topic => topic.value === exerciseType);
+      
+      if (!typeExists && exerciseType !== "all") {
+        setExerciseType("all");
+      }
     }
   }, [language, difficulty, exerciseType]);
   

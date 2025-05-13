@@ -362,29 +362,15 @@ export default function SimplifiedPracticeArea() {
             </CardContent>
           </Card>
           
-          {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            {/* Run Button */}
-            <Button 
-              onClick={() => executeCode(currentCode)}
-              disabled={isRunning}
-              className="w-full"
-            >
-              <Terminal className="mr-2 h-4 w-4" />
-              {isRunning ? "Running..." : "Run Code"}
-            </Button>
-            
-            {/* Get Feedback Button */}
-            <Button 
-              onClick={getGeneralCodeFeedback}
-              disabled={feedbackLoading || !currentCode}
-              variant="secondary"
-              className="w-full"
-            >
-              <Cpu className="mr-2 h-4 w-4" />
-              {feedbackLoading ? "Getting Feedback..." : "Get Code Review"}
-            </Button>
-          </div>
+          {/* Run Button */}
+          <Button 
+            onClick={() => executeCode(currentCode)}
+            disabled={isRunning}
+            className="w-full"
+          >
+            <Terminal className="mr-2 h-4 w-4" />
+            {isRunning ? "Running..." : "Run Code"}
+          </Button>
           
           {/* Output Area */}
           <Card>

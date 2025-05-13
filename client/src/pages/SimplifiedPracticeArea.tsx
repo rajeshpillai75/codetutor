@@ -389,9 +389,10 @@ export default function SimplifiedPracticeArea() {
           </Card>
         </div>
         
-        {/* Right Side: AI Feedback and Hint Generator */}
+        {/* Right Side: AI Feedback */}
         <div className="lg:col-span-4 space-y-4">
-          {/* Hint Generator */}
+          {/* Hint Generator (hidden for now) */}
+          {/* Uncomment to show hint generator
           <HintGenerator 
             currentCode={currentCode}
             language={language}
@@ -399,6 +400,7 @@ export default function SimplifiedPracticeArea() {
             difficulty={selectedExercise?.difficulty || "beginner"}
             selectedModel={selectedModel}
           />
+          */}
           
           {/* AI Feedback */}
           <Card className="h-full flex flex-col">

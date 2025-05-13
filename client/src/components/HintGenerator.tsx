@@ -108,6 +108,7 @@ const MascotImage = ({ emotion }: { emotion: MascotEmotion }) => {
         rx="30" 
         ry="5" 
         fill="rgba(0,0,0,0.1)" 
+        initial={{ opacity: 0.1 }}
         animate={{ 
           rx: emotion === "excited" || emotion === "celebrating" ? [30, 25, 30] : 30,
           opacity: emotion === "excited" || emotion === "celebrating" ? [0.1, 0.2, 0.1] : 0.1

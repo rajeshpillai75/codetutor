@@ -1119,7 +1119,8 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
         </div>
       )}
       
-      {/* Hint Generator */}
+      {/* Hint Generator (hidden for now) */}
+      {/* Uncomment to show hint generator
       <div className="mb-4">
         <HintGenerator 
           currentCode={currentCode}
@@ -1129,6 +1130,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
           selectedModel={selectedModel}
         />
       </div>
+      */}
 
       {/* Code Editor */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">

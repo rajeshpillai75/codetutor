@@ -106,17 +106,18 @@ export default function ChatMentor() {
                     Change Mentor
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl p-0">
-                  <div className="max-h-[80vh] overflow-y-auto">
-                    <DialogTitle className="sr-only">Choose Your AI Mentor</DialogTitle>
-                    <MentorPersonalitySelector
-                      currentPersonality={personalityType}
-                      currentModel={selectedModel}
-                      onPersonalityChange={setPersonalityType}
-                      onModelChange={setSelectedModel}
-                      onClose={() => setIsPersonalitySelectorOpen(false)}
-                    />
+                <DialogContent className="max-w-4xl p-0" aria-describedby="mentor-selector-description">
+                  <DialogTitle className="sr-only">Choose Your AI Mentor</DialogTitle>
+                  <div id="mentor-selector-description" className="sr-only">
+                    Select a mentor personality and AI model that matches your learning style
                   </div>
+                  <MentorPersonalitySelector
+                    currentPersonality={personalityType}
+                    currentModel={selectedModel}
+                    onPersonalityChange={setPersonalityType}
+                    onModelChange={setSelectedModel}
+                    onClose={() => setIsPersonalitySelectorOpen(false)}
+                  />
                 </DialogContent>
               </Dialog>
             </CardContent>

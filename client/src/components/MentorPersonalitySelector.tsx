@@ -33,7 +33,7 @@ export default function MentorPersonalitySelector({
   };
 
   return (
-    <Card className="w-full max-w-4xl max-h-[85vh] overflow-auto">
+    <Card className="w-full max-w-4xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
@@ -57,7 +57,7 @@ export default function MentorPersonalitySelector({
           </TabsList>
           
           <TabsContent value="personalities" className="py-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[40vh] overflow-y-auto p-1">
               {(Object.keys(personalityDetails) as MentorPersonalityType[]).map(personality => (
                 <MentorPersonalityCard
                   key={personality}
@@ -71,7 +71,7 @@ export default function MentorPersonalitySelector({
           </TabsContent>
           
           <TabsContent value="models" className="py-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[40vh] overflow-y-auto p-1">
               <Card 
                 className={`border-2 transition-all cursor-pointer hover:border-blue-400 ${
                   selectedModel === "openai" ? 'ring-2 ring-offset-2 ring-blue-400' : ''
@@ -153,11 +153,11 @@ export default function MentorPersonalitySelector({
           </TabsContent>
         </Tabs>
         
-        <div className="flex justify-between pt-4 border-t">
+        <div className="flex justify-between pt-4 border-t sticky bottom-0 bg-background pb-2">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleApply}>
+          <Button onClick={handleApply} className="bg-primary">
             Meet Your New Mentor
           </Button>
         </div>

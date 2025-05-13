@@ -83,7 +83,7 @@ interface ChatInterfaceProps {
   userId?: number;
   currentLanguage?: string;
   currentTopic?: string;
-  initialModel?: "openai" | "anthropic";
+  initialModel?: "openai" | "anthropic" | "llama3";
   initialPersonality?: MentorPersonality;
 }
 
@@ -99,7 +99,7 @@ export default function ChatInterface({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [personality, setPersonality] = useState<MentorPersonality>(initialPersonality);
   const [skillLevel, setSkillLevel] = useState<"beginner" | "intermediate" | "advanced">("beginner");
-  const [model, setModel] = useState<"openai" | "anthropic">(initialModel);
+  const [model, setModel] = useState<"openai" | "anthropic" | "llama3">(initialModel);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

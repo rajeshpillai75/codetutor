@@ -592,7 +592,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      if (model !== 'anthropic' && !process.env.OPENAI_API_KEY) {
+      if (model === 'llama3' && !process.env.PERPLEXITY_API_KEY) {
+        console.error("Perplexity API key is missing");
+        return res.status(500).json({ 
+          error: "Perplexity API key is missing", 
+          message: "The Perplexity API key is not configured. Please contact the administrator." 
+        });
+      }
+      
+      if (model !== 'anthropic' && model !== 'llama3' && !process.env.OPENAI_API_KEY) {
         console.error("OpenAI API key is missing");
         return res.status(500).json({ 
           error: "OpenAI API key is missing", 
@@ -609,6 +617,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           messages as ChatMessage[],
           selectedPersonality,
           context
+        );
+      } else if (model === 'llama3') {
+        // Use Llama 3 via Perplexity API
+        response = await getChatbotResponseWithPerplexity(
+          messages as ChatMessage[],
+          context?.language || 'javascript',
+          context?.currentTopic || 'general',
+          selectedPersonality
         );
       } else {
         // Default to OpenAI

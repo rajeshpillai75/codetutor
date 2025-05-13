@@ -1119,6 +1119,17 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
         </div>
       )}
       
+      {/* Hint Generator */}
+      <div className="mb-4">
+        <HintGenerator 
+          currentCode={currentCode}
+          language={language}
+          exerciseId={selectedExercise?.id}
+          difficulty={selectedExercise?.difficulty || "beginner"}
+          selectedModel={selectedModel}
+        />
+      </div>
+
       {/* Code Editor */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
         <div className="p-4 bg-gray-50 border-b">

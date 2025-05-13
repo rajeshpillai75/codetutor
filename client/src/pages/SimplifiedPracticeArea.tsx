@@ -397,7 +397,7 @@ export default function SimplifiedPracticeArea() {
                 loading={feedbackLoading}
                 onSendQuery={(query) => {
                   setFeedbackQuery(query);
-                  handleSendFeedbackQuery();
+                  handleSendFeedbackQuery(query);
                 }}
                 onGetGeneralFeedback={getGeneralCodeFeedback}
                 selectedModel={selectedModel}

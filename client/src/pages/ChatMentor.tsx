@@ -16,7 +16,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { Brain, Code, Cpu, MessageSquare, BookOpen, Bot, Zap, Lightbulb, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -106,7 +106,8 @@ export default function ChatMentor() {
                     Change Mentor
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl p-0">
+                <DialogContent className="max-w-4xl p-0 max-h-[90vh] overflow-y-auto">
+                  <DialogTitle className="sr-only">Choose Your AI Mentor</DialogTitle>
                   <MentorPersonalitySelector
                     currentPersonality={personalityType}
                     currentModel={selectedModel}

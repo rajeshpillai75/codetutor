@@ -99,11 +99,17 @@ export default function MentorPersonalityCard({
                 <p className="text-sm text-gray-500">{details.title}</p>
               </div>
               <Badge 
-                variant={aiModel === "openai" ? "secondary" : "destructive"} 
+                variant={
+                  aiModel === "openai" ? "secondary" : 
+                  aiModel === "anthropic" ? "destructive" : 
+                  "outline"
+                } 
                 className="ml-auto"
               >
                 <Cpu className="h-3 w-3 mr-1" />
-                {aiModel === "openai" ? "GPT" : "Claude"}
+                {aiModel === "openai" ? "GPT" : 
+                 aiModel === "anthropic" ? "Claude" : 
+                 "Llama 3"}
               </Badge>
             </div>
             

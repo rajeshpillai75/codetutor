@@ -77,7 +77,7 @@ const personalityDetails = {
 export default function SimplifiedChatMentor() {
   const [selectedLanguage, setSelectedLanguage] = useState<string>("javascript");
   const [selectedTopic, setSelectedTopic] = useState<string>("basics");
-  const [selectedModel, setSelectedModel] = useState<"openai" | "anthropic">("openai");
+  const [selectedModel, setSelectedModel] = useState<"openai" | "anthropic" | "llama3">("openai");
   const [personalityType, setPersonalityType] = useState<MentorPersonalityType>("FRIENDLY");
   const [isPersonalitySelectorOpen, setIsPersonalitySelectorOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -197,13 +197,14 @@ export default function SimplifiedChatMentor() {
               
               <div className="ml-auto flex items-center gap-2">
                 {/* Model Selector */}
-                <Select value={selectedModel} onValueChange={(value: "openai" | "anthropic") => setSelectedModel(value)}>
+                <Select value={selectedModel} onValueChange={(value: "openai" | "anthropic" | "llama3") => setSelectedModel(value)}>
                   <SelectTrigger className="w-[140px] h-8">
                     <SelectValue placeholder="Select model" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="openai">OpenAI</SelectItem>
                     <SelectItem value="anthropic">Anthropic</SelectItem>
+                    <SelectItem value="llama3">Llama 3</SelectItem>
                   </SelectContent>
                 </Select>
                 

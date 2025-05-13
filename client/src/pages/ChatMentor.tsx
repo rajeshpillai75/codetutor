@@ -25,7 +25,7 @@ export default function ChatMentor() {
   const [selectedLanguage, setSelectedLanguage] = useState<string>("javascript");
   const [selectedTopic, setSelectedTopic] = useState<string>("basics");
   const [location, setLocation] = useLocation();
-  const [selectedModel, setSelectedModel] = useState<"openai" | "anthropic">("openai");
+  const [selectedModel, setSelectedModel] = useState<"openai" | "anthropic" | "llama3">("openai");
   const [personalityType, setPersonalityType] = useState<MentorPersonalityType>("FRIENDLY");
   const [isPersonalitySelectorOpen, setIsPersonalitySelectorOpen] = useState(false);
 

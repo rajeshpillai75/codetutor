@@ -757,41 +757,52 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
 
   // Filter exercises based on current selections
   useEffect(() => {
-    // Get exercises for the selected language
-    const exercises = languageExercises[language as keyof typeof languageExercises] || [];
-    
-    // Filter based on difficulty and topic type
-    const filtered = exercises.filter((ex: Exercise) => {
-      // Match by difficulty level
-      const difficultyMatch = difficulty === "all" || ex.difficulty === difficulty;
-      
-      // Match by topic/exercise type
-      const typeMatch = exerciseType === "all" || ex.type === exerciseType;
-      
-      return difficultyMatch && typeMatch;
-    });
-    
-    setAvailableExercises(filtered);
-    
-    // Reset selected exercise when filters change
-    if (filtered.length > 0) {
-      // Only auto-select if none is currently selected or if current selection is no longer in the filtered list
-      if (!selectedExercise || !filtered.some(ex => ex.id === selectedExercise.id)) {
-        setSelectedExercise(filtered[0]);
-        setCodeOutput(""); // Clear output when changing exercise
+    try {
+      // Safety check for language
+      if (!language || !languageExercises) {
+        setAvailableExercises([]);
+        return;
       }
-    } else {
-      setSelectedExercise(null);
-    }
-    
-    // When language changes, reset the exercise type if current type isn't available for the new language
-    if (language) {
-      const availableTypes = topicCategories[language as keyof typeof topicCategories] || [];
-      const typeExists = availableTypes.some(topic => topic.value === exerciseType);
       
-      if (!typeExists && exerciseType !== "all") {
-        setExerciseType("all");
+      // Get exercises for the selected language
+      const exercises = languageExercises[language as keyof typeof languageExercises] || [];
+      
+      // Filter based on difficulty and topic type
+      const filtered = exercises.filter((ex: Exercise) => {
+        // Match by difficulty level
+        const difficultyMatch = difficulty === "all" || ex.difficulty === difficulty;
+        
+        // Match by topic/exercise type
+        const typeMatch = exerciseType === "all" || ex.type === exerciseType;
+        
+        return difficultyMatch && typeMatch;
+      });
+      
+      setAvailableExercises(filtered);
+      
+      // Reset selected exercise when filters change
+      if (filtered.length > 0) {
+        // Only auto-select if none is currently selected or if current selection is no longer in the filtered list
+        if (!selectedExercise || !filtered.some(ex => ex.id === selectedExercise.id)) {
+          setSelectedExercise(filtered[0]);
+          setCodeOutput(""); // Clear output when changing exercise
+        }
+      } else {
+        setSelectedExercise(null);
       }
+      
+      // When language changes, reset the exercise type if current type isn't available for the new language
+      if (language && topicCategories) {
+        const availableTypes = topicCategories[language as keyof typeof topicCategories] || [];
+        const typeExists = availableTypes.some(topic => topic.value === exerciseType);
+        
+        if (!typeExists && exerciseType !== "all") {
+          setExerciseType("all");
+        }
+      }
+    } catch (err) {
+      console.error("Error filtering exercises:", err);
+      setAvailableExercises([]);
     }
   }, [language, difficulty, exerciseType]);
   
@@ -1035,14 +1046,15 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Topics</SelectItem>
-                {topicCategories[language as keyof typeof topicCategories]?.map(topic => (
-                  <SelectItem key={topic.value} value={topic.value}>
-                    <div className="flex flex-col">
-                      <span>{topic.label}</span>
-                      <span className="text-xs text-muted-foreground">{topic.description}</span>
-                    </div>
-                  </SelectItem>
-                ))}
+                {language && topicCategories[language as keyof typeof topicCategories] ? 
+                  topicCategories[language as keyof typeof topicCategories].map(topic => (
+                    <SelectItem key={topic.value} value={topic.value}>
+                      <div className="flex flex-col">
+                        <span>{topic.label}</span>
+                        <span className="text-xs text-muted-foreground">{topic.description}</span>
+                      </div>
+                    </SelectItem>
+                  )) : null}
               </SelectContent>
             </Select>
           </CardContent>

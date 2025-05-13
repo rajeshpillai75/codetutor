@@ -126,8 +126,9 @@ export default function SimplifiedPracticeArea() {
   
   // Set the initial exercise based on language
   useEffect(() => {
-    if (SAMPLE_EXERCISES[language] && SAMPLE_EXERCISES[language].length > 0) {
-      const firstExercise = SAMPLE_EXERCISES[language][0];
+    if (language && SAMPLE_EXERCISES[language as keyof typeof SAMPLE_EXERCISES] && 
+        SAMPLE_EXERCISES[language as keyof typeof SAMPLE_EXERCISES].length > 0) {
+      const firstExercise = SAMPLE_EXERCISES[language as keyof typeof SAMPLE_EXERCISES][0];
       setSelectedExercise(firstExercise);
       setCurrentCode(firstExercise.initialCode);
     } else {
@@ -205,13 +206,15 @@ export default function SimplifiedPracticeArea() {
   
   // Map language names to Ace editor modes
   const getEditorMode = () => {
-    const modeMap = {
+    const modeMap: Record<string, string> = {
       javascript: "javascript",
       python: "python",
       java: "java",
       "html-css": "html",
     };
-    return modeMap[language] || "javascript";
+    return language && modeMap[language as keyof typeof modeMap] 
+      ? modeMap[language as keyof typeof modeMap] 
+      : "javascript";
   };
   
   return (

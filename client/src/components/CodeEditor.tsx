@@ -48,40 +48,66 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
   useEffect(() => {
     if (!editorRef.current) return;
 
+    let aceLoaded = false;
+    let editorInstance: any = null;
+
+    // Function to safely initialize the editor
+    const setupEditor = () => {
+      try {
+        if (aceLoaded && editorRef.current && typeof window.ace !== 'undefined') {
+          initializeEditor();
+        }
+      } catch (err) {
+        console.error("Error setting up editor:", err);
+      }
+    };
+
     // Load Ace Editor from CDN if it's not already loaded
     if (typeof window.ace === "undefined") {
       // Load Ace and required extensions
       const loadAce = async () => {
-        const script = document.createElement("script");
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js";
-        script.async = true;
-        document.body.appendChild(script);
-        
-        script.onload = () => {
-          // Load language tools for autocompletion
-          const langTools = document.createElement("script");
-          langTools.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ext-language_tools.js";
-          langTools.async = true;
-          document.body.appendChild(langTools);
+        try {
+          const script = document.createElement("script");
+          script.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js";
+          script.async = true;
+          document.body.appendChild(script);
           
-          // Load error markers
-          const errorMarker = document.createElement("script");
-          errorMarker.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ext-error_marker.js";
-          errorMarker.async = true;
-          document.body.appendChild(errorMarker);
-          
-          langTools.onload = initializeEditor;
-        };
+          script.onload = () => {
+            // Load language tools for autocompletion
+            const langTools = document.createElement("script");
+            langTools.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ext-language_tools.js";
+            langTools.async = true;
+            document.body.appendChild(langTools);
+            
+            // Load error markers
+            const errorMarker = document.createElement("script");
+            errorMarker.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ext-error_marker.js";
+            errorMarker.async = true;
+            document.body.appendChild(errorMarker);
+            
+            langTools.onload = () => {
+              aceLoaded = true;
+              setTimeout(setupEditor, 100); // Small delay to ensure everything is loaded
+            };
+          };
+        } catch (err) {
+          console.error("Error loading Ace editor:", err);
+        }
       };
       
       loadAce();
     } else {
-      initializeEditor();
+      aceLoaded = true;
+      setupEditor();
     }
 
     return () => {
       if (editor) {
-        editor.destroy();
+        try {
+          editor.destroy();
+        } catch (err) {
+          console.error("Error destroying editor:", err);
+        }
       }
     };
   }, [editorRef, language]);
@@ -104,68 +130,89 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
   }, [initialCode, editor]);
 
   const initializeEditor = () => {
-    if (!editorRef.current || typeof window.ace === 'undefined') {
-      console.log("Ace editor not loaded yet");
+    try {
+      if (!editorRef.current || typeof window.ace === 'undefined') {
+        console.log("Ace editor not loaded yet");
+        return;
+      }
+
+      // Enable languages tools if loaded
+      if (window.ace.require) {
+        try {
+          const langTools = window.ace.require("ace/ext/language_tools");
+          window.ace.require("ace/ext/error_marker");
+        } catch (e) {
+          console.log("Optional Ace extensions not loaded:", e);
+        }
+      }
+    } catch (err) {
+      console.error("Error in initializeEditor:", err);
       return;
     }
 
-    // Enable languages tools if loaded
-    if (window.ace.require) {
-      try {
-        const langTools = window.ace.require("ace/ext/language_tools");
-        window.ace.require("ace/ext/error_marker");
-      } catch (e) {
-        console.log("Optional Ace extensions not loaded:", e);
+    try {
+      const newEditor = window.ace.edit(editorRef.current);
+      newEditor.setTheme(`ace/theme/${currentTheme}`);
+      
+      // Get language mode safely
+      const lang = language.toLowerCase();
+      const mode = EDITOR_LANGUAGE_MODES[lang as keyof typeof EDITOR_LANGUAGE_MODES] || 'text';
+      newEditor.session.setMode(`ace/mode/${mode}`);
+      
+      // Make sure initialCode is valid
+      if (initialCode) {
+        newEditor.setValue(initialCode, -1);
+      } else {
+        newEditor.setValue("// Loading code...", -1);
       }
+      
+      newEditor.setOptions({
+        fontSize: `${fontSize}px`,
+        showPrintMargin: false,
+        highlightActiveLine: true,
+        highlightGutterLine: true,
+        showLineNumbers: true,
+        tabSize: 2,
+        useSoftTabs: true,
+        wrap: true,
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        enableSnippets: true,
+        showInvisibles: false,
+        fadeFoldWidgets: true,
+        showFoldWidgets: true
+      });
+
+      newEditor.session.on("change", () => {
+        setCode(newEditor.getValue());
+      });
+
+      // Focus editor after initialization
+      setTimeout(() => {
+        try {
+          newEditor.focus();
+        } catch (err) {
+          console.log("Could not focus editor:", err);
+        }
+      }, 100);
+      
+      // Create keyboard shortcuts
+      newEditor.commands.addCommand({
+        name: 'run',
+        bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
+        exec: () => handleRunCode()
+      });
+      
+      newEditor.commands.addCommand({
+        name: 'save',
+        bindKey: {win: 'Ctrl-S', mac: 'Command-S'},
+        exec: () => console.log('Save operation')
+      });
+
+      setEditor(newEditor);
+    } catch (err) {
+      console.error("Error creating editor:", err);
     }
-
-    const newEditor = window.ace.edit(editorRef.current);
-    newEditor.setTheme(`ace/theme/${currentTheme}`);
-    
-    // Get language mode safely
-    const lang = language.toLowerCase();
-    const mode = EDITOR_LANGUAGE_MODES[lang as keyof typeof EDITOR_LANGUAGE_MODES] || 'text';
-    newEditor.session.setMode(`ace/mode/${mode}`);
-    
-    newEditor.setValue(initialCode, -1);
-    newEditor.setOptions({
-      fontSize: `${fontSize}px`,
-      showPrintMargin: false,
-      highlightActiveLine: true,
-      highlightGutterLine: true,
-      showLineNumbers: true,
-      tabSize: 2,
-      useSoftTabs: true,
-      wrap: true,
-      enableBasicAutocompletion: true,
-      enableLiveAutocompletion: true,
-      enableSnippets: true,
-      showInvisibles: false,
-      fadeFoldWidgets: true,
-      showFoldWidgets: true
-    });
-
-    newEditor.session.on("change", () => {
-      setCode(newEditor.getValue());
-    });
-
-    // Focus editor after initialization
-    newEditor.focus();
-    
-    // Create keyboard shortcuts
-    newEditor.commands.addCommand({
-      name: 'run',
-      bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
-      exec: () => handleRunCode()
-    });
-    
-    newEditor.commands.addCommand({
-      name: 'save',
-      bindKey: {win: 'Ctrl-S', mac: 'Command-S'},
-      exec: () => console.log('Save operation')
-    });
-
-    setEditor(newEditor);
   };
 
   const handleReset = () => {

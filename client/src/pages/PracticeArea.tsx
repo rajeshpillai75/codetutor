@@ -1167,6 +1167,9 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
             feedback={feedback}
             loading={feedbackLoading}
             onSendQuery={handleSendFeedbackQuery}
+            onGetGeneralFeedback={getGeneralCodeFeedback}
+            selectedModel={selectedModel}
+            onChangeModel={(model) => setSelectedModel(model)}
           />
         </div>
       </div>

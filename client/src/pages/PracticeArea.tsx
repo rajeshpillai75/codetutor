@@ -29,10 +29,51 @@ interface Exercise {
 export default function PracticeArea() {
   const [language, setLanguage] = useState<string>("javascript");
   const [difficulty, setDifficulty] = useState<string>("beginner");
-  const [exerciseType, setExerciseType] = useState<string>("dataStructures");
+  const [exerciseType, setExerciseType] = useState<string>("basics");
   const [availableExercises, setAvailableExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [codeOutput, setCodeOutput] = useState<string>("");
+  
+  // Define difficulty levels
+  const difficultyLevels = [
+    { value: "beginner", label: "Beginner", description: "For those new to programming" },
+    { value: "intermediate", label: "Intermediate", description: "For those with some programming experience" },
+    { value: "advanced", label: "Advanced", description: "For experienced programmers" }
+  ];
+  
+  // Define topic categories for each language
+  const topicCategories = {
+    javascript: [
+      { value: "basics", label: "Basics", description: "Variables, data types, operators, and control flow" },
+      { value: "functions", label: "Functions", description: "Function declarations, expressions, and scope" },
+      { value: "dataStructures", label: "Data Structures", description: "Arrays, objects, and built-in methods" },
+      { value: "oop", label: "Object-Oriented Programming", description: "Classes, inheritance, and prototypes" },
+      { value: "async", label: "Async JavaScript", description: "Promises, async/await, and callbacks" },
+      { value: "algorithms", label: "Algorithms", description: "Problem-solving and algorithm implementation" }
+    ],
+    python: [
+      { value: "basics", label: "Basics", description: "Variables, data types, operators, and control flow" },
+      { value: "functions", label: "Functions", description: "Function declarations, parameters, and scope" },
+      { value: "dataStructures", label: "Data Structures", description: "Lists, dictionaries, tuples, and sets" },
+      { value: "oop", label: "Object-Oriented Programming", description: "Classes, inheritance, and methods" },
+      { value: "algorithms", label: "Algorithms", description: "Problem-solving and algorithm implementation" }
+    ],
+    java: [
+      { value: "basics", label: "Basics", description: "Variables, data types, operators, and control flow" },
+      { value: "oop", label: "Object-Oriented Programming", description: "Classes, inheritance, and interfaces" },
+      { value: "dataStructures", label: "Data Structures", description: "Arrays, collections, and iterators" }
+    ],
+    "html-css": [
+      { value: "basics", label: "HTML Basics", description: "Document structure, elements, and attributes" },
+      { value: "layout", label: "CSS Layout", description: "Flexbox, Grid, and positioning" },
+      { value: "responsive", label: "Responsive Design", description: "Media queries and mobile-first approach" }
+    ],
+    react: [
+      { value: "basics", label: "Basics", description: "Components, JSX, and props" },
+      { value: "state", label: "State Management", description: "Hooks, context, and state patterns" },
+      { value: "routing", label: "Routing", description: "React Router and navigation" }
+    ]
+  };
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [currentCode, setCurrentCode] = useState<string>("");
   
@@ -952,9 +993,14 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
                 <SelectValue placeholder="Select Difficulty" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="beginner">Beginner</SelectItem>
-                <SelectItem value="intermediate">Intermediate</SelectItem>
-                <SelectItem value="advanced">Advanced</SelectItem>
+                {difficultyLevels.map(level => (
+                  <SelectItem key={level.value} value={level.value}>
+                    <div className="flex flex-col">
+                      <span>{level.label}</span>
+                      <span className="text-xs text-muted-foreground">{level.description}</span>
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </CardContent>
@@ -970,13 +1016,18 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
               onValueChange={setExerciseType}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Exercise Type" />
+                <SelectValue placeholder="Select Topic" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="general">General Coding</SelectItem>
-                <SelectItem value="dataStructures">Data Structures</SelectItem>
-                <SelectItem value="algorithms">Algorithms</SelectItem>
+                <SelectItem value="all">All Topics</SelectItem>
+                {topicCategories[language as keyof typeof topicCategories]?.map(topic => (
+                  <SelectItem key={topic.value} value={topic.value}>
+                    <div className="flex flex-col">
+                      <span>{topic.label}</span>
+                      <span className="text-xs text-muted-foreground">{topic.description}</span>
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </CardContent>

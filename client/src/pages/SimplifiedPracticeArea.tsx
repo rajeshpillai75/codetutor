@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Terminal, CheckCircle, Cpu } from "lucide-react";
+import { Terminal, CheckCircle, Cpu, Code } from "lucide-react";
 import { apiPost } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -362,15 +362,29 @@ export default function SimplifiedPracticeArea() {
             </CardContent>
           </Card>
           
-          {/* Run Button */}
-          <Button 
-            onClick={() => executeCode(currentCode)}
-            disabled={isRunning}
-            className="w-full"
-          >
-            <Terminal className="mr-2 h-4 w-4" />
-            {isRunning ? "Running..." : "Run Code"}
-          </Button>
+          {/* Action Buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* Run Button */}
+            <Button 
+              onClick={() => executeCode(currentCode)}
+              disabled={isRunning}
+              className="w-full"
+            >
+              <Terminal className="mr-2 h-4 w-4" />
+              {isRunning ? "Running..." : "Run Code"}
+            </Button>
+            
+            {/* Get Feedback Button */}
+            <Button 
+              onClick={getGeneralCodeFeedback}
+              disabled={feedbackLoading || !currentCode}
+              variant="secondary"
+              className="w-full"
+            >
+              <Cpu className="mr-2 h-4 w-4" />
+              {feedbackLoading ? "Getting Feedback..." : "Get Code Review"}
+            </Button>
+          </div>
           
           {/* Output Area */}
           <Card>

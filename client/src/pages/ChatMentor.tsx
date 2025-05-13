@@ -174,6 +174,7 @@ export default function ChatMentor() {
             </CardContent>
           </Card>
           
+{/* Learning Resources section - hidden as requested 
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center">
@@ -213,6 +214,7 @@ export default function ChatMentor() {
               </Button>
             </CardContent>
           </Card>
+*/}
         </div>
         
         {/* Main chat area */}

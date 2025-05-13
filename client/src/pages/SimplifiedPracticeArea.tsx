@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -119,6 +119,10 @@ export default function SimplifiedPracticeArea() {
   const [codeOutput, setCodeOutput] = useState<string>("");
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [currentCode, setCurrentCode] = useState<string>("");
+  // Create a ref to access the AceEditor directly
+  const aceEditorRef = useRef<any>(null);
+  // Store a direct reference to the editor instance
+  const [editorInstance, setEditorInstance] = useState<any>(null);
   const [editorTheme, setEditorTheme] = useState<string>("monokai");
   const [selectedModel, setSelectedModel] = useState<"openai" | "llama3">("openai");
   
@@ -200,11 +204,14 @@ export default function SimplifiedPracticeArea() {
   // Helper function to get the latest code from the editor
   const getLatestCodeFromEditor = (): string => {
     try {
-      // @ts-ignore - We need to access internal Ace editor properties
-      const editorElement = document.querySelector('.ace_editor');
-      // @ts-ignore - Ace editor exposes env.editor on the DOM element
-      const editor = editorElement?.env?.editor;
-      return editor ? editor.getValue() : currentCode;
+      if (aceEditorRef.current) {
+        // Access the editor directly through the ref
+        const editor = aceEditorRef.current.editor;
+        if (editor) {
+          return editor.getValue();
+        }
+      }
+      return currentCode;
     } catch (error) {
       console.error("Error accessing editor:", error);
       return currentCode;
@@ -246,6 +253,13 @@ export default function SimplifiedPracticeArea() {
   const getGeneralCodeFeedback = async () => {
     // Ensure we're using the most current code from the editor
     const latestCode = getLatestCodeFromEditor();
+    console.log("Getting code from editor:", {
+      editorExists: !!aceEditorRef.current,
+      editorInstanceExists: !!(aceEditorRef.current?.editor),
+      latestCode: latestCode?.substring(0, 20) + "...",
+      currentCode: currentCode?.substring(0, 20) + "..."
+    });
+    
     if (!latestCode) return;
     
     // Make sure currentCode state is updated with the latest
@@ -363,16 +377,15 @@ export default function SimplifiedPracticeArea() {
                 mode={getEditorMode()}
                 theme={editorTheme}
                 value={currentCode}
+                ref={aceEditorRef}
                 onChange={(newCode) => {
                   // Ensure currentCode is always updated with editor content
-                  console.log("Editor content changed, updating currentCode");
                   setCurrentCode(newCode);
                 }}
                 onBlur={(event) => {
                   // Additional safety to make sure we always have the latest code
                   const editorValue = event.target.value;
                   if (editorValue !== currentCode) {
-                    console.log("Editor blur event detected, syncing code state");
                     setCurrentCode(editorValue);
                   }
                 }}

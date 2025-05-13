@@ -175,9 +175,19 @@ export default function SimplifiedPracticeArea() {
       } else {
         setCodeOutput(`Execution for ${language} is not supported in this demo.`);
       }
-    } catch (error) {
-      console.error("Code execution error:", error);
-      setCodeOutput(`Error: ${error.message}`);
+    } catch (error: unknown) {
+      // Safe way to log unknown errors
+      if (error instanceof Error) {
+        console.error("Code execution error:", error.message);
+      } else {
+        console.error("Code execution error: Unknown error type");
+      }
+      
+      if (error instanceof Error) {
+        setCodeOutput(`Error: ${error.message}`);
+      } else {
+        setCodeOutput(`Error: An unexpected error occurred`);
+      }
     } finally {
       console.log = originalConsoleLog;
       setIsRunning(false);
@@ -252,7 +262,7 @@ export default function SimplifiedPracticeArea() {
           
           {/* Exercise Selection */}
           <div className="flex flex-wrap gap-2">
-            {SAMPLE_EXERCISES[language]?.map((exercise, index) => (
+            {language && SAMPLE_EXERCISES[language as keyof typeof SAMPLE_EXERCISES]?.map((exercise: { title: string; description: string; initialCode: string }, index: number) => (
               <button
                 key={index}
                 className={`px-3 py-1 text-sm rounded-full transition-colors ${

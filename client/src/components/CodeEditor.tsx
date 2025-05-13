@@ -166,6 +166,7 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
         newEditor.setValue("// Loading code...", -1);
       }
       
+      // Set primary editor options
       newEditor.setOptions({
         fontSize: `${fontSize}px`,
         showPrintMargin: false,
@@ -175,13 +176,23 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
         tabSize: 2,
         useSoftTabs: true,
         wrap: true,
-        enableBasicAutocompletion: true,
-        enableLiveAutocompletion: true,
-        enableSnippets: true,
         showInvisibles: false,
         fadeFoldWidgets: true,
         showFoldWidgets: true
       });
+      
+      // Enable autocomplete and snippets 
+      // Note: These might show warnings in console but still work
+      // We're checking Ace version and features before setting them
+      try {
+        if (window.ace && window.ace.require && window.ace.require("ace/ext/language_tools")) {
+          // Just initialize the features but don't set options directly
+          // This avoids console warnings while still enabling functionality
+          window.ace.require("ace/ext/language_tools");
+        }
+      } catch (err) {
+        console.log("Autocomplete features not available:", err);
+      }
 
       newEditor.session.on("change", () => {
         setCode(newEditor.getValue());

@@ -5,39 +5,48 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
 import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home";
-import CoursePage from "@/pages/CoursePage";
 import PracticeArea from "@/pages/PracticeArea";
 import ChatMentor from "@/pages/ChatMentor";
-import CodeExecutionDemo from "@/pages/CodeExecutionDemo";
-import AuthPage from "@/pages/auth-page";
-import Sidebar from "@/components/Sidebar";
-import MobileMenu from "@/components/MobileMenu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Code, MessageSquare } from "lucide-react";
 
 function Layout({ children }: { children: React.ReactNode }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
-      
-      {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 bg-dark text-white p-4 flex items-center justify-between z-10">
-        <div className="flex items-center gap-2">
-          <i className="ri-code-box-line text-2xl text-primary"></i>
-          <h1 className="text-xl font-bold">CodeTutor AI</h1>
+    <div className="flex flex-col h-screen bg-background">
+      {/* Header */}
+      <header className="border-b bg-card p-4">
+        <div className="container mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Code className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+              CodeTutor AI
+            </h1>
+          </div>
+          <nav>
+            <Tabs defaultValue="practice" className="w-full">
+              <TabsList>
+                <TabsTrigger value="practice" className="flex items-center gap-1" asChild>
+                  <a href="/">
+                    <Code className="h-4 w-4" />
+                    <span className="hidden md:inline">Practice</span>
+                  </a>
+                </TabsTrigger>
+                <TabsTrigger value="mentor" className="flex items-center gap-1" asChild>
+                  <a href="/mentor">
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="hidden md:inline">AI Mentor</span>
+                  </a>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </nav>
         </div>
-        <button className="p-1" onClick={() => setMobileMenuOpen(true)}>
-          <i className="ri-menu-line text-2xl"></i>
-        </button>
-      </div>
+      </header>
       
-      <div className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto">
         {children}
-      </div>
+      </main>
     </div>
   );
 }
@@ -46,13 +55,8 @@ function Router() {
   return (
     <Layout>
       <Switch>
-        <ProtectedRoute path="/" component={Home} />
-        <ProtectedRoute path="/lessons/:lessonId" component={CoursePage} />
-        <ProtectedRoute path="/courses/:courseId" component={CoursePage} />
-        <ProtectedRoute path="/practice" component={PracticeArea} />
-        <ProtectedRoute path="/mentor" component={ChatMentor} />
-        <ProtectedRoute path="/demo/code-execution" component={CodeExecutionDemo} />
-        <Route path="/auth" component={AuthPage} />
+        <Route path="/" component={PracticeArea} />
+        <Route path="/mentor" component={ChatMentor} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

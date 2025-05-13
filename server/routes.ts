@@ -20,6 +20,10 @@ import {
   ChatMessage
 } from "./openai";
 import { getChatbotResponseWithAnthropic } from "./anthropic";
+import { 
+  getChatbotResponseWithPerplexity, 
+  getCodeFeedbackWithPerplexity 
+} from "./perplexity";
 import { log } from "./vite";
 import session from "express-session";
 import connectPg from "connect-pg-simple";

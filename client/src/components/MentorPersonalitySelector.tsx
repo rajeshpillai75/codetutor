@@ -4,7 +4,7 @@ import MentorPersonalityCard, {
   MentorPersonalityType, 
   personalityDetails 
 } from "./MentorPersonalityCard";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Brain, MessageSquare, Settings } from "lucide-react";
 
@@ -33,7 +33,7 @@ export default function MentorPersonalitySelector({
   };
 
   return (
-    <Card className="w-full max-w-4xl">
+    <Card className="w-full max-w-4xl flex flex-col">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
@@ -43,7 +43,8 @@ export default function MentorPersonalitySelector({
           Choose a mentor personality that matches your learning style. Each mentor has a different teaching approach!
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      
+      <CardContent className="flex-1 overflow-auto">
         <Tabs defaultValue="personalities" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="personalities" className="flex items-center gap-2">
@@ -57,7 +58,7 @@ export default function MentorPersonalitySelector({
           </TabsList>
           
           <TabsContent value="personalities" className="py-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[40vh] overflow-y-auto p-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[400px] overflow-y-auto p-1">
               {(Object.keys(personalityDetails) as MentorPersonalityType[]).map(personality => (
                 <MentorPersonalityCard
                   key={personality}
@@ -71,7 +72,7 @@ export default function MentorPersonalitySelector({
           </TabsContent>
           
           <TabsContent value="models" className="py-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[40vh] overflow-y-auto p-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[400px] overflow-y-auto p-1">
               <Card 
                 className={`border-2 transition-all cursor-pointer hover:border-blue-400 ${
                   selectedModel === "openai" ? 'ring-2 ring-offset-2 ring-blue-400' : ''
@@ -152,16 +153,16 @@ export default function MentorPersonalitySelector({
             </div>
           </TabsContent>
         </Tabs>
-        
-        <div className="flex justify-between pt-4 border-t sticky bottom-0 bg-background pb-2">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleApply} className="bg-primary">
-            Meet Your New Mentor
-          </Button>
-        </div>
       </CardContent>
+      
+      <CardFooter className="flex justify-between border-t py-4 bg-card">
+        <Button variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button onClick={handleApply} className="bg-primary font-medium">
+          Meet Your New Mentor
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

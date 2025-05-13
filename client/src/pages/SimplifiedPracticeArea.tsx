@@ -144,6 +144,30 @@ export default function SimplifiedPracticeArea() {
     }
   }, [language]);
   
+  // Set up regular syncing of editor content
+  useEffect(() => {
+    // Function to sync editor content with state
+    const syncEditorContent = () => {
+      try {
+        if (editorInstance) {
+          const editorContent = editorInstance.getValue();
+          if (editorContent !== currentCode) {
+            console.log("Auto-syncing editor content with state");
+            setCurrentCode(editorContent);
+          }
+        }
+      } catch (error) {
+        console.error("Error syncing editor content:", error);
+      }
+    };
+
+    // Set up interval to sync every 500ms
+    const intervalId = setInterval(syncEditorContent, 500);
+    
+    // Clean up interval on unmount
+    return () => clearInterval(intervalId);
+  }, [editorInstance, currentCode]);
+  
   // Execute code function
   const executeCode = (code: string) => {
     setIsRunning(true);
@@ -204,13 +228,19 @@ export default function SimplifiedPracticeArea() {
   // Helper function to get the latest code from the editor
   const getLatestCodeFromEditor = (): string => {
     try {
-      if (aceEditorRef.current) {
-        // Access the editor directly through the ref
-        const editor = aceEditorRef.current.editor;
-        if (editor) {
-          return editor.getValue();
-        }
+      // Use the stored editor instance if available
+      if (editorInstance) {
+        console.log("Getting code from stored editor instance");
+        return editorInstance.getValue();
       }
+      
+      // Fallback to the ref if editorInstance is not available
+      if (aceEditorRef.current && aceEditorRef.current.editor) {
+        console.log("Getting code from editor ref");
+        return aceEditorRef.current.editor.getValue();
+      }
+      
+      console.log("Falling back to currentCode state");
       return currentCode;
     } catch (error) {
       console.error("Error accessing editor:", error);
@@ -232,10 +262,18 @@ export default function SimplifiedPracticeArea() {
       setCurrentCode(latestCode);
     }
     
+    // Force a final update before sending
+    const finalCode = getLatestCodeFromEditor();
+    console.log("Before API call (specific query), final code check:", {
+      matches: finalCode === latestCode,
+      finalCodeStart: finalCode?.substring(0, 20),
+      latestCodeStart: latestCode?.substring(0, 20)
+    });
+    
     setFeedbackLoading(true);
     try {
       const data = await apiPost("/api/ai/code-feedback", {
-        code: latestCode,
+        code: finalCode,
         language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
         query: queryToUse,
         model: selectedModel
@@ -267,11 +305,19 @@ export default function SimplifiedPracticeArea() {
       setCurrentCode(latestCode);
     }
     
+    // Force a final update before sending
+    const finalCode = getLatestCodeFromEditor();
+    console.log("Before API call, final code check:", {
+      matches: finalCode === latestCode,
+      finalCodeStart: finalCode?.substring(0, 20),
+      latestCodeStart: latestCode?.substring(0, 20)
+    });
+    
     setFeedbackLoading(true);
     try {
-      console.log("Getting general code feedback for current code:", latestCode.substring(0, 50) + "...");
+      console.log("Getting general code feedback for current code:", finalCode.substring(0, 50) + "...");
       const data = await apiPost("/api/ai/code-feedback", {
-        code: latestCode,
+        code: finalCode,
         language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
         query: "Analyze this code and provide general feedback on structure, style, and best practices.",
         model: selectedModel
@@ -378,15 +424,23 @@ export default function SimplifiedPracticeArea() {
                 theme={editorTheme}
                 value={currentCode}
                 ref={aceEditorRef}
+                onLoad={(editor) => {
+                  // Store the editor instance when it's loaded
+                  console.log("Editor loaded:", editor);
+                  setEditorInstance(editor);
+                }}
                 onChange={(newCode) => {
                   // Ensure currentCode is always updated with editor content
                   setCurrentCode(newCode);
                 }}
-                onBlur={(event) => {
-                  // Additional safety to make sure we always have the latest code
-                  const editorValue = event.target.value;
-                  if (editorValue !== currentCode) {
-                    setCurrentCode(editorValue);
+                onBlur={() => {
+                  // Make sure we have the latest code on blur
+                  if (editorInstance) {
+                    const latestCode = editorInstance.getValue();
+                    if (latestCode !== currentCode) {
+                      console.log("Updating code on blur");
+                      setCurrentCode(latestCode);
+                    }
                   }
                 }}
                 name="code-editor"

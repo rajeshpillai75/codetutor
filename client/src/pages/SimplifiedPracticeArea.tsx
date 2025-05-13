@@ -221,13 +221,22 @@ export default function SimplifiedPracticeArea() {
   
   // Get general code feedback without a specific query
   const getGeneralCodeFeedback = async () => {
-    if (!currentCode) return;
+    // Ensure we're using the most current code from the editor
+    const editorInstance = document.querySelector('.ace_editor')?.env?.editor;
+    const latestCode = editorInstance ? editorInstance.getValue() : currentCode;
+    
+    if (!latestCode) return;
+    
+    // Make sure currentCode state is updated with the latest
+    if (latestCode !== currentCode) {
+      setCurrentCode(latestCode);
+    }
     
     setFeedbackLoading(true);
     try {
-      console.log("Getting general code feedback for current code:", currentCode.substring(0, 50) + "...");
+      console.log("Getting general code feedback for current code:", latestCode.substring(0, 50) + "...");
       const data = await apiPost("/api/ai/code-feedback", {
-        code: currentCode,
+        code: latestCode,
         language: language === "html-css" ? "html" : language === "react" ? "javascript" : language,
         query: "Analyze this code and provide general feedback on structure, style, and best practices.",
         model: selectedModel

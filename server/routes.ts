@@ -1,6 +1,5 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import path from "path";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { 
@@ -31,10 +30,6 @@ import connectPg from "connect-pg-simple";
 import { pool } from "./db";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Serve specific HTML files for different routes
-  app.get('/practice', (req, res) => {
-    res.sendFile(path.resolve(import.meta.dirname, '../client/practice-area.html'));
-  });
   // Set up PostgreSQL session store
   const PostgresSessionStore = connectPg(session);
   const sessionStore = new PostgresSessionStore({

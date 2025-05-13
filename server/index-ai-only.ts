@@ -3,7 +3,7 @@ import { log } from "./vite";
 import { registerRoutes } from "./routes-ai-only";
 import cors from "cors";
 import { setupVite, serveStatic } from "./vite";
-import { check } from "./seeds";
+import { check } from "./seeds-minimal";
 
 const app = express();
 

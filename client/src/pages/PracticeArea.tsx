@@ -44,6 +44,7 @@ export default function PracticeArea() {
     errorDetection?: { line: number; message: string }[];
   } | null>(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackQuery, setFeedbackQuery] = useState("");
   
   // Handle feedback query
   const handleSendFeedbackQuery = async (query: string) => {
@@ -744,6 +745,12 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
     setIsRunning(true);
     setCodeOutput("");
     setCurrentCode(code);
+    // Clear previous feedback and query when running new code
+    setFeedback(null);
+    // Clear feedback query field if it exists
+    if (typeof setFeedbackQuery === 'function') {
+      setFeedbackQuery("");
+    }
     
     // Create a safe way to capture console.log output
     let output = "";
@@ -990,7 +997,12 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id;
               <Card 
                 key={exercise.id} 
                 className={`cursor-pointer transition-all hover:shadow-md ${selectedExercise?.id === exercise.id ? 'border-primary border-2' : ''}`}
-                onClick={() => setSelectedExercise(exercise)}
+                onClick={() => {
+                  setSelectedExercise(exercise);
+                  // Clear feedback when switching exercises
+                  setFeedback(null);
+                  setFeedbackQuery("");
+                }}
               >
                 <CardContent className="p-4">
                   <h3 className="font-medium text-lg">{exercise.title}</h3>

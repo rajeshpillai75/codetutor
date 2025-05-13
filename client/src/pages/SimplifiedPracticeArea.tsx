@@ -141,6 +141,9 @@ export default function SimplifiedPracticeArea() {
     setIsRunning(true);
     setCodeOutput("");
     setCurrentCode(code);
+    // Clear previous feedback and query when running new code
+    setFeedback(null);
+    setFeedbackQuery("");
     
     // Create a safe way to capture console.log output
     let output = "";
@@ -258,7 +261,9 @@ export default function SimplifiedPracticeArea() {
                   setSelectedExercise(exercise);
                   setCurrentCode(exercise.initialCode);
                   setCodeOutput("");
+                  // Clear feedback and query when changing exercises
                   setFeedback(null);
+                  setFeedbackQuery("");
                 }}
               >
                 {exercise.title}

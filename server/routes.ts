@@ -9,7 +9,8 @@ import {
   insertLessonSchema,
   insertExerciseSchema,
   insertUserProgressSchema,
-  insertCodeSubmissionSchema
+  insertCodeSubmissionSchema,
+  insertSavedProgramSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import {
@@ -703,6 +704,132 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error: "Failed to get chat response",
         message: "There was an error processing your request. Please try again later."
       });
+    }
+  });
+
+  // Saved Programs routes
+  app.get("/api/saved-programs", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+      const savedPrograms = await storage.getSavedProgramsByUser(userId);
+      res.json(savedPrograms);
+    } catch (err) {
+      console.error("Error fetching saved programs:", err);
+      res.status(500).json({ error: "Failed to get saved programs" });
+    }
+  });
+
+  app.get("/api/saved-programs/:id", isAuthenticated, async (req, res) => {
+    try {
+      const programId = parseInt(req.params.id);
+      const program = await storage.getSavedProgram(programId);
+      
+      if (!program) {
+        return res.status(404).json({ error: "Saved program not found" });
+      }
+      
+      // Verify user owns this program
+      if (program.userId !== req.user?.id) {
+        return res.status(403).json({ error: "Not authorized to access this program" });
+      }
+      
+      res.json(program);
+    } catch (err) {
+      console.error("Error fetching saved program:", err);
+      res.status(500).json({ error: "Failed to get saved program" });
+    }
+  });
+
+  app.get("/api/saved-programs/language/:language", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+      
+      const language = req.params.language;
+      const programs = await storage.getSavedProgramsByLanguage(userId, language);
+      res.json(programs);
+    } catch (err) {
+      console.error("Error fetching saved programs by language:", err);
+      res.status(500).json({ error: "Failed to get saved programs by language" });
+    }
+  });
+
+  app.post("/api/saved-programs", isAuthenticated, async (req, res) => {
+    try {
+      // Ensure the user ID in the request matches the authenticated user
+      if (req.body.userId !== req.user?.id) {
+        return res.status(403).json({ error: "User ID mismatch" });
+      }
+      
+      const programData = insertSavedProgramSchema.parse({
+        ...req.body,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      
+      const program = await storage.createSavedProgram(programData);
+      res.status(201).json(program);
+    } catch (err) {
+      if (err instanceof ZodError) {
+        handleZodError(err, res);
+      } else {
+        console.error("Error creating saved program:", err);
+        res.status(500).json({ error: "Failed to create saved program" });
+      }
+    }
+  });
+
+  app.put("/api/saved-programs/:id", isAuthenticated, async (req, res) => {
+    try {
+      const programId = parseInt(req.params.id);
+      const program = await storage.getSavedProgram(programId);
+      
+      if (!program) {
+        return res.status(404).json({ error: "Saved program not found" });
+      }
+      
+      // Verify user owns this program
+      if (program.userId !== req.user?.id) {
+        return res.status(403).json({ error: "Not authorized to update this program" });
+      }
+      
+      // Update the program
+      const updatedProgram = await storage.updateSavedProgram(programId, {
+        ...req.body,
+        updatedAt: new Date().toISOString()
+      });
+      
+      res.json(updatedProgram);
+    } catch (err) {
+      console.error("Error updating saved program:", err);
+      res.status(500).json({ error: "Failed to update saved program" });
+    }
+  });
+
+  app.delete("/api/saved-programs/:id", isAuthenticated, async (req, res) => {
+    try {
+      const programId = parseInt(req.params.id);
+      const program = await storage.getSavedProgram(programId);
+      
+      if (!program) {
+        return res.status(404).json({ error: "Saved program not found" });
+      }
+      
+      // Verify user owns this program
+      if (program.userId !== req.user?.id) {
+        return res.status(403).json({ error: "Not authorized to delete this program" });
+      }
+      
+      await storage.deleteSavedProgram(programId);
+      res.status(204).send();
+    } catch (err) {
+      console.error("Error deleting saved program:", err);
+      res.status(500).json({ error: "Failed to delete saved program" });
     }
   });
 

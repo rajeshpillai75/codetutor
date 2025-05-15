@@ -39,10 +39,11 @@ declare global {
   }
 }
 
-export default function CodeEditor({ title, language, initialCode, exerciseId, onExecute }: CodeEditorProps) {
+export default function CodeEditor({ title: initialTitle, language, initialCode, exerciseId, onExecute }: CodeEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [editor, setEditor] = useState<any>(null);
   const [code, setCode] = useState(initialCode);
+  const [title, setTitle] = useState(initialTitle);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [output, setOutput] = useState<string>("");
   const [isExecuting, setIsExecuting] = useState(false);
@@ -142,6 +143,11 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
       setCode(initialCode);
     }
   }, [initialCode, editor]);
+  
+  // Update title when initialTitle changes
+  useEffect(() => {
+    setTitle(initialTitle);
+  }, [initialTitle]);
 
   const initializeEditor = () => {
     try {
@@ -260,6 +266,7 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
     if (editor && program.code) {
       editor.setValue(program.code, -1);
       setCode(program.code);
+      setTitle(program.name); // Update the title to match the saved program name
       if (showOutput) {
         setOutput("");
         setShowOutput(false);

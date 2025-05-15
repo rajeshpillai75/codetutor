@@ -142,3 +142,30 @@ export type InsertUserProgress = z.infer<typeof insertUserProgressSchema>;
 
 export type CodeSubmission = typeof codeSubmissions.$inferSelect;
 export type InsertCodeSubmission = z.infer<typeof insertCodeSubmissionSchema>;
+
+// Saved Programs table
+export const savedPrograms = pgTable("saved_programs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  language: text("language").notNull(),
+  code: text("code").notNull(),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  description: text("description"),
+  tags: text("tags").array(),
+});
+
+export const insertSavedProgramSchema = createInsertSchema(savedPrograms).pick({
+  userId: true,
+  name: true,
+  language: true,
+  code: true,
+  createdAt: true,
+  updatedAt: true,
+  description: true,
+  tags: true,
+});
+
+export type SavedProgram = typeof savedPrograms.$inferSelect;
+export type InsertSavedProgram = z.infer<typeof insertSavedProgramSchema>;

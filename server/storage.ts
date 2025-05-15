@@ -19,7 +19,10 @@ import {
   type InsertUserProgress,
   codeSubmissions,
   type CodeSubmission,
-  type InsertCodeSubmission
+  type InsertCodeSubmission,
+  savedPrograms,
+  type SavedProgram,
+  type InsertSavedProgram
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -67,6 +70,15 @@ export interface IStorage {
   getCodeSubmissionsByUser(userId: number): Promise<CodeSubmission[]>;
   getCodeSubmissionsByExercise(exerciseId: number): Promise<CodeSubmission[]>;
   createCodeSubmission(submission: InsertCodeSubmission): Promise<CodeSubmission>;
+  
+  // Saved programs operations
+  getAllSavedPrograms(): Promise<SavedProgram[]>;
+  getSavedProgram(id: number): Promise<SavedProgram | undefined>;
+  getSavedProgramsByUser(userId: number): Promise<SavedProgram[]>;
+  getSavedProgramsByLanguage(userId: number, language: string): Promise<SavedProgram[]>;
+  createSavedProgram(program: InsertSavedProgram): Promise<SavedProgram>;
+  updateSavedProgram(id: number, program: Partial<InsertSavedProgram>): Promise<SavedProgram>;
+  deleteSavedProgram(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -237,6 +249,52 @@ export class DatabaseStorage implements IStorage {
       .values(insertCodeSubmission)
       .returning();
     return submission;
+  }
+
+  // Saved programs operations
+  async getAllSavedPrograms(): Promise<SavedProgram[]> {
+    return await db.select().from(savedPrograms);
+  }
+  
+  async getSavedProgram(id: number): Promise<SavedProgram | undefined> {
+    const [program] = await db.select().from(savedPrograms).where(eq(savedPrograms.id, id));
+    return program;
+  }
+  
+  async getSavedProgramsByUser(userId: number): Promise<SavedProgram[]> {
+    return await db.select().from(savedPrograms).where(eq(savedPrograms.userId, userId));
+  }
+  
+  async getSavedProgramsByLanguage(userId: number, language: string): Promise<SavedProgram[]> {
+    return await db.select().from(savedPrograms).where(
+      and(
+        eq(savedPrograms.userId, userId),
+        eq(savedPrograms.language, language)
+      )
+    );
+  }
+  
+  async createSavedProgram(insertSavedProgram: InsertSavedProgram): Promise<SavedProgram> {
+    const [program] = await db
+      .insert(savedPrograms)
+      .values(insertSavedProgram)
+      .returning();
+    return program;
+  }
+  
+  async updateSavedProgram(id: number, programUpdate: Partial<InsertSavedProgram>): Promise<SavedProgram> {
+    const [updatedProgram] = await db
+      .update(savedPrograms)
+      .set(programUpdate)
+      .where(eq(savedPrograms.id, id))
+      .returning();
+    return updatedProgram;
+  }
+  
+  async deleteSavedProgram(id: number): Promise<void> {
+    await db
+      .delete(savedPrograms)
+      .where(eq(savedPrograms.id, id));
   }
 }
 

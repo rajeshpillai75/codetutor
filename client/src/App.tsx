@@ -8,8 +8,9 @@ import { AuthProvider } from "@/hooks/use-auth";
 import NotFound from "@/pages/not-found";
 import PracticeArea from "@/pages/PracticeArea";
 import ChatMentor from "@/pages/ChatMentor";
+import AuthPage from "@/pages/auth-page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Code, MessageSquare } from "lucide-react";
+import { Code, MessageSquare, User } from "lucide-react";
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -38,6 +39,12 @@ function Layout({ children }: { children: React.ReactNode }) {
                     <span className="hidden md:inline">AI Mentor</span>
                   </a>
                 </TabsTrigger>
+                <TabsTrigger value="auth" className="flex items-center gap-1" asChild>
+                  <a href="/auth">
+                    <User className="h-4 w-4" />
+                    <span className="hidden md:inline">Sign In</span>
+                  </a>
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </nav>
@@ -57,6 +64,7 @@ function Router() {
       <Switch>
         <Route path="/" component={PracticeArea} />
         <Route path="/mentor" component={ChatMentor} />
+        <Route path="/auth" component={AuthPage} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

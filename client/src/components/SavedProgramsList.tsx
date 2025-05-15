@@ -139,7 +139,7 @@ export function SavedProgramsList({
         </Badge>
       </div>
       
-      <ScrollArea className="h-[500px] pr-4">
+      <ScrollArea className="h-full pr-4">
         <Accordion type="single" collapsible className="space-y-4">
           {filteredPrograms.map((program) => (
             <AccordionItem 
@@ -172,20 +172,6 @@ export function SavedProgramsList({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem 
-                          onClick={() => handleLoadProgram(program)}
-                          className="gap-2"
-                        >
-                          <ArrowUpRight className="h-4 w-4" />
-                          Load
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => setEditingProgram(program)}
-                          className="gap-2"
-                        >
-                          <Pencil className="h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
                           onClick={() => setProgramToDelete(program)}
                           className="text-destructive gap-2"
                         >
@@ -196,6 +182,26 @@ export function SavedProgramsList({
                     </DropdownMenu>
                   </div>
                 </CardHeader>
+                <div className="flex justify-end gap-2 px-4 py-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setEditingProgram(program)}
+                    className="gap-1"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    Edit
+                  </Button>
+                  <Button 
+                    variant="default" 
+                    size="sm"
+                    onClick={() => handleLoadProgram(program)}
+                    className="gap-1"
+                  >
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                    Load Program
+                  </Button>
+                </div>
                 <AccordionContent>
                   <CardContent className="pt-0">
                     {program.description && (
@@ -217,26 +223,6 @@ export function SavedProgramsList({
                       </div>
                     )}
                   </CardContent>
-                  <CardFooter className="pb-4 pt-0 justify-end gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setEditingProgram(program)}
-                      className="gap-1"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                      Edit
-                    </Button>
-                    <Button 
-                      variant="default" 
-                      size="sm"
-                      onClick={() => handleLoadProgram(program)}
-                      className="gap-1"
-                    >
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                      Load Program
-                    </Button>
-                  </CardFooter>
                 </AccordionContent>
               </Card>
             </AccordionItem>

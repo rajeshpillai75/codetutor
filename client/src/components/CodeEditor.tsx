@@ -567,10 +567,11 @@ export default function CodeEditor({ title: initialTitle, language, initialCode,
                       Select a program to load into the editor
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="flex-1 overflow-hidden">
+                  <div className="flex-1 overflow-hidden mt-4">
                     <SavedProgramsList 
                       language={language}
                       onLoadProgram={handleLoadProgram}
+                      className="h-full"
                     />
                   </div>
                 </DialogContent>

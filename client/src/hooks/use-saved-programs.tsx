@@ -1,8 +1,12 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, UseMutationResult } from "@tanstack/react-query";
 import { SavedProgram, InsertSavedProgram } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+
+// Types for our mutation inputs
+type CreateProgramInput = Omit<InsertSavedProgram, 'createdAt' | 'updatedAt'>;
+type UpdateProgramInput = { id: number; data: Partial<InsertSavedProgram> };
 
 export function useSavedPrograms() {
   const { toast } = useToast();
@@ -27,20 +31,29 @@ export function useSavedPrograms() {
   };
 
   // Create a new saved program
-  const createSavedProgramMutation = useMutation({
-    mutationFn: async (program: Omit<InsertSavedProgram, 'createdAt' | 'updatedAt'>) => {
+  const createSavedProgramMutation: UseMutationResult<SavedProgram, Error, CreateProgramInput> = useMutation({
+    mutationFn: async (program) => {
       if (!user) throw new Error("User not authenticated");
       
-      const res = await apiRequest("POST", "/api/saved-programs", {
-        ...program,
-        userId: user.id,
+      const res = await fetch("/api/saved-programs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...program,
+          userId: user.id
+        }),
+        credentials: "include"
       });
       
-      return await res.json() as SavedProgram;
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`${res.status}: ${text || res.statusText}`);
+      }
+      
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/saved-programs'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/saved-programs/language'] });
       toast({
         title: "Program saved",
         description: "Your program has been saved successfully.",
@@ -56,17 +69,27 @@ export function useSavedPrograms() {
   });
 
   // Update an existing saved program
-  const updateSavedProgramMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number, data: Partial<InsertSavedProgram> }) => {
+  const updateSavedProgramMutation: UseMutationResult<SavedProgram, Error, UpdateProgramInput> = useMutation({
+    mutationFn: async ({ id, data }) => {
       if (!user) throw new Error("User not authenticated");
       
-      const res = await apiRequest("PUT", `/api/saved-programs/${id}`, data);
-      return await res.json() as SavedProgram;
+      const res = await fetch(`/api/saved-programs/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include"
+      });
+      
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`${res.status}: ${text || res.statusText}`);
+      }
+      
+      return await res.json();
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['/api/saved-programs'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/saved-programs', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['/api/saved-programs/language'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/saved-programs', variables.id.toString()] });
       toast({
         title: "Program updated",
         description: "Your program has been updated successfully.",
@@ -82,15 +105,22 @@ export function useSavedPrograms() {
   });
 
   // Delete a saved program
-  const deleteSavedProgramMutation = useMutation({
-    mutationFn: async (id: number) => {
+  const deleteSavedProgramMutation: UseMutationResult<void, Error, number> = useMutation({
+    mutationFn: async (id) => {
       if (!user) throw new Error("User not authenticated");
       
-      await apiRequest("DELETE", `/api/saved-programs/${id}`);
+      const res = await fetch(`/api/saved-programs/${id}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`${res.status}: ${text || res.statusText}`);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/saved-programs'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/saved-programs/language'] });
       toast({
         title: "Program deleted",
         description: "Your program has been deleted successfully.",

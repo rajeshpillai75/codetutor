@@ -45,6 +45,13 @@ interface SaveProgramDialogProps {
     description?: string;
     tags?: string[];
   };
+  triggerProps?: {
+    id?: string;
+    variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+    size?: "default" | "sm" | "lg" | "icon";
+    title?: string;
+    className?: string;
+  };
 }
 
 export function SaveProgramDialog({
@@ -52,6 +59,7 @@ export function SaveProgramDialog({
   language,
   onSaved,
   existingProgram,
+  triggerProps,
 }: SaveProgramDialogProps) {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
@@ -111,14 +119,27 @@ export function SaveProgramDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-2"
-        >
-          <Save className="h-4 w-4" />
-          {isEditing ? "Update Program" : "Save Program"}
-        </Button>
+        {triggerProps ? (
+          <Button
+            id={triggerProps.id}
+            variant={triggerProps.variant || "outline"}
+            size={triggerProps.size || "sm"}
+            title={triggerProps.title}
+            className={triggerProps.className || "gap-2"}
+          >
+            <Save className="h-4 w-4" />
+            {triggerProps.size !== "icon" && (isEditing ? "Update Program" : "Save Program")}
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            <Save className="h-4 w-4" />
+            {isEditing ? "Update Program" : "Save Program"}
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[500px]">

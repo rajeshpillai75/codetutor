@@ -56,6 +56,8 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
   } | null>(null);
   const [feedbackQuery, setFeedbackQuery] = useState("");
   const [showOutput, setShowOutput] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!editorRef.current) return;
@@ -229,7 +231,11 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
       newEditor.commands.addCommand({
         name: 'save',
         bindKey: {win: 'Ctrl-S', mac: 'Command-S'},
-        exec: () => console.log('Save operation')
+        exec: () => {
+          if (user) {
+            document.getElementById('save-program-trigger')?.click();
+          }
+        }
       });
 
       setEditor(newEditor);
@@ -242,6 +248,23 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
     if (editor) {
       editor.setValue(initialCode, -1);
       setCode(initialCode);
+      if (showOutput) {
+        setOutput("");
+        setShowOutput(false);
+      }
+    }
+  };
+  
+  // Function to load a saved program
+  const handleLoadProgram = (program: SavedProgram) => {
+    if (editor && program.code) {
+      editor.setValue(program.code, -1);
+      setCode(program.code);
+      if (showOutput) {
+        setOutput("");
+        setShowOutput(false);
+      }
+      setShowLoadDialog(false);
     }
   };
   
@@ -504,6 +527,49 @@ export default function CodeEditor({ title, language, initialCode, exerciseId, o
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
+          
+          {user && (
+            <>
+              <SaveProgramDialog
+                code={code}
+                language={language}
+                triggerProps={{
+                  id: "save-program-trigger",
+                  variant: "ghost",
+                  size: "icon",
+                  title: "Save Program (Ctrl+S)",
+                  className: "h-8 text-white hover:bg-gray-700"
+                }}
+              />
+              
+              <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    title="Load Saved Program"
+                    className="h-8 text-white hover:bg-gray-700"
+                  >
+                    <FolderOpen className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
+                  <DialogHeader>
+                    <DialogTitle>My Saved Programs</DialogTitle>
+                    <DialogDescription>
+                      Select a program to load into the editor
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex-1 overflow-hidden">
+                    <SavedProgramsList 
+                      language={language}
+                      onLoadProgram={handleLoadProgram}
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

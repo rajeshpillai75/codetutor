@@ -273,8 +273,8 @@ export function SavedProgramsList({
           existingProgram={{
             id: editingProgram.id,
             name: editingProgram.name,
-            description: editingProgram.description,
-            tags: editingProgram.tags,
+            description: editingProgram.description ? editingProgram.description : undefined,
+            tags: editingProgram.tags ? editingProgram.tags : undefined,
           }}
           onSaved={() => setEditingProgram(null)}
         />

@@ -2,8 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { EDITOR_THEMES, EDITOR_LANGUAGE_MODES } from "@/lib/constants";
 import AIFeedback from "./AIFeedback";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/use-auth";
+import { SavedProgram } from "@shared/schema";
+import { SaveProgramDialog } from "./SaveProgramDialog";
+import { SavedProgramsList } from "./SavedProgramsList";
 import { Button } from "@/components/ui/button";
-import { Terminal, Play, RefreshCw, Save, Settings, ChevronDown, CheckCircle } from "lucide-react";
+import { Terminal, Play, RefreshCw, Save, Settings, ChevronDown, CheckCircle, FolderOpen } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   DropdownMenu, 
@@ -11,6 +15,14 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
 interface CodeEditorProps {

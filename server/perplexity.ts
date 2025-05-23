@@ -215,7 +215,9 @@ export async function getChatbotResponseWithPerplexity(
     // Get the correct personality system prompt
     const systemPrompt = personalityPrompts[personality] + `
       Focus on ${topic} in ${language}. When providing code examples, wrap them in triple backticks with the correct language annotation.
-      If providing resources, format them as a list of objects with title and url properties.`;
+      If providing resources, format them as a list of objects with title and url properties.
+      
+      CRITICAL: Your response MUST be under 200 words total. Be concise and direct. Do not write long introductions.`;
 
     // Convert our messages to Perplexity messages format
     const perplexityMessages: PerplexityMessage[] = messages.map(msg => ({
